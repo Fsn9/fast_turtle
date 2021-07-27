@@ -84,8 +84,6 @@ void init_graphics(){
     // Robot orientation marker
     geometry_msgs::Point arrow_origin, arrow_end;
     geometry_msgs::Quaternion q;
-    q = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(0)->get_theta());
-    //q = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
     robot_orientation_marker.header.frame_id = "robot";
     robot_orientation_marker.ns = "simulator_markers";
     robot_orientation_marker.id = 2;
@@ -98,12 +96,15 @@ void init_graphics(){
     robot_orientation_marker.color.r = 0.0;
     robot_orientation_marker.color.g = 0.0;
     robot_orientation_marker.color.b = 0.0;
-    robot_orientation_marker.pose.orientation = q;
+    robot_orientation_marker.pose.orientation.x = 0;
+    robot_orientation_marker.pose.orientation.y = 0;
+    robot_orientation_marker.pose.orientation.z = 0;
+    robot_orientation_marker.pose.orientation.w = 1;
     arrow_origin.x = 0.0;
     arrow_origin.y = 0.0;
     arrow_origin.z = robot_marker.scale.z;
     arrow_end.x = arrow_origin.x + 0.3;
-    arrow_end.y = arrow_origin.y + 0.3;
+    arrow_end.y = arrow_origin.y;
     arrow_end.z = robot_marker.scale.z;
     robot_orientation_marker.points.clear();
     robot_orientation_marker.points.push_back(arrow_origin);
@@ -164,13 +165,6 @@ void repaint(){
     robot_marker_publisher.publish(robot_marker);
 
     // Robot orientation marker
-    /*
-    robot_orientation_marker.points[0].x = robot_marker.pose.position.x;
-    robot_orientation_marker.points[0].y = robot_marker.pose.position.y;
-    robot_orientation_marker.points[1].x = robot_orientation_marker.points[0].x + 0.3;
-    robot_orientation_marker.points[1].y = robot_orientation_marker.points[0].y + 0.3;
-    */
-    robot_orientation_marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(0)->get_theta() * 0.5);
     robot_orientation_marker_publisher.publish(robot_orientation_marker);
 
     // Obstacles
