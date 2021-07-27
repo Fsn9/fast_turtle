@@ -21,7 +21,6 @@ int main(int argc, char **argv)
     ft.get_world()->get_burger(robot_idx)->get_lidar()->display_lasers();
     float v = 0.1;
     float w = 0.0;
-
     ft.act(v,w);
     return 0;
 }

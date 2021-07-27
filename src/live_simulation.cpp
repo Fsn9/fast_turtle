@@ -9,6 +9,7 @@
 #include "geometry_msgs/Pose.h"
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
+#include "sensor_msgs/LaserScan.h"
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
 
@@ -24,8 +25,11 @@ ros::Publisher world_marker_publisher;
 ros::Publisher robot_marker_publisher;
 ros::Publisher robot_orientation_marker_publisher;
 ros::Publisher obstacle_markers_publisher;
+
 // Publishers
+sensor_msgs::LaserScan laser_scan_msg;
 ros::Publisher robots_publisher;
+ros::Publisher laser_scan_publisher;
 
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
@@ -81,7 +85,8 @@ void init_graphics(){
     geometry_msgs::Point arrow_origin, arrow_end;
     geometry_msgs::Quaternion q;
     q = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(0)->get_theta());
-    robot_orientation_marker.header.frame_id = "world";
+    //q = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
+    robot_orientation_marker.header.frame_id = "robot";
     robot_orientation_marker.ns = "simulator_markers";
     robot_orientation_marker.id = 2;
     robot_orientation_marker.type = visualization_msgs::Marker::ARROW;
@@ -94,8 +99,8 @@ void init_graphics(){
     robot_orientation_marker.color.g = 0.0;
     robot_orientation_marker.color.b = 0.0;
     robot_orientation_marker.pose.orientation = q;
-    arrow_origin.x = robot_marker.pose.position.x;
-    arrow_origin.y = robot_marker.pose.position.x;
+    arrow_origin.x = 0.0;
+    arrow_origin.y = 0.0;
     arrow_origin.z = robot_marker.scale.z;
     arrow_end.x = arrow_origin.x + 0.3;
     arrow_end.y = arrow_origin.y + 0.3;
@@ -129,12 +134,24 @@ void init_graphics(){
         obstacle_markers.markers.push_back(obstacle_marker);
     }
 
+    laser_scan_msg.ranges = ft->get_world()->get_burger(0)->get_lidar()->get_lasers();
+    laser_scan_msg.angle_min = 0;
+    laser_scan_msg.angle_max = M_PI * 2;
+    laser_scan_msg.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg.range_min = MIN_DISTANCE;
+    laser_scan_msg.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg.time_increment = 0;
+    //laser_scan_msg.scan_time = ft->get_world()->get_burger(0)->get_dt();
+    laser_scan_msg.scan_time = 0;
+    laser_scan_msg.header.frame_id = "robot";
+
     //only if using a MESH_RESOURCE world_marker type:
     //world_marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
     world_marker_publisher.publish(world_marker);
     robot_marker_publisher.publish(robot_marker);
     robot_orientation_marker_publisher.publish(robot_orientation_marker);
     obstacle_markers_publisher.publish(obstacle_markers);
+    laser_scan_publisher.publish(laser_scan_msg);
 }
 
 void repaint(){
@@ -147,15 +164,21 @@ void repaint(){
     robot_marker_publisher.publish(robot_marker);
 
     // Robot orientation marker
+    /*
     robot_orientation_marker.points[0].x = robot_marker.pose.position.x;
     robot_orientation_marker.points[0].y = robot_marker.pose.position.y;
     robot_orientation_marker.points[1].x = robot_orientation_marker.points[0].x + 0.3;
     robot_orientation_marker.points[1].y = robot_orientation_marker.points[0].y + 0.3;
-    robot_orientation_marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(0)->get_theta());
+    */
+    robot_orientation_marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(0)->get_theta() * 0.5);
     robot_orientation_marker_publisher.publish(robot_orientation_marker);
 
     // Obstacles
     obstacle_markers_publisher.publish(obstacle_markers);
+
+    // Laser Scan
+    laser_scan_msg.ranges = ft->get_world()->get_burger(0)->get_lidar()->get_lasers();
+    //laser_scan_publisher.publish(laser_scan_msg);
 }
 
 void send_data(){
@@ -197,10 +220,11 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
 
     // Initialize markers
-    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker",0);
+    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker", 0);
     robot_marker_publisher = nh.advertise<visualization_msgs::Marker>("robot_marker",0);
     robot_orientation_marker_publisher = nh.advertise<visualization_msgs::Marker>("robot_orientation_marker",0);
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
+    laser_scan_publisher = nh.advertise<sensor_msgs::LaserScan>("laser_scan", 10);
 
     // Subscriber
     ros::Subscriber sub = nh.subscribe("cmd_vel", 1000, listen_cmd_vel);
@@ -211,11 +235,10 @@ int main(int argc, char** argv)
     // Initialize simulator object
     ft = new FastTurtle();
     ft->init_world(8, 0, 0, "square");
-    ft->add_obstacle(1, 0, 0.08, "round", false);
-	ft->add_obstacle(1.5, 1.5, 0.12, "round", false);
-    ft->add_obstacle(-1, -1, 0.08, "round", false);
-	ft->add_obstacle(1.5, -1.5, 0.12, "round", false);
-    ft->add_turtlebot_burger(0, 0, -M_PI_2, 0.09, 0.1, "michelangelo");
+    ft->add_obstacle(0, -2, 0.10, "round", false);
+    ft->add_obstacle(0, 2, 0.10, "round", false);
+    ft->add_obstacle(-1, -1, 0.10, "round", false);
+    ft->add_turtlebot_burger(0, -1, -M_PI_2, 0.09, 0.1, "michelangelo");
 
     // Send first world data and graphics data
     send_data();
