@@ -34,7 +34,7 @@ ros::Publisher laser_scan_publisher;
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
     ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-    ft->get_world()->get_burger(0)->move(msg.linear.x, msg.angular.z);
+    ft->act(msg.linear.x, msg.angular.z);
     std::cout << "[Robot position]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
 }
 
@@ -172,7 +172,7 @@ void repaint(){
 
     // Laser Scan
     laser_scan_msg.ranges = ft->get_world()->get_burger(0)->get_lidar()->get_lasers();
-    //laser_scan_publisher.publish(laser_scan_msg);
+    laser_scan_publisher.publish(laser_scan_msg);
 }
 
 void send_data(){
@@ -228,11 +228,13 @@ int main(int argc, char** argv)
 
     // Initialize simulator object
     ft = new FastTurtle();
+    float obstacle_radius = 0.15;
     ft->init_world(8, 0, 0, "square");
-    ft->add_obstacle(0, -2, 0.10, "round", false);
-    ft->add_obstacle(0, 2, 0.10, "round", false);
-    ft->add_obstacle(-1, -1, 0.10, "round", false);
-    ft->add_turtlebot_burger(0, -1, -M_PI_2, 0.09, 0.1, "michelangelo");
+    ft->add_obstacle(0, -2, obstacle_radius, "round", false);
+    ft->add_obstacle(0, 2, obstacle_radius, "round", false);
+    ft->add_obstacle(-1, -1, obstacle_radius, "round", false);
+    ft->add_obstacle(-1, -2, obstacle_radius, "round", false);
+    ft->add_turtlebot_burger(0, -1, -M_PI_2, BURGER_RADIUS, 0.1, "michelangelo");
 
     // Send first world data and graphics data
     send_data();

@@ -36,7 +36,9 @@ std::string Line::tostring(){
 	+ ", x1: " + std::to_string(this->x1) 
 	+ ", y1: " + std::to_string(this->y1) 
 	+ ", x2: " + std::to_string(this->x2) 
-	+ ", y2: " + std::to_string(this->y2)+"\n";
+	+ ", y2: " + std::to_string(this->y2)
+	+ "| horizontal: " + bool_to_string(this->horizontal) + ", vertical: " + bool_to_string(this->vertical)
+	+"\n";
 }
 
 float Line::get_slope(){return this->slope;}
@@ -58,6 +60,8 @@ void Line::set_points(float x1, float y1, float x2, float y2){
 	this->y2 = y2;
 	this->numerator = y2-y1;
 	this->denominator = x2-x1;
+	this->horizontal = false;
+	this->vertical = false;
 	// If line is not vertical
 	if (this->denominator != 0 || abs(this->denominator) >= DENOMINATOR_TOLERANCE){
 		this->slope = numerator / (double)denominator;
@@ -74,7 +78,9 @@ void Line::set_points(float x1, float y1, float x2, float y2){
 	}
 	// If line is horizontal
 	if (this->slope == 0) this->horizontal = true;
-	if (abs(this->slope) >= HIGHEST_SLOPE) this->vertical = true;
+	if (abs(this->slope) >= HIGHEST_SLOPE) {
+		this->vertical = true;
+	}
 }
 
 bool Line::intersects(float x,float y){return y -  this->slope * x - this->intercept <= INTERSECTION_POINT_TOLERANCE;}

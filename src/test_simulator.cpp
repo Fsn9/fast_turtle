@@ -4,11 +4,13 @@
 int main(int argc, char **argv)
 {
     FastTurtle ft;
+    float obstacle_radius = 0.15;
     ft.init_world(8,0,0,"square");
-    ft.add_turtlebot_burger(0, -1, -M_PI_2, 0.1, 1,"michelangelo");
-    ft.add_obstacle(0, -2, 0.10, "round", false);
-    ft.add_obstacle(0, 2, 0.10, "round", false);
-    ft.add_obstacle(-1, -1, 0.10, "round", false);
+    ft.add_turtlebot_burger(0, -1, -M_PI_2, 0.09, 1, "michelangelo");
+    ft.add_obstacle(0, -2, obstacle_radius, "round", false);
+    ft.add_obstacle(0, 2, obstacle_radius, "round", false);
+    ft.add_obstacle(-1, -1, obstacle_radius, "round", false);
+    ft.add_obstacle(-1, -2, obstacle_radius, "round", false);
 
     int robot_idx = 0;
     std::vector<float> pose = ft.observe_robot_pose(robot_idx);
@@ -22,5 +24,6 @@ int main(int argc, char **argv)
     float v = 0.1;
     float w = 0.0;
     ft.act(v,w);
+    ft.get_world()->get_burger(robot_idx)->get_lidar()->display_lasers();
     return 0;
 }

@@ -32,7 +32,14 @@ std::vector<float> FastTurtle::observe_robot_lidar(int idx_robot){
 }
 
 int FastTurtle::act(float v, float w){
-    this->w->get_burger(0)->update_lidar_heavy(this->w->get_round_obstacles(), this->w->get_edges());
+    this->w->get_burger(0)->move(v,w);
+    this->w->get_burger(0)->get_lidar()->update_lidar_heavy(
+        this->w->get_round_obstacles(), 
+        this->w->get_edges(), 
+        this->get_world()->get_burger(0)->get_xc(), 
+        this->get_world()->get_burger(0)->get_yc(), 
+        this->get_world()->get_burger(0)->get_theta()
+    );
     return 0;
 }
 
