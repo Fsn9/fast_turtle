@@ -80,45 +80,38 @@ std::string TurtlebotBurger::get_model(){
 }
 
 void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, float x_robot, float y_robot, float theta_robot){
+    std::fill(this->lasers.begin(), this->lasers.end(), MAX_DISTANCE);
     Line laser(0,0,0,0);
     bool in_sight;
-    std::tuple<bool, float, float, float, float> intersection;
+    std::tuple<bool, float, float, float, float> intersection_obstacle;
+    std::tuple<bool, float, float> intersection_line;
     float min_distance;
     float distance;
 
     // Go through all rays
     for (int ray=0; ray < this->lasers.size(); ray++)
-    //for (int ray=0; ray < 1; ray++)
     {
         std::tuple<float, float, float, float> laser_points = this->get_laser_points(ray, x_robot, y_robot, theta_robot);
         laser.set_points(std::get<0>(laser_points), std::get<1>(laser_points), std::get<2>(laser_points), std::get<3>(laser_points));
-        std::cout << "\nRay " << ray << "\n";
-        std::cout << "Laser:" << laser.tostring()<<"\n";
+        // Go through all obstacles
         for(int o = 0; o < round_obstacles.size(); o++)
         {
-            // Check intersection
-            intersection = round_obstacles[o].intersects_line(laser);
-            std::cout << "obstacle " << o << ": " << round_obstacles[o].tostring();
-            std::cout << "intersection " <<  o << " :(" <<
-            bool_to_string(std::get<0>(intersection)) << ", " <<
-            std::get<1>(intersection) << ", " <<
-            std::get<2>(intersection) << ", " <<
-            std::get<3>(intersection) << ", " <<
-            std::get<4>(intersection) << ")\n";
+            // Check intersections
+            intersection_obstacle = round_obstacles[o].intersects_line(laser);
             // If there was intersection
-            if (std::get<0>(intersection))
+            if (std::get<0>(intersection_obstacle))
             {
                 // Choose right pair of points. The intersection function returns two possible pairs.
                 std::tuple<float, float> obstacle_points = this->get_nearest_points(
                     x_robot,
                     y_robot,
-                    std::get<1>(intersection),
-                    std::get<2>(intersection),
-                    std::get<3>(intersection),
-                    std::get<4>(intersection)
+                    std::get<1>(intersection_obstacle),
+                    std::get<2>(intersection_obstacle),
+                    std::get<3>(intersection_obstacle),
+                    std::get<4>(intersection_obstacle)
                 );
                 // Check if it is in sight 
-                in_sight = this->obstacle_in_sight(
+                in_sight = this->in_sight(
                     std::get<0>(laser_points),
                     std::get<1>(laser_points),
                     std::get<2>(laser_points),
@@ -126,7 +119,7 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
                     std::get<0>(obstacle_points),
                     std::get<1>(obstacle_points)
                 );
-                printf("It is in sight %s the obstacle %d\n",bool_to_string(in_sight), o);
+                //If it is in sight measure distance
                 if (in_sight)
                 {
                     distance = distance_between_points(
@@ -134,16 +127,40 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
                         std::get<1>(laser_points),
                         std::get<0>(obstacle_points),
                         std::get<1>(obstacle_points)
-                    );
-                    printf("DISTANCE: %f\n", distance);
-                    this->lasers[ray] = std::min(distance, this->lasers[ray]) + BURGER_RADIUS;
+                    ) + BURGER_RADIUS;
+                    this->lasers[ray] = std::min(distance, this->lasers[ray]);
                 }
 
             }
         }
-        std::cout << "-----------\n";
+        for(int e = 0; e < round_obstacles.size(); e++)
+        {
+            intersection_line = edges[e].intersects_line(laser);
+            // If intersects with world edge
+            if (std::get<0>(intersection_line))
+            {
+                in_sight = this->in_sight(
+                    std::get<0>(laser_points),
+                    std::get<1>(laser_points),
+                    std::get<2>(laser_points),
+                    std::get<3>(laser_points),
+                    std::get<1>(intersection_line),
+                    std::get<2>(intersection_line)
+                );
+                if(in_sight)
+                {
+                    distance = distance_between_points(
+                    std::get<0>(laser_points),
+                    std::get<1>(laser_points),
+                    std::get<1>(intersection_line),
+                    std::get<2>(intersection_line)
+                    ) + BURGER_RADIUS;
+                    this->lasers[ray] = std::min(distance, this->lasers[ray]);
+                }
+            }
+            
+        }
     }
-    
 }
 
 // Lidar
@@ -179,7 +196,7 @@ template <typename T> bool Lidar::in_sight(float x_sight, float y_sight, float x
     return true;
 }
 */
-bool Lidar::obstacle_in_sight(float x_min, float y_min, float x_max, float y_max, float x_obs, float y_obs){
+bool Lidar::in_sight(float x_min, float y_min, float x_max, float y_max, float x_obs, float y_obs){
     // Check after if it is needed to add the last condition
     return this->in_between(x_min, x_obs, x_max) && this->in_between(y_min, y_obs, y_max);
 }

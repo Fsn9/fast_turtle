@@ -29,7 +29,7 @@ class Lidar{
         //template <typename T> bool in_sight(float x_sight, float y_sight, float x_forward, float y_forward, float x_object, float y_object, T object);
         std::tuple<float, float> get_nearest_points(float xr, float yr, float x1, float y1, float x2, float y2);
         std::tuple<float,float,float,float> get_laser_points(float, float, float, float);
-        bool obstacle_in_sight(float, float, float, float, float, float);
+        bool in_sight(float, float, float, float, float, float);
 };
 #endif
 

@@ -52,8 +52,8 @@ void init_graphics(){
     world_marker.pose.orientation.y = 0.0;
     world_marker.pose.orientation.z = 0.0;
     world_marker.pose.orientation.w = 1.0;
-    world_marker.scale.x = ft->get_world()->get_length() * 0.5;
-    world_marker.scale.y = ft->get_world()->get_length() * 0.5;
+    world_marker.scale.x = ft->get_world()->get_length();
+    world_marker.scale.y = ft->get_world()->get_length();
     world_marker.scale.z = 0.0001;
     world_marker.color.a = 0.5; 
     world_marker.color.r = 1.0;
@@ -229,7 +229,7 @@ int main(int argc, char** argv)
     // Initialize simulator object
     ft = new FastTurtle();
     float obstacle_radius = 0.15;
-    ft->init_world(8, 0, 0, "square");
+    ft->init_world(4, 0, 0, "square");
     ft->add_obstacle(0, -2, obstacle_radius, "round", false);
     ft->add_obstacle(0, 2, obstacle_radius, "round", false);
     ft->add_obstacle(-1, -1, obstacle_radius, "round", false);

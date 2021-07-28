@@ -45,7 +45,7 @@ class Line{
 		bool intersects(float x,float y);
 		bool is_vertical();
 		bool is_horizontal();
-		std::tuple<bool, float, float> intersects_line(Line* other);
+		std::tuple<bool, float, float> intersects_line(Line other);
 		std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
 };
 #endif

@@ -3,7 +3,7 @@
 // Constants
 #define TO_DEG 180.0 / M_PI
 #define TO_RAD M_PI / 180.0
-#define HIGHEST_SLOPE 1e2
+#define HIGHEST_SLOPE 1e3
 #define DENOMINATOR_TOLERANCE 0.01
 #define INTERSECTION_POINT_TOLERANCE 0.01
 
@@ -89,15 +89,15 @@ bool Line::is_vertical(){return this->vertical;}
 
 bool Line::is_horizontal(){return this->horizontal;}
 
-std::tuple<bool, float, float> Line::intersects_line(Line* other){
-	if (this->slope == other->get_slope()) return {false,0,0};
-	else if(!this->vertical && other->vertical) return {true, other->get_intercept(), this->slope * other->get_intercept() + this->intercept};
-	else if(this->vertical && !other->vertical) return {true, this->intercept, other->get_slope() * this->intercept + other->get_intercept()};
+std::tuple<bool, float, float> Line::intersects_line(Line other){
+	if (this->slope == other.get_slope()) return {false,0,0};
+	else if(!this->vertical && other.vertical) return {true, other.get_intercept(), this->slope * other.get_intercept() + this->intercept};
+	else if(this->vertical && !other.vertical) return {true, this->intercept, other.get_slope() * this->intercept + other.get_intercept()};
 	else{
 		return {
 			true, 
-			(other->get_intercept() - this->intercept) / (this->slope - other->get_slope()),
-			(other->get_intercept() * this->slope - this->intercept * other->get_slope())/(this->slope - other->get_slope())
+			(other.get_intercept() - this->intercept) / (this->slope - other.get_slope()),
+			(other.get_intercept() * this->slope - this->intercept * other.get_slope())/(this->slope - other.get_slope())
 			};
 	}
 

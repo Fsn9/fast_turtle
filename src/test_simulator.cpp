@@ -1,29 +1,27 @@
 // Simulator classes
 #include "fast_turtle.h"
+#include <chrono>
 
 int main(int argc, char **argv)
 {
     FastTurtle ft;
     float obstacle_radius = 0.15;
-    ft.init_world(8,0,0,"square");
+    ft.init_world(4, 0, 0,"square");
     ft.add_turtlebot_burger(0, -1, -M_PI_2, 0.09, 1, "michelangelo");
     ft.add_obstacle(0, -2, obstacle_radius, "round", false);
     ft.add_obstacle(0, 2, obstacle_radius, "round", false);
     ft.add_obstacle(-1, -1, obstacle_radius, "round", false);
     ft.add_obstacle(-1, -2, obstacle_radius, "round", false);
-
-    int robot_idx = 0;
-    std::vector<float> pose = ft.observe_robot_pose(robot_idx);
-    std::vector<float> lasers = ft.observe_robot_lidar(robot_idx);
-    float x, y, th;
-    x = pose[0];
-    y = pose[1];
-    th = pose[2];
-    std::cout << ft.get_world()->get_burger(robot_idx)->tostring();
-    ft.get_world()->get_burger(robot_idx)->get_lidar()->display_lasers();
     float v = 0.1;
     float w = 0.0;
-    ft.act(v,w);
-    ft.get_world()->get_burger(robot_idx)->get_lidar()->display_lasers();
+    std::chrono::steady_clock::time_point begin; 
+    std::chrono::steady_clock::time_point end;
+    while(1){
+        begin = std::chrono::steady_clock::now();
+        ft.act(v,w);
+        end = std::chrono::steady_clock::now();
+        std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl; 
+    }
+    
     return 0;
 }
