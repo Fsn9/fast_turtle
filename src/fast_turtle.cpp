@@ -1,6 +1,8 @@
 #include "fast_turtle.h"
 
-FastTurtle::FastTurtle(){}
+FastTurtle::FastTurtle(){
+    std::cout << "--Fast Turtle simulator created --\n";
+}
 
 void FastTurtle::init_world(float length, float xc, float yc, std::string type = "square"){
     this->w = new World(length, xc, yc);
