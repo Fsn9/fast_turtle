@@ -49,10 +49,10 @@ int main()
 ```
 
 ##### 2) Link your .cpp script file to the compiler
-Go to the `fast_turtle` main folder and add the following lines to `CMakeLists.txt`
+Inside the folder `fast_turtle/scripts` add the following lines to the end of the `CMakeLists.txt`
 ```cmake
 add_executable(your_script_alias your_script_file_name.cpp)
-target_link_libraries(test ft ${catkin_LIBRARIES})
+target_link_libraries(your_script_alias ft ${catkin_LIBRARIES})
 add_dependencies(your_script_alias fast_turtle_generate_messages_cpp)
 ```
 
