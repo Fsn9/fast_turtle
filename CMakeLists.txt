@@ -211,34 +211,21 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-# Init controller node
-add_executable(controller_publisher src/controller_publisher.cpp)
-target_link_libraries(controller_publisher ${catkin_LIBRARIES})
-add_dependencies(controller_publisher fast_turtle_generate_messages_cpp)
+# Include headers
+include_directories(include)
+
+# Library definition
+add_library(ft STATIC
+  src/fast_turtle.cpp
+  src/geometry.cpp
+  src/goal.cpp
+  src/obstacles.cpp
+  src/robot.cpp
+  src/utils.cpp
+  src/world.cpp
+)
 
 # It defines the live_simulation.cpp as an executable
 add_executable(live_simulation src/live_simulation.cpp)
-target_link_libraries(live_simulation ${catkin_LIBRARIES})
+target_link_libraries(live_simulation ${catkin_LIBRARIES} ft)
 add_dependencies(live_simulation fast_turtle_generate_messages_cpp)
-
-# Libraries definition
-add_library(fast_turtle src/fast_turtle.cpp)
-add_library(world src/world.cpp)
-add_library(geometry src/geometry.cpp)
-add_library(goal src/goal.cpp)
-add_library(obstacles src/obstacles.cpp)
-add_library(utils src/utils.cpp)
-add_library(robot src/robot.cpp)
-
-# Link libraries
-target_link_libraries(live_simulation fast_turtle)
-target_link_libraries(fast_turtle world)
-target_link_libraries(world geometry)
-target_link_libraries(world robot)
-target_link_libraries(world obstacles)
-target_link_libraries(world utils)
-
-## TESTING THE LIBRARY
-# test_simulator.cpp temporary working
-add_executable(test_simulator src/test_simulator.cpp)
-target_link_libraries(test_simulator fast_turtle)

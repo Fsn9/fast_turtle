@@ -1,6 +1,6 @@
 // Simulator classes
 #include "fast_turtle.h"
-#include <chrono>
+#include <ros/ros.h>
 
 int main(int argc, char **argv)
 {
@@ -14,13 +14,13 @@ int main(int argc, char **argv)
     ft.add_obstacle(-1, -2, obstacle_radius, "round", false);
     float v = 0.1;
     float w = 0.0;
-    std::chrono::steady_clock::time_point begin; 
-    std::chrono::steady_clock::time_point end;
+    int idx_robot = 0;
+    Observation observation;
+
     while(1){
-        begin = std::chrono::steady_clock::now();
-        ft.act(v,w);
-        end = std::chrono::steady_clock::now();
-        std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl; 
+        ft.act(v, w, idx_robot);
+        observation = ft.observe(idx_robot);
+        observation.print();
     }
     
     return 0;

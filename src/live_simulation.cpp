@@ -1,7 +1,7 @@
 // Simulator library
 #include "fast_turtle.h"
 // ROS main library
-#include "ros/ros.h"
+#include <ros/ros.h>
 // TF
 #include <tf/transform_broadcaster.h>
 // Messages
@@ -34,7 +34,7 @@ ros::Publisher laser_scan_publisher;
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
     ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-    ft->act(msg.linear.x, msg.angular.z);
+    ft->act(msg.linear.x, msg.angular.z, 0);
     std::cout << "[Robot position]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
 }
 
