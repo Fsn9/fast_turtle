@@ -17,9 +17,9 @@ After clonning, you launch teleoperation with the following command: `roslaunch 
 
 ### Using the library
 #### Steps:
-##### 1) Inside the folder `fast_turtle/scripts`, create a `your_script_file_name.cpp` script file that uses the library
+##### 1) Inside the folder `fast_turtle/scripts`, create a `your_script_file_name.cpp` script file that uses the library. There is already an `example.cpp` script file in the `scripts` folder, as represented below:
 ```cpp
-// your_script_file_name.cpp
+// example.cpp
 #include "fast_turtle.h" // The simulator library
 #include <ros/ros.h> // The ROS library if you want to use it
 
