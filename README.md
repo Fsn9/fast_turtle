@@ -17,7 +17,7 @@ After clonning, you launch teleoperation with the following command: `roslaunch 
 
 ### Using the library
 #### Steps:
-##### 1) Inside the folder `fast_turtle/scripts`, create a `your_script_file_name.cpp` script file that uses the library. There is already an `example.cpp` script file in the `scripts` folder, as represented below (just to give you a big picture idea of how it works):
+##### 1) Inside the folder `fast_turtle/scripts`, create a `your_script_file_name.cpp` script file that uses the library. There is already an `example.cpp` script file in the `scripts` folder, as represented below (just to give you a big picture idea of how to use the library):
 ```cpp
 // example.cpp
 #include "fast_turtle.h" // The simulator library
@@ -25,28 +25,33 @@ After clonning, you launch teleoperation with the following command: `roslaunch 
 
 int main()
 {
- FastTurtle ft; // The simulator object
- ft.init_world(4, 0, 0,"square"); // Initializing the world
- // Adding a robot to the world (x=0,y=-1,orientation=-M_PI/2,radius=0.09m,cycle_time=1s,name="michelangelo")
- ft.add_turtlebot_burger(0, -1, -M_PI_2, 0.09, 1, "michelangelo"); 
- // Adding an obstacle (x=0, y=-2, radius=0.1m, type="round", dynamics = false)
- ft.add_obstacle(0, -2, 0.1, "round", false); 
- // Defining some twist commands to act in the world
- float v = 0.1; //linear velocity
- float w = 0.0; //angular velocity
- // Define the observation object (where we collect the observations of the robot)
- Observation observation;
- 
- // The main loop of the simulator
- while(1){
-  ft.act(v,w); // Acting with twist commands in the world
-  observation = ft.observe(0); // Observation of the robot 0 created in line 37 (the only robot stored in the vector of robots in the first position) 
-  observation.print(); // Print the observation to the terminal for debugging
- }
-}
+  FastTurtle ft; // The simulator object
+  ft.init_world(4, 0, 0,"square"); // Initializing the world
+  // Adding a robot to the world (x=0,y=-1,orientation=-M_PI/2,radius=0.09m,cycle_time=1s,name="michelangelo")
+  ft.add_turtlebot_burger(0, -1, -M_PI_2, 0.09, 1, "michelangelo"); 
+  // Adding an obstacle (x=0, y=-2, radius=0.1m, type="round", dynamics = false)
+  ft.add_obstacle(0, -2, 0.1, "round", false); 
+  // Defining some twist commands to act in the world
+  float v = 0.1; // linear velocity
+  float w = 0.0; // angular velocity
+  // Define the observation object (where we collect the observations of the robot)
+  Observation observation;
+
+  // The main loop of the simulator
+  // Only one robot acting and observing
+  // The 0 argument below is because it is the only robot added until now 
+  //and it is in the first element of the vector of robots in the world object
+  while(1){
+    // Robot 0 Acting with twist commands in the world 
+    ft.act(v,w,0); 
+    // Observation of the Robot 0 created above
+    observation = ft.observe(0); 
+    // Print the observation to the terminal for debugging
+    observation.print(); 
+  }
 
   return 0;
-
+}
 ```
 
 ##### 2) Link your .cpp script file to the compiler
