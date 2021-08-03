@@ -1,6 +1,11 @@
 // ROS
 // Simulator classes
 #include "world.h"
+// CPP API libraries
+#include <unistd.h> 
+#include <chrono>
+
+#define MIN_SIMULATION_TIME 1e-3
 
 class Observation;
 
@@ -9,8 +14,11 @@ class Observation;
 class FastTurtle{
     private:
         World* w;
+        std::vector<std::chrono::steady_clock::time_point> last_times; // keeps track of the controller last actuation times
+        unsigned int simulation_dt;
     public:
         FastTurtle();
+        FastTurtle(unsigned int simulation_dt);
         void init_world(float length, float xc, float yc, std::string type);
         void add_turtlebot_burger(float x, float y, float theta, float radius, float dt, std::string name);
         void add_obstacle(float x, float y, float radius, std::string type_, bool dynamics);
@@ -19,6 +27,7 @@ class FastTurtle{
         std::vector<float> observe_robot_lidar(int idx_robot); // Get robot idx lidar
         void act(float v, float w, int idx_robot); // Act with twist in the world
         Observation observe(int idx_robot);
+        void sleep();
 };
 #endif
 

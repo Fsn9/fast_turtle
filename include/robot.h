@@ -26,10 +26,10 @@ class Lidar{
         void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, float x_robot, float y_robot, float theta_robot);
         std::string tostring();
         bool in_between(float xi, float xm, float xf);
-        //template <typename T> bool in_sight(float x_sight, float y_sight, float x_forward, float y_forward, float x_object, float y_object, T object);
         std::tuple<float, float> get_nearest_points(float xr, float yr, float x1, float y1, float x2, float y2);
         std::tuple<float,float,float,float> get_laser_points(float, float, float, float);
         bool in_sight(float, float, float, float, float, float);
+        //template <typename T> bool in_sight(float x_sight, float y_sight, float x_forward, float y_forward, float x_object, float y_object, T object);
 };
 #endif
 
@@ -41,6 +41,8 @@ class TurtlebotBurger : public Circle{
         Lidar* lidar;
         std::string model;
         std::string name;
+        double last_v;
+        double last_w;
     public:
         TurtlebotBurger(float x, float y, float theta, float radius, float dt, std::string name);
         void set_pose(float x, float y, float theta);
@@ -50,6 +52,9 @@ class TurtlebotBurger : public Circle{
         float y();
         float get_dt();
         float get_theta();
+        double get_last_v();
+        double get_last_w();
+        void set_new_v_w(double v, double w);
         std::string get_name();
         std::string get_model();
         Lidar* get_lidar();

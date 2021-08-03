@@ -2,12 +2,11 @@
 /* World */
 // World class
 World::World(float length, float xc, float yc): Square(length, xc, yc){
-	// Parameter file upload
-	this->lines.reserve(4);
-	this->round_obstacles.reserve(30);
-	this->burgers.reserve(4);
-	
-	// Goal
+	// TO DO: Get values below from json or xml file
+	this->lines.reserve(4); // Max edges
+	this->round_obstacles.reserve(MAX_ROUND_OBSTACLES); // Max round obstacles
+	this->burgers.reserve(MAX_BURGERS); // Max burgers
+	this->n_burgers = 0; // counter of burgers
 }
 
 void World::add_obstacle(float x, float y, float radius, std::string type_, bool dynamics){
@@ -20,7 +19,14 @@ void World::add_obstacle(float x, float y, float radius, std::string type_, bool
 }
 
 void World::add_turtlebot_burger(float x, float y, float theta, float radius, float dt, std::string name){
-	this->burgers.push_back(TurtlebotBurger(x,y,theta,radius,dt,name));
+	std::vector<TurtlebotBurger>::iterator it; 
+	it = this->burgers.begin() + this->n_burgers;
+  	it = this->burgers.insert(it, TurtlebotBurger(x,y,theta,radius,dt,name));
+	this->n_burgers += 1;
+}
+
+int World::get_n_burgers(){
+	return this->n_burgers;
 }
 
 std::vector<RoundObstacle> World::get_round_obstacles(){

@@ -1,14 +1,24 @@
 #include "fast_turtle.h"
 
+FastTurtle::FastTurtle(unsigned int simulation_dt){
+    std::cout << "--Fast Turtle simulator created --\n";
+    this->last_times.reserve(MAX_BURGERS);
+    this->simulation_dt = simulation_dt * 1e6;
+}
+
 FastTurtle::FastTurtle(){
     std::cout << "--Fast Turtle simulator created --\n";
+    this->last_times.reserve(MAX_BURGERS);
+    this->simulation_dt = MIN_SIMULATION_TIME * 1e6;
 }
+
 
 void FastTurtle::init_world(float length, float xc, float yc, std::string type = "square"){
     this->w = new World(length, xc, yc);
 }
 
 void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radius, float dt, std::string name){
+    this->last_times[this->w->get_n_burgers()] = std::chrono::steady_clock::now();
     this->w->add_turtlebot_burger(x,y,theta,radius,dt,name);
 }
 
@@ -50,7 +60,34 @@ Observation FastTurtle::observe(int idx_robot){
 
 // Acts with twist message in robot with idx_robot
 void FastTurtle::act(float v, float w, int idx_robot){
-    this->w->get_burger(idx_robot)->move(v,w);
+    if (idx_robot < 0 || idx_robot > this->w->get_n_burgers() - 1){
+        throw std::invalid_argument("invalid robot index of " + 
+        std::to_string(idx_robot) +". It needs to be >= 0 or < " + 
+        std::to_string(this->w->get_burgers().size()));
+    }
+    // Check current time
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+
+    // Measure time passed since robot last actuation time
+    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times[idx_robot]).count() * 1e-9;
+
+    // If duration is bigger than the controller rate, then controller can act
+    if(elapsed > this->w->get_burger(idx_robot)->get_dt()){
+        std::cout << "\n robot " << idx_robot << "\n";
+        std::cout << "elapsed:" << elapsed << "\n";
+        std::cout << "controller period:" << this->w->get_burger(idx_robot)->get_dt() << "\n";
+        // Update last time
+        this->last_times[idx_robot] = now;
+        // Update last twist values
+        this->w->get_burger(idx_robot)->set_new_v_w(v,w);
+    }
+    // Move robot
+    this->w->get_burger(idx_robot)->move(
+        this->w->get_burger(idx_robot)->get_last_v(),
+        this->w->get_burger(idx_robot)->get_last_w()
+    );
+
+    // Updated robot lidar
     this->w->get_burger(idx_robot)->get_lidar()->update_lidar_heavy(
         this->w->get_round_obstacles(), 
         this->w->get_edges(), 
@@ -58,6 +95,10 @@ void FastTurtle::act(float v, float w, int idx_robot){
         this->get_world()->get_burger(idx_robot)->get_yc(), 
         this->get_world()->get_burger(idx_robot)->get_theta()
     );
+}
+
+void FastTurtle::sleep(){
+    usleep(this->simulation_dt);
 }
 
 std::vector<float> Observation::get_pose(){

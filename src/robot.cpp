@@ -9,6 +9,8 @@ TurtlebotBurger::TurtlebotBurger(float x, float y, float theta, float radius, fl
     this->diameter = this->radius * 2.0;
     this->name = name;
     this->model = "burger";
+    this->last_v = 0.0;
+    this->last_w = 0.0;
 
     // Lidar
     float frequency;
@@ -77,6 +79,19 @@ std::string TurtlebotBurger::get_name(){
 
 std::string TurtlebotBurger::get_model(){
     return this->model;
+}
+
+double TurtlebotBurger::get_last_w(){
+    return this->last_w;
+}
+
+double TurtlebotBurger::get_last_v(){
+    return this->last_v;
+}
+
+void TurtlebotBurger::set_new_v_w(double v, double w){
+    this->last_v = v;
+    this->last_w = w;
 }
 
 void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, float x_robot, float y_robot, float theta_robot){

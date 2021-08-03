@@ -9,13 +9,16 @@
 #include "obstacles.h"
 #include "robot.h"
 
+#define MAX_BURGERS 4
+#define MAX_ROUND_OBSTACLES 30
+
 class World : public Square{
 	private:
 		float dt;
 		std::vector<Line> lines;
 		std::vector<TurtlebotBurger> burgers;
-		//std::vector<Obstacle> squared_obstacles;
 		std::vector<RoundObstacle> round_obstacles;
+		int n_burgers;
     public:
         World(float length, float xc, float yc);
         std::string tostring();
@@ -25,5 +28,6 @@ class World : public Square{
 		std::vector<TurtlebotBurger> get_burgers();
 		TurtlebotBurger* get_burger(int idx);
 		RoundObstacle* get_round_obstacle(int idx);
+		int get_n_burgers();
 };
 #endif
