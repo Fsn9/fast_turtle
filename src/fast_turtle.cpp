@@ -73,21 +73,19 @@ void FastTurtle::act(float v, float w, int idx_robot){
 
     // If duration is bigger than the controller rate, then controller can act
     if(elapsed > this->w->get_burger(idx_robot)->get_dt()){
-        std::cout << "\n robot " << idx_robot << "\n";
-        std::cout << "elapsed:" << elapsed << "\n";
-        std::cout << "controller period:" << this->w->get_burger(idx_robot)->get_dt() << "\n";
         // Update last time
         this->last_times[idx_robot] = now;
         // Update last twist values
         this->w->get_burger(idx_robot)->set_new_v_w(v,w);
     }
+
     // Move robot
     this->w->get_burger(idx_robot)->move(
         this->w->get_burger(idx_robot)->get_last_v(),
         this->w->get_burger(idx_robot)->get_last_w()
     );
 
-    // Updated robot lidar
+    // Update robot lidar
     this->w->get_burger(idx_robot)->get_lidar()->update_lidar_heavy(
         this->w->get_round_obstacles(), 
         this->w->get_edges(), 
@@ -116,14 +114,14 @@ void Observation::print(){
 }
 
 void Observation::print_pose(){
-    std::cout << "\nPose: \n";
+    std::cout << "\nPose of robot " << this->idx_robot << ": \n";
     for(std::vector<float>::const_iterator i = this->pose.begin(); i!=this->pose.end(); ++i)
         std::cout << *i << ' ';
     std::cout << "\n";
 }
 
 void Observation::print_laser_data(){
-    std::cout << "\nLaser data: \n";
+    std::cout << "\nLaser data of robot " << this->idx_robot << ": \n";
     for(std::vector<float>::const_iterator i = this->laser_data.begin(); i!=this->laser_data.end(); ++i)
         std::cout << *i << ' ';
     std::cout << "\n";
