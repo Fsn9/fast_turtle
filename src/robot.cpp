@@ -148,7 +148,8 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
 
             }
         }
-        for(int e = 0; e < round_obstacles.size(); e++)
+        // Go through 
+        for(int e = 0; e < edges.size(); e++)
         {
             intersection_line = edges[e].intersects_line(laser);
             // If intersects with world edge
