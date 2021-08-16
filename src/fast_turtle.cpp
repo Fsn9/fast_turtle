@@ -18,8 +18,13 @@ void FastTurtle::init_world(float length, float xc, float yc, std::string type =
 }
 
 void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radius, float dt, std::string name){
-    this->last_times[this->w->get_n_burgers()] = std::chrono::steady_clock::now();
-    this->w->add_turtlebot_burger(x,y,theta,radius,dt,name);
+    if (this->get_world()->get_n_burgers() < MAX_BURGERS){
+        this->last_times[this->w->get_n_burgers()] = std::chrono::steady_clock::now();
+        this->w->add_turtlebot_burger(x,y,theta,radius,dt,name);
+    }
+    else{
+        throw std::invalid_argument("No more robots allowed. Maximum is" + std::to_string(MAX_BURGERS));
+    }
 }
 
 void FastTurtle::add_obstacle(float x, float y, float radius, std::string type_, bool dynamics){
