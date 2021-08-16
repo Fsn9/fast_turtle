@@ -257,7 +257,6 @@ void send_data(){
         robot_msg.scan.header.frame_id =  "robot_" 
             + ft->get_world()->get_burger(i)->get_model() + "_" 
             + ft->get_world()->get_burger(i)->get_name();
-        std::cout << "Frameid " << i << "| " << robot_msg.scan.header.frame_id << std::endl;
         robot_msg.scan.ranges = ft->get_world()->get_burger(i)->get_lidar()->get_lasers();
         robots_msg.robots.push_back(robot_msg); 
     }
