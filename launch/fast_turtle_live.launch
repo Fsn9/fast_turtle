@@ -5,7 +5,7 @@ output: where to log the outputs. "screen" is to the terminal.
 -->
 <launch>
   <!-- Turtlebot3 model-->
-  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
   <param name="model" value="$(arg model)"/>
   <param name="turtlebot_model" type="string" value="burger"/>
 

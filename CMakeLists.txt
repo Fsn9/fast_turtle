@@ -59,11 +59,9 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
+#add_service_files(
 #   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+#)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -225,9 +223,18 @@ add_library(ft STATIC
   src/robot.cpp
   src/utils.cpp
   src/world.cpp
+  src/controller.cpp
 )
 
 # It defines the live_simulation.cpp as an executable
 add_executable(live_simulation src/live_simulation.cpp)
 target_link_libraries(live_simulation ${catkin_LIBRARIES} ft)
 add_dependencies(live_simulation fast_turtle_generate_messages_cpp)
+
+# Link ft library and ros library
+target_link_libraries(ft ${catkin_LIBRARIES})
+
+# It defines the my_controller.cpp as an executable
+add_executable(my_controller src/my_controller.cpp)
+target_link_libraries(my_controller ${catkin_LIBRARIES} ft)
+add_dependencies(my_controller fast_turtle_generate_messages_cpp)

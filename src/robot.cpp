@@ -1,9 +1,8 @@
 #include "robot.h"
-#define DT 1
 
-TurtlebotBurger::TurtlebotBurger(float x, float y, float theta, float radius, float dt, std::string name) : Circle(x, y, radius){
+TurtlebotBurger::TurtlebotBurger(float x, float y, float theta, float radius, std::string name, float controller_period) : Circle(x, y, radius){
     // Attributes
-    this->dt = dt;
+    this->controller_period = controller_period;
     this->theta = theta;
     this->inv_diameter = 1.0 / (2 * this->radius);
     this->diameter = this->radius * 2.0;
@@ -29,19 +28,18 @@ float TurtlebotBurger::get_theta(){
     return this->theta;
 }
 
-float TurtlebotBurger::get_dt(){
-    return this->dt;
+float TurtlebotBurger::get_controller_period(){
+    return this->controller_period;
 }
 
 std::string TurtlebotBurger::tostring(){
     return "(TurtlebotBurger) Name: " + this->get_name() + " , Model: " + this->get_model() + " , " +
     Circle::tostring() + ", theta: " 
-    + std::to_string(this->theta) 
-    + " dt: " + std::to_string(this->dt)
+    + std::to_string(this->theta)
     + ", with " + this->lidar->tostring() + "\n";
 }
 
-std::tuple<float, float, float> TurtlebotBurger::kinematics(float v, float w){
+std::tuple<float, float, float> TurtlebotBurger::kinematics(float v, float w, double time_step){
     float v_left = v + w * this->radius;
     float v_right = v - w * this->radius;
     float dd = (v_left + v_right) * 0.5;
@@ -49,15 +47,15 @@ std::tuple<float, float, float> TurtlebotBurger::kinematics(float v, float w){
     
     return 
     {
-        this->xc + dd * cos(this->theta + dth * 0.5) * this->dt,
-        this->yc + dd * sin(this->theta + dth * 0.5) * this->dt,
-        normalize_angle(this->theta + dth * this->dt)
+        this->xc + dd * cos(this->theta + dth * 0.5) * time_step,
+        this->yc + dd * sin(this->theta + dth * 0.5) * time_step,
+        normalize_angle(this->theta + dth * TIME_STEP)
     };
 }
 
-void TurtlebotBurger::move(float v, float w){
+void TurtlebotBurger::move(float v, float w, double time_step){
     // Compute position
-    std::tuple<float,float,float> new_pose = this->kinematics(v,w);
+    std::tuple<float,float,float> new_pose = this->kinematics(v, w, time_step);
     // Update position
     this->xc = std::get<0>(new_pose);
     this->yc = std::get<1>(new_pose);

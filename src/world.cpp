@@ -18,10 +18,10 @@ void World::add_obstacle(float x, float y, float radius, std::string type_, bool
 	return;
 }
 
-void World::add_turtlebot_burger(float x, float y, float theta, float radius, float dt, std::string name){
+void World::add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period){
 	std::vector<TurtlebotBurger>::iterator it; 
 	it = this->burgers.begin() + this->n_burgers;
-	it = this->burgers.insert(it, TurtlebotBurger(x,y,theta,radius,dt,name));
+	it = this->burgers.insert(it, TurtlebotBurger(x,y,theta,radius,name,controller_period));
 	this->n_burgers += 1;
 }
 

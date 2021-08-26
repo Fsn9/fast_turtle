@@ -1,19 +1,23 @@
+#ifndef ROBOT_H
+#define ROBOT_H
+
 #include "geometry.h"
 #include "obstacles.h"
+
 #include <math.h>
 #include <iostream>
 #include <tuple>
 
-#define HIGHEST_NUMBER 1e10
-#define TO_DEG 57.29577
-#define TO_RAD 0.01745
-#define N_LASERS 360
-#define MIN_DISTANCE 0.12
-#define MAX_DISTANCE 3.5
-#define BURGER_RADIUS 0.09
+#define HIGHEST_NUMBER 1e10f
+#define TO_DEG 57.29577f
+#define TO_RAD 0.01745f
+#define N_LASERS 360u
+#define MIN_DISTANCE 0.12f
+#define MAX_DISTANCE 3.5f
+#define BURGER_RADIUS 0.09f
+#define TIME_STEP 0.05f
+#define DEFAULT_CONTROLLER_PERIOD 0.1f
 
-#ifndef LIDAR_H
-#define LIDAR_H
 class Lidar{
     private:
         float frequency, min_distance, max_distance;
@@ -31,33 +35,30 @@ class Lidar{
         bool in_sight(float, float, float, float, float, float);
         //template <typename T> bool in_sight(float x_sight, float y_sight, float x_forward, float y_forward, float x_object, float y_object, T object);
 };
-#endif
 
-#ifndef TURTLEBOTBURGER_H
-#define TURTLEBOTBURGER_H
 class TurtlebotBurger : public Circle{
     private:
-        float dt, theta, inv_diameter, diameter;
+        float theta, inv_diameter, diameter, controller_period;
         Lidar* lidar;
         std::string model;
         std::string name;
         double last_v;
         double last_w;
     public:
-        TurtlebotBurger(float x, float y, float theta, float radius, float dt, std::string name);
+        TurtlebotBurger(float x, float y, float theta, float radius, std::string name, float controller_period);
         void set_pose(float x, float y, float theta);
         std::string tostring();
-        std::tuple<float, float, float> kinematics(float v, float w);
+        std::tuple<float, float, float> kinematics(float v, float w, double time_step);
         float x();
         float y();
-        float get_dt();
         float get_theta();
+        float get_controller_period();
         double get_last_v();
         double get_last_w();
         void set_new_v_w(double v, double w);
         std::string get_name();
         std::string get_model();
         Lidar* get_lidar();
-        void move(float v, float w);
+        void move(float v, float w, double time_step);
 };
-#endif
+#endif // ROBOT_H

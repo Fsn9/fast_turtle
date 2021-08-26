@@ -13,9 +13,11 @@
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
 
-// Global variables
+// Simulation frames per second
+#define SIMULATION_FPS 40u
+
 // Initialize fast turtle simulator object
-FastTurtle* ft;
+FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 
 // Markers
 visualization_msgs::Marker world_marker;
@@ -35,11 +37,27 @@ ros::Publisher robots_publisher;
 // Messages
 sensor_msgs::LaserScan laser_scan_msg;
 
+// Vector of real time command velocities for all robots
+std::vector<cmd_vel_> cmd_vels{{0,0},{0,0},{0,0},{0,0}};
+
+// Move robot 'idx'
+void move_robot(int idx)
+{
+    ft->act(cmd_vels[idx].v, cmd_vels[idx].w, idx);
+}
+
+// Updates logic of the simulator
+void update_physics()
+{
+    for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++) move_robot(idx);
+}
+
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 0){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        ft->act(msg.linear.x, msg.angular.z, 0);
+        cmd_vels[0].v = msg.linear.x;
+        cmd_vels[0].w = msg.angular.z;
         std::cout << "[Robot 0 pose]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
     }
 }
@@ -48,7 +66,8 @@ void listen_cmd_vel1(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 1){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        ft->act(msg.linear.x, msg.angular.z, 1);
+        cmd_vels[1].v = msg.linear.x;
+        cmd_vels[1].w = msg.angular.z;
         std::cout << "[Robot 1 pose]: " << ft->get_world()->get_burger(1)->tostring() << "\n";
     }
 }
@@ -57,7 +76,8 @@ void listen_cmd_vel2(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 2){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        ft->act(msg.linear.x, msg.angular.z, 2);
+        cmd_vels[2].v = msg.linear.x;
+        cmd_vels[2].w = msg.angular.z;
         std::cout << "[Robot 2 pose]: " << ft->get_world()->get_burger(2)->tostring() << "\n";
     }
 }
@@ -66,7 +86,8 @@ void listen_cmd_vel3(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 3){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        ft->act(msg.linear.x, msg.angular.z, 3);
+        cmd_vels[3].v = msg.linear.x;
+        cmd_vels[3].w = msg.angular.z;
         std::cout << "[Robot 3 pose]: " << ft->get_world()->get_burger(3)->tostring() << "\n";
     }
 }
@@ -219,7 +240,7 @@ void repaint(){
     obstacle_markers_publisher.publish(obstacle_markers);
 }
 
-void send_data(){
+void publish_data(){
     tf::Transform transform;
     tf::Quaternion q;
     static tf::TransformBroadcaster tf_br_robot;
@@ -279,7 +300,7 @@ int main(int argc, char** argv)
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
 
     // Subscribers for all robots
-    ros::Subscriber sub0 = nh.subscribe("cmd_vel", 1000, listen_cmd_vel);
+    ros::Subscriber sub0 = nh.subscribe("cmd_vel0", 1000, listen_cmd_vel);
     ros::Subscriber sub1 = nh.subscribe("cmd_vel1", 1000, listen_cmd_vel1);
     ros::Subscriber sub2 = nh.subscribe("cmd_vel2", 1000, listen_cmd_vel2);
     ros::Subscriber sub3 = nh.subscribe("cmd_vel3", 1000, listen_cmd_vel3);
@@ -288,28 +309,38 @@ int main(int argc, char** argv)
     robots_publisher = nh.advertise<fast_turtle::RobotDataArray>("robots", 1000);
 
     // Initialize simulator object
-    ft = new FastTurtle();
     float obstacle_radius = 0.15;
     ft->init_world(4, 0, 0, "square");
     ft->add_obstacle(0, -2, obstacle_radius, "round", false);
     ft->add_obstacle(0, 2, obstacle_radius, "round", false);
     ft->add_obstacle(-1, -1, obstacle_radius, "round", false);
     ft->add_obstacle(-1, -2, obstacle_radius, "round", false);
-    ft->add_turtlebot_burger(0, -1, -M_PI_2, BURGER_RADIUS, 0.1, "michelangelo");
-    ft->add_turtlebot_burger(0, 1, M_PI_2, BURGER_RADIUS, 0.1, "leonardo");
+    ft->add_turtlebot_burger(0, -1, -M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
+    ft->add_turtlebot_burger(0, 1, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
 
     // Send first world data and graphics data
-    send_data();
+    publish_data();
     init_graphics_and_data();
+
+    // Frames per second
+    ros::Rate loop_rate(SIMULATION_FPS);
 
     // Main cycle
     while(ros::ok()){
+        // Updates logic
+        update_physics();
+
+        // Publishes fresh data
+        publish_data();
+
         // Repaint graphics
         repaint();
-        // Publishes fresh data
-        send_data();
+
         // Spin (so callbacks can work)
         ros::spinOnce();
+
+        // Sleep
+        loop_rate.sleep();
     }
 
 }

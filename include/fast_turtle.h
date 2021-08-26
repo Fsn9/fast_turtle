@@ -1,3 +1,6 @@
+#ifndef FAST_TURTLE_H
+#define FAST_TURTLE_H
+
 // ROS
 // Simulator classes
 #include "world.h"
@@ -5,34 +8,37 @@
 #include <unistd.h> 
 #include <chrono>
 
-#define MIN_SIMULATION_TIME 1e-3
+#define MAX_LIN_VELOCITY 0.22f
+#define MAX_ANG_VELOCITY 2.84f
+
+// Command velocity
+typedef struct cmd_vel_{
+    double v;
+    double w;
+} cmd_vel_;
 
 class Observation;
 
-#ifndef FAST_TURTLE_H
-#define FAST_TURTLE_H
 class FastTurtle{
     private:
         World* w;
         std::vector<std::chrono::steady_clock::time_point> last_times; // keeps track of the controller last actuation times
-        unsigned int simulation_dt;
+        unsigned int simulation_fps;
+        double simulation_dt;
     public:
         FastTurtle();
-        FastTurtle(unsigned int simulation_dt);
+        FastTurtle(unsigned int simulation_fps);
         void init_world(float length, float xc, float yc, std::string type);
-        void add_turtlebot_burger(float x, float y, float theta, float radius, float dt, std::string name);
+        void add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period = DEFAULT_CONTROLLER_PERIOD);
         void add_obstacle(float x, float y, float radius, std::string type_, bool dynamics);
         World* get_world();  
         std::vector<float> observe_robot_pose(int idx_robot); // Get robot idx pose
         std::vector<float> observe_robot_lidar(int idx_robot); // Get robot idx lidar
         void act(float v, float w, int idx_robot); // Act with twist in the world
         Observation observe(int idx_robot);
-        void sleep();
+        void sleep() = delete;
 };
-#endif
 
-#ifndef OBSERVATION_H
-#define OBSERVATION_H
 class Observation{
     private:
         std::vector<float> pose;
@@ -47,4 +53,4 @@ class Observation{
         void print_laser_data();
         Observation(std::vector<float> pose, std::vector<float> laser_data, int idx_robot);
 };
-#endif
+#endif // FAST_TURTLE_H
