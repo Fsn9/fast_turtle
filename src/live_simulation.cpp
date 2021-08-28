@@ -43,6 +43,8 @@ std::vector<cmd_vel_> cmd_vels{{0,0},{0,0},{0,0},{0,0}};
 // Move robot 'idx'
 void move_robot(int idx)
 {
+    if (cmd_vels[idx].v > MAX_LIN_VELOCITY) cmd_vels[idx].v = MAX_LIN_VELOCITY;
+    if (cmd_vels[idx].w > MAX_ANG_VELOCITY) cmd_vels[idx].w = MAX_ANG_VELOCITY;
     ft->act(cmd_vels[idx].v, cmd_vels[idx].w, idx);
 }
 

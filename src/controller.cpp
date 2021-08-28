@@ -11,8 +11,6 @@ Controller::Controller(int robot_idx)
 
 void Controller::publish_commands(double v, double w)
 {
-    if (v > MAX_LIN_VELOCITY) v = MAX_LIN_VELOCITY;
-    if (w > MAX_ANG_VELOCITY) w = MAX_ANG_VELOCITY;
     geometry_msgs::Twist twist_msg;
     twist_msg.linear.x = v;
     twist_msg.angular.z = w;
