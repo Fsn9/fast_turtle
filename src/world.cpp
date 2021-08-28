@@ -9,8 +9,8 @@ World::World(float length, float xc, float yc): Square(length, xc, yc){
 	this->n_burgers = 0; // counter of burgers
 }
 
-void World::add_obstacle(float x, float y, float radius, std::string type_, bool dynamics){
-	if (type_.compare("round") == 0) this->round_obstacles.push_back(RoundObstacle(x,y,radius,dynamics));
+void World::add_obstacle(float x, float y, float radius, std::string type_){
+	if (type_.compare("round") == 0) this->round_obstacles.push_back(RoundObstacle(x,y,radius));
 	else if (type_.compare("squared") == 0) {}
 	else{
 		std::cout << "Not valid type";

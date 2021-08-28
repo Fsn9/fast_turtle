@@ -26,8 +26,8 @@ void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radiu
     }
 }
 
-void FastTurtle::add_obstacle(float x, float y, float radius, std::string type_, bool dynamics){
-    this->w->add_obstacle(x,y,radius,type_,dynamics);
+void FastTurtle::add_obstacle(float x, float y, float radius, std::string type_){
+    this->w->add_obstacle(x,y,radius,type_);
 }
 
 World* FastTurtle::get_world(){

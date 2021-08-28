@@ -311,10 +311,10 @@ int main(int argc, char** argv)
     // Initialize simulator object
     float obstacle_radius = 0.15;
     ft->init_world(4, 0, 0, "square");
-    ft->add_obstacle(0, -2, obstacle_radius, "round", false);
-    ft->add_obstacle(0, 2, obstacle_radius, "round", false);
-    ft->add_obstacle(-1, -1, obstacle_radius, "round", false);
-    ft->add_obstacle(-1, -2, obstacle_radius, "round", false);
+    ft->add_obstacle(0, -2, obstacle_radius, "round");
+    ft->add_obstacle(0, 2, obstacle_radius, "round");
+    ft->add_obstacle(-1, -1, obstacle_radius, "round");
+    ft->add_obstacle(-1, -2, obstacle_radius, "round");
     ft->add_turtlebot_burger(0, -1, -M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
     ft->add_turtlebot_burger(0, 1, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
 

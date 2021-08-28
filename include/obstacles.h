@@ -10,7 +10,7 @@ class Obstacle{
 
 class RoundObstacle : public Obstacle, public Circle{
     public:
-        RoundObstacle(float xc, float yc, float radius, bool dynamics);
+        RoundObstacle(float xc, float yc, float radius);
         std::string tostring();
 };
 #endif // OBSTACLES_H

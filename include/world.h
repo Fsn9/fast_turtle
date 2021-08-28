@@ -24,7 +24,7 @@ class World : public Square{
     public:
         World(float length, float xc, float yc);
         std::string tostring();
-		void add_obstacle(float x, float y, float radius, std::string type_, bool dynamics);
+		void add_obstacle(float x, float y, float radius, std::string type_);
 		void add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period);
 		std::vector<RoundObstacle> get_round_obstacles();
 		std::vector<TurtlebotBurger> get_burgers();
