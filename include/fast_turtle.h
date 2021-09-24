@@ -32,6 +32,8 @@ class FastTurtle{
         void add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period = DEFAULT_CONTROLLER_PERIOD);
         void add_obstacle(float x, float y, float radius, std::string type_, bool dynamics) = delete;
         void add_obstacle(float x, float y, float radius, std::string type_);
+        void add_wall(float length, float x, float y, float angle, std::string type_, bool dynamics) = delete;
+        void add_wall(float length, float x, float y, float angle, std::string type_);
         World* get_world();  
         std::vector<float> observe_robot_pose(int idx_robot); // Get robot idx pose
         std::vector<float> observe_robot_lidar(int idx_robot); // Get robot idx lidar

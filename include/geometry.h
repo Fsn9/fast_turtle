@@ -75,15 +75,16 @@ class Circle{
 #define SQUARE_H
 class Square{
 	protected:
-		float length, xc, yc;
+		float length, xc, yc, angle;
 		std::vector<Point2d> corners;
 		std::vector<Line> edges;	
 	public:
 		std::vector<Line> get_edges();
-		Square(float length, float xc, float yc);
+		Square(float length, float xc, float yc, float angle);
 		std::string tostring();
 		float get_xc();
         float get_yc();
+		float get_angle();
 		float get_length();
 };
 #endif

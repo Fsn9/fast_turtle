@@ -48,7 +48,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 10
+      Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz/Marker
@@ -63,6 +63,14 @@ Visualization Manager:
       Enabled: true
       Marker Topic: /obstacle_markers
       Name: Round Obstacles
+      Namespaces:
+        simulation_markers: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /wall_markers
+      Name: Wall Obstacles
       Namespaces:
         simulation_markers: true
       Queue Size: 100
