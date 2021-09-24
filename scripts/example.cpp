@@ -6,7 +6,7 @@ int main()
   FastTurtle ft; // The simulator object
   ft.init_world(4, 0, 0,"square"); // Initializing the world
   // Adding a robot to the world (x=0,y=-1,orientation=-M_PI/2,radius=0.09m,cycle_time=1s,name="michelangelo")
-  ft.add_turtlebot_burger(0, -1, -M_PI_2, 0.09, 1, "michelangelo"); 
+  ft.add_turtlebot_burger(0, -1, -M_PI_2, 0.09, "michelangelo", 1); 
   // Adding an obstacle (x=0, y=-2, radius=0.1m, type="round", dynamics = false)
   ft.add_obstacle(0, -2, 0.1, "round"); 
   // Defining some twist commands to act in the world
