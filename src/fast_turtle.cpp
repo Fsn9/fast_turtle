@@ -30,6 +30,10 @@ void FastTurtle::add_obstacle(float x, float y, float radius, std::string type_)
     this->w->add_obstacle(x,y,radius,type_);
 }
 
+void FastTurtle::add_food_item(float x, float y, float radius){
+    this->w->add_food_item(x,y,radius);
+}
+
 World* FastTurtle::get_world(){
     return this->w;
 }
