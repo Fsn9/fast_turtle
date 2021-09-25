@@ -10,7 +10,7 @@
 #include "goal.h"
 #include "obstacles.h"
 #include "robot.h"
-#include "food_items.h"
+//#include "food_items.h"
 
 #define MAX_BURGERS 10u
 #define MAX_ROUND_OBSTACLES 30u

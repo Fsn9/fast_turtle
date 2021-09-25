@@ -56,6 +56,35 @@ void update_physics()
     for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++) move_robot(idx);
 }
 
+/*void food_markers_update(){
+    food_markers = NULL;
+    visualization_msgs::Marker food_marker;
+    for(i = 0; i < ft->get_world()->get_food_items().size(); i++){
+        food_marker.header.frame_id = "world";
+        food_marker.ns = "simulation_markers";
+        food_marker.id = j;
+        food_marker.type = visualization_msgs::Marker::CYLINDER;
+        food_marker.action = visualization_msgs::Marker::ADD;
+        food_marker.pose.position.x = ft->get_world()->get_food_item(i)->get_xc();
+        food_marker.pose.position.y = ft->get_world()->get_food_item(i)->get_yc();
+        food_marker.pose.position.z = 1;
+        food_marker.pose.orientation.x = 0.0;
+        food_marker.pose.orientation.y = 0.0;
+        food_marker.pose.orientation.z = 0.0;
+        food_marker.pose.orientation.w = 1.0;
+        food_marker.scale.x = ft->get_world()->get_food_item(i)->get_diameter();
+        food_marker.scale.y = ft->get_world()->get_food_item(i)->get_diameter();
+        food_marker.scale.z = 0.5;
+        food_marker.color.a = 1.0;
+        food_marker.color.r = 1.0;
+        food_marker.color.g = 0.75;
+        food_marker.color.b = 0.79;
+        food_markers.markers.push_back(food_marker);
+        j+=1;
+    }
+    food_markers_publisher.publish(food_markers);
+}*/
+
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 0){
@@ -229,7 +258,7 @@ void init_graphics_and_data(){
         food_marker.pose.orientation.w = 1.0;
         food_marker.scale.x = ft->get_world()->get_food_item(i)->get_diameter();
         food_marker.scale.y = ft->get_world()->get_food_item(i)->get_diameter();
-        food_marker.scale.z = 0.192;
+        food_marker.scale.z = 0.5;
         food_marker.color.a = 1.0;
         food_marker.color.r = 1.0;
         food_marker.color.g = 0.75;
@@ -273,6 +302,30 @@ void repaint(){
     obstacle_markers_publisher.publish(obstacle_markers);
 
     // Food markers
+    for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
+        for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
+            if(abs(food_markers.markers[i].pose.position.x) < 0.5 && abs(food_markers.markers[i].pose.position.y) < 0.5){
+                break;
+            }
+            if(ft->get_world()->get_food_item(i)->visible && 
+                abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < 0.5 && 
+                abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < 0.5){
+                ft->get_world()->get_food_item(i)->visible = false;
+                ft->get_world()->get_food_item(i)->robot = j;
+                food_markers.markers[i].color.a = 0;
+                break;
+            }
+            else if(ft->get_world()->get_food_item(i)->visible == false && ft->get_world()->get_food_item(i)->robot == j && abs(robot_markers.markers[j].pose.position.x) < 0.5 && abs(robot_markers.markers[j].pose.position.y) < 0.5){
+                food_markers.markers[i].color.a = 1;
+                food_markers.markers[i].pose.position.x = robot_markers.markers[j].pose.position.x;
+                food_markers.markers[i].pose.position.y = robot_markers.markers[j].pose.position.y;
+                ft->get_world()->get_food_item(i)->visible = true;
+                ft->get_world()->get_food_item(i)->robot = -1;
+                break;
+            }
+        }
+    }
+    
     food_markers_publisher.publish(food_markers);
 }
 
@@ -337,7 +390,7 @@ int main(int argc, char** argv)
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
 
     // Subscribers for all robots
-    ros::Subscriber sub0 = nh.subscribe("cmd_vel0", 1000, listen_cmd_vel);
+    ros::Subscriber sub0 = nh.subscribe("cmd_vel", 1000, listen_cmd_vel);
     ros::Subscriber sub1 = nh.subscribe("cmd_vel1", 1000, listen_cmd_vel1);
     ros::Subscriber sub2 = nh.subscribe("cmd_vel2", 1000, listen_cmd_vel2);
    // ros::Subscriber sub3 = nh.subscribe("cmd_vel3", 1000, listen_cmd_vel(3));
@@ -359,8 +412,9 @@ int main(int argc, char** argv)
     ft->add_turtlebot_burger(1, 1, M_PI_2, BURGER_RADIUS, "joao", 0.2);
     // ft->add_turtlebot_burger(5, 1, M_PI_2, BURGER_RADIUS, "carolina", 0.2);
     // ft->add_turtlebot_burger(1, 5, M_PI_2, BURGER_RADIUS, "teresa", 0.2);
-    // std::cout << "hamburgueres " << ft->get_world()->get_n_burgers() << "\n"; 
-    //ft->add_food_item(0, 5, FOOD_RADIUS);
+     std::cout << "obstaculos " << ft->get_world()->get_round_obstacles().size() << "\n"; 
+    ft->add_food_item(0, 3, FOOD_RADIUS);
+    ft->add_food_item(1, 5, FOOD_RADIUS);
 
     // Send first world data and graphics data
     publish_data();

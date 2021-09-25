@@ -67,6 +67,14 @@ Visualization Manager:
         simulation_markers: true
       Queue Size: 100
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /food_markers
+      Name: Food Obstacles
+      Namespaces:
+        simulation_markers: true
+      Queue Size: 100
+      Value: true
     - Class: rviz/TF
       Enabled: true
       Frame Timeout: 15
