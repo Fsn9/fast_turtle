@@ -16,6 +16,11 @@
 // Simulation frames per second
 #define SIMULATION_FPS 40u
 
+// Values for food distances
+#define FOOD_LIMIT_X 0.5
+#define FOOD_LIMIT_Y 0.5
+#define PROXIMITY 0.3
+
 // Initialize fast turtle simulator object
 FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 
@@ -55,35 +60,6 @@ void update_physics()
 {
     for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++) move_robot(idx);
 }
-
-/*void food_markers_update(){
-    food_markers = NULL;
-    visualization_msgs::Marker food_marker;
-    for(i = 0; i < ft->get_world()->get_food_items().size(); i++){
-        food_marker.header.frame_id = "world";
-        food_marker.ns = "simulation_markers";
-        food_marker.id = j;
-        food_marker.type = visualization_msgs::Marker::CYLINDER;
-        food_marker.action = visualization_msgs::Marker::ADD;
-        food_marker.pose.position.x = ft->get_world()->get_food_item(i)->get_xc();
-        food_marker.pose.position.y = ft->get_world()->get_food_item(i)->get_yc();
-        food_marker.pose.position.z = 1;
-        food_marker.pose.orientation.x = 0.0;
-        food_marker.pose.orientation.y = 0.0;
-        food_marker.pose.orientation.z = 0.0;
-        food_marker.pose.orientation.w = 1.0;
-        food_marker.scale.x = ft->get_world()->get_food_item(i)->get_diameter();
-        food_marker.scale.y = ft->get_world()->get_food_item(i)->get_diameter();
-        food_marker.scale.z = 0.5;
-        food_marker.color.a = 1.0;
-        food_marker.color.r = 1.0;
-        food_marker.color.g = 0.75;
-        food_marker.color.b = 0.79;
-        food_markers.markers.push_back(food_marker);
-        j+=1;
-    }
-    food_markers_publisher.publish(food_markers);
-}*/
 
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
@@ -258,7 +234,7 @@ void init_graphics_and_data(){
         food_marker.pose.orientation.w = 1.0;
         food_marker.scale.x = ft->get_world()->get_food_item(i)->get_diameter();
         food_marker.scale.y = ft->get_world()->get_food_item(i)->get_diameter();
-        food_marker.scale.z = 0.5;
+        food_marker.scale.z = 0.3;
         food_marker.color.a = 1.0;
         food_marker.color.r = 1.0;
         food_marker.color.g = 0.75;
@@ -293,6 +269,44 @@ void repaint(){
         robot_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
         robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
     }
+    
+
+    // Food markers
+    for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
+        for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
+            if(abs(food_markers.markers[i].pose.position.x) < PROXIMITY && abs(food_markers.markers[i].pose.position.y) < PROXIMITY){
+                break;
+            }
+            // Caught food
+            if(ft->get_world()->get_food_item(i)->visible && 
+                abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < 0.5 && 
+                abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < 0.5){
+                ft->get_world()->get_food_item(i)->visible = false;
+                ft->get_world()->get_food_item(i)->robot = j;
+                robot_markers.markers[j].color.r = 1.0;
+                robot_markers.markers[j].color.g = 0.75;
+                robot_markers.markers[j].color.b = 0.79;
+                food_markers.markers[i].color.a = 0;
+
+                break;
+            }
+            // Arrived at base, drops food
+            else if(ft->get_world()->get_food_item(i)->visible == false && 
+            ft->get_world()->get_food_item(i)->robot == j && abs(robot_markers.markers[j].pose.position.x) < FOOD_LIMIT_X &&
+            abs(robot_markers.markers[j].pose.position.y) < FOOD_LIMIT_Y){
+                food_markers.markers[i].color.a = 1;
+                food_markers.markers[i].pose.position.x = robot_markers.markers[j].pose.position.x;
+                food_markers.markers[i].pose.position.y = robot_markers.markers[j].pose.position.y;
+                ft->get_world()->get_food_item(i)->visible = true;
+                ft->get_world()->get_food_item(i)->robot = -1;
+                robot_markers.markers[j].color.r = 0.0;
+                robot_markers.markers[j].color.g = 0.0;
+                robot_markers.markers[j].color.b = 1.0;
+                break;
+            }
+        }
+    }
+    
     robot_markers_publisher.publish(robot_markers);
 
     // Robot orientation markers
@@ -300,32 +314,6 @@ void repaint(){
 
     // Obstacles
     obstacle_markers_publisher.publish(obstacle_markers);
-
-    // Food markers
-    for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
-        for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
-            if(abs(food_markers.markers[i].pose.position.x) < 0.5 && abs(food_markers.markers[i].pose.position.y) < 0.5){
-                break;
-            }
-            if(ft->get_world()->get_food_item(i)->visible && 
-                abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < 0.5 && 
-                abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < 0.5){
-                ft->get_world()->get_food_item(i)->visible = false;
-                ft->get_world()->get_food_item(i)->robot = j;
-                food_markers.markers[i].color.a = 0;
-                break;
-            }
-            else if(ft->get_world()->get_food_item(i)->visible == false && ft->get_world()->get_food_item(i)->robot == j && abs(robot_markers.markers[j].pose.position.x) < 0.5 && abs(robot_markers.markers[j].pose.position.y) < 0.5){
-                food_markers.markers[i].color.a = 1;
-                food_markers.markers[i].pose.position.x = robot_markers.markers[j].pose.position.x;
-                food_markers.markers[i].pose.position.y = robot_markers.markers[j].pose.position.y;
-                ft->get_world()->get_food_item(i)->visible = true;
-                ft->get_world()->get_food_item(i)->robot = -1;
-                break;
-            }
-        }
-    }
-    
     food_markers_publisher.publish(food_markers);
 }
 
@@ -402,19 +390,17 @@ int main(int argc, char** argv)
     // Initialize simulator object
     float obstacle_radius = 0.15;
     ft->init_world(40, 0, 0, "square");
-    ft->add_obstacle(0, -2, obstacle_radius, "round");
-    ft->add_obstacle(0, 2, obstacle_radius, "round");
-    ft->add_obstacle(-1, -1, obstacle_radius, "round");
-    ft->add_obstacle(-1, -2, obstacle_radius, "round");
-    ft->add_turtlebot_burger(0, -1, -M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
-    ft->add_turtlebot_burger(0, 1, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
+    //ft->add_obstacle(0, -2, obstacle_radius, "round");
+    //ft->add_obstacle(0, 2, obstacle_radius, "round");
+    //ft->add_obstacle(-1, -1, obstacle_radius, "round");
+    //ft->add_obstacle(-1, -2, obstacle_radius, "round");
+    ft->add_turtlebot_burger(-1, 0, -M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
+    ft->add_turtlebot_burger(1, 0, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
     //adicionar robots
-    ft->add_turtlebot_burger(1, 1, M_PI_2, BURGER_RADIUS, "joao", 0.2);
-    // ft->add_turtlebot_burger(5, 1, M_PI_2, BURGER_RADIUS, "carolina", 0.2);
-    // ft->add_turtlebot_burger(1, 5, M_PI_2, BURGER_RADIUS, "teresa", 0.2);
-     std::cout << "obstaculos " << ft->get_world()->get_round_obstacles().size() << "\n"; 
-    ft->add_food_item(0, 3, FOOD_RADIUS);
-    ft->add_food_item(1, 5, FOOD_RADIUS);
+    ft->add_turtlebot_burger(0, 0, M_PI_2, BURGER_RADIUS, "turtle", 0.2);
+    //std::cout << "obstaculos " << ft->get_world()->get_round_obstacles().size() << "\n"; 
+    ft->add_food_item(-1, 2, FOOD_RADIUS);
+    ft->add_food_item(1, 2, FOOD_RADIUS);
 
     // Send first world data and graphics data
     publish_data();
