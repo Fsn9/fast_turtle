@@ -270,7 +270,7 @@ void repaint(){
         robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
     }
     
-
+    
     // Food markers
     for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
         for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
@@ -279,8 +279,10 @@ void repaint(){
             }
             // Caught food
             if(ft->get_world()->get_food_item(i)->visible && 
-                abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < 0.5 && 
-                abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < 0.5){
+                abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < PROXIMITY && 
+                abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < PROXIMITY && 
+                abs(robot_markers.markers[j].pose.position.x) >= FOOD_LIMIT_X &&
+                abs(robot_markers.markers[j].pose.position.y) >= FOOD_LIMIT_Y){
                 ft->get_world()->get_food_item(i)->visible = false;
                 ft->get_world()->get_food_item(i)->robot = j;
                 robot_markers.markers[j].color.r = 1.0;
