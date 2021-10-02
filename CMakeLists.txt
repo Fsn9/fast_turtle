@@ -231,6 +231,11 @@ add_executable(live_simulation src/live_simulation.cpp)
 target_link_libraries(live_simulation ${catkin_LIBRARIES} ft)
 add_dependencies(live_simulation fast_turtle_generate_messages_cpp)
 
+# It defines the arena01.cpp as an executable
+add_executable(arena01 src/arena01.cpp)
+target_link_libraries(arena01 ${catkin_LIBRARIES} ft)
+add_dependencies(arena01 fast_turtle_generate_messages_cpp)
+
 # Link ft library and ros library
 target_link_libraries(ft ${catkin_LIBRARIES})
 

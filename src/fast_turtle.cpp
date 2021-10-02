@@ -13,7 +13,7 @@ FastTurtle::FastTurtle(unsigned int simulation_fps){
 }
 
 void FastTurtle::init_world(float length, float xc, float yc, std::string type = "square"){
-    this->w = new World(length, xc, yc);
+    this->w = new World(length, xc, yc, 0.0);
 }
 
 void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period){
@@ -28,6 +28,10 @@ void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radiu
 
 void FastTurtle::add_obstacle(float x, float y, float radius, std::string type_){
     this->w->add_obstacle(x,y,radius,type_);
+}
+
+void FastTurtle::add_wall(float length, float x, float y, float angle, std::string type_){
+    this->w->add_wall(length,x,y,angle,type_);
 }
 
 void FastTurtle::add_food_item(float x, float y, float radius){

@@ -172,7 +172,7 @@ std::tuple<bool, float, float, float, float> Circle::intersects_line(Line line){
 }
 
 // Square
-Square::Square(float length, float xc, float yc) : length(length), xc(xc), yc(yc){
+Square::Square(float length, float xc, float yc, float angle) : length(length), xc(xc), yc(yc), angle(angle){
 	// Corners
 	this->corners.push_back(Point2d(xc - length * 0.5, yc + length * 0.5));
 	this->corners.push_back(Point2d(xc + length * 0.5, yc + length * 0.5));
@@ -211,6 +211,11 @@ float Square::get_xc(){
 float Square::get_yc(){
 	return this->yc;
 }
+
+float Square::get_angle(){
+	return this->angle;
+}
+
 float Square::get_length(){
 	return this->length;
 }
