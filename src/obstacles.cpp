@@ -11,6 +11,6 @@ FoodItem::FoodItem(float xc, float yc, float radius) : Circle(xc, yc, radius){
     this->dynamics = dynamics;
 }
 
-std::string FoodItem::toString(){
+std::string FoodItem::tostring(){
     return "(FoodItem) " + Circle::tostring() + ")\n";
 }

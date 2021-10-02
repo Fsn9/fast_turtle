@@ -7,7 +7,7 @@ World::World(float length, float xc, float yc): Square(length, xc, yc){
 	this->round_obstacles.reserve(MAX_ROUND_OBSTACLES); // Max round obstacles
 	this->burgers.reserve(MAX_BURGERS); // Max burgers
 	this->n_burgers = 0; // counter of burgers
-	this->food_items.reserve(5); // Max food
+	this->food_items.reserve(MAX_FOODS); // Max food
 }
 
 void World::add_obstacle(float x, float y, float radius, std::string type_){
