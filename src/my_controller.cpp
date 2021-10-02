@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "my_controller");
 
     // Define my controller
-    int robot_idx = 0;
+    int robot_idx = 4;
     MyController my_controller(robot_idx);
 
     // Commands
@@ -36,8 +36,7 @@ int main(int argc, char **argv)
 
     // Publish at a loop_rate
     int loop_rate = 3; // hz
-    ros::Rate rate(loop_rate);
-
+    ros::Rate rate(loop_rate);    
     // Infinite cycle to read and publish commands
     while(ros::ok())
     {

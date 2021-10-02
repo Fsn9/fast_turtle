@@ -34,6 +34,10 @@ void FastTurtle::add_wall(float length, float x, float y, float angle, std::stri
     this->w->add_wall(length,x,y,angle,type_);
 }
 
+void FastTurtle::add_food_item(float x, float y, float radius){
+    this->w->add_food_item(x,y,radius);
+}
+
 World* FastTurtle::get_world(){
     return this->w;
 }

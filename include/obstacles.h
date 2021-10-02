@@ -14,9 +14,19 @@ class RoundObstacle : public Obstacle, public Circle{
         std::string tostring();
 };
 
+
 class WallObstacle : public Obstacle, public Square{
     public:
         WallObstacle(float length, float xc, float yc, float angle);
         std::string tostring();
 };
+
+class FoodItem : public Obstacle, public Circle{
+    public:
+        FoodItem(float xc, float yc, float radius);
+        std::string tostring();
+        bool visible = true; //If the food was captured
+        int robot = -1;  //-1  if the food is free, robot_id if it was captured
+};
+
 #endif // OBSTACLES_H

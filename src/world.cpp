@@ -8,6 +8,7 @@ World::World(float length, float xc, float yc, float angle): Square(length, xc, 
 	this->wall_obstacles.reserve(MAX_WALL_OBSTACLES); // Max wall obstacles
 	this->burgers.reserve(MAX_BURGERS); // Max burgers
 	this->n_burgers = 0; // counter of burgers
+	this->food_items.reserve(MAX_FOODS); // Max food
 }
 
 void World::add_obstacle(float x, float y, float radius, std::string type_){
@@ -36,6 +37,11 @@ void World::add_turtlebot_burger(float x, float y, float theta, float radius, st
 	this->n_burgers += 1;
 }
 
+void World::add_food_item(float xc, float yc, float radius){
+	this->food_items.push_back(FoodItem(xc, yc, radius));
+	return;
+}
+
 int World::get_n_burgers(){
 	return this->n_burgers;
 }
@@ -48,6 +54,7 @@ RoundObstacle* World::get_round_obstacle(int idx){
 	return &this->round_obstacles[idx];
 }
 
+
 std::vector<WallObstacle> World::get_wall_obstacles(){
 	return this->wall_obstacles;
 }
@@ -55,7 +62,6 @@ std::vector<WallObstacle> World::get_wall_obstacles(){
 WallObstacle* World::get_wall_obstacle(int idx){
 	return &this->wall_obstacles[idx];
 }
-
 
 std::string World::tostring(){
 	std::string repr_ = "";
@@ -80,3 +86,10 @@ TurtlebotBurger* World::get_burger(int idx){
 	return &this->burgers[idx];
 }
 
+std::vector<FoodItem> World::get_food_items(){
+	return this->food_items;
+}
+
+FoodItem* World::get_food_item(int idx){
+	return &this->food_items[idx];
+}
