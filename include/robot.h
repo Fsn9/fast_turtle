@@ -45,6 +45,7 @@ class TurtlebotBurger : public Circle{
         std::string name;
         double last_v;
         double last_w;
+        bool visible=true;
     public:
         TurtlebotBurger(float x, float y, float theta, float radius, std::string name, float controller_period);
         void set_pose(float x, float y, float theta);
@@ -54,6 +55,8 @@ class TurtlebotBurger : public Circle{
         float y();
         float get_theta();
         float get_controller_period();
+        bool check_visibility();
+        void set_visibility(bool value);
         double get_last_v();
         double get_last_w();
         void set_new_v_w(double v, double w);

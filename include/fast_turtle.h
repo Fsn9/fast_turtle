@@ -42,6 +42,7 @@ class FastTurtle{
         void act(float v, float w, int idx_robot); // Act with twist in the world
         Observation observe(int idx_robot);
         void sleep() = delete;
+        bool check_collisions();
 };
 
 class Observation{
