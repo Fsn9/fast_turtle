@@ -32,6 +32,14 @@ float TurtlebotBurger::get_controller_period(){
     return this->controller_period;
 }
 
+bool TurtlebotBurger::check_visibility(){
+    return this->visible;
+}
+
+void TurtlebotBurger::set_visibility(bool value){
+    this->visible = value;
+}
+
 std::string TurtlebotBurger::tostring(){
     return "(TurtlebotBurger) Name: " + this->get_name() + " , Model: " + this->get_model() + " , " +
     Circle::tostring() + ", theta: " 

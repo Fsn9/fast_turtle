@@ -38,6 +38,23 @@ void FastTurtle::add_food_item(float x, float y, float radius){
     this->w->add_food_item(x,y,radius);
 }
 
+bool FastTurtle::check_collisions(){
+    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
+        for(int j = i+1; j < ft->get_world()->get_n_burgers(); j++){
+            if(this->get_world()->get_burger(i)->intersects(this->get_world()->get_burger(j))){
+                robot_markers.markers[j].color.a = 0;
+                robot_markers.markers[i].color.a = 0;
+                ft->get_world()->get_burger(i)->set_visibility(false);
+                ft->get_world()->get_burger(j)->set_visibility(false);
+            } //somehow returnar robots que colidiram :)
+        }
+    }
+    if(one.intersects_circle(two)){
+        return true;
+    }else{
+        return false;
+    }
+}
 World* FastTurtle::get_world(){
     return this->w;
 }

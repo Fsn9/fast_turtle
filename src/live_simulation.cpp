@@ -297,6 +297,9 @@ void repaint(){
         //robot_markers.markers[i].pose.position.z = 1;
     }
     
+    //check for collisions between bots
+    ft->check_collisions();
+    
     
     // Food markers
     for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
