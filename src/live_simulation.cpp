@@ -294,7 +294,6 @@ void repaint(){
     for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
         robot_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
         robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
-        //robot_markers.markers[i].pose.position.z = 1;
     }
     
     //check for collisions between bots
