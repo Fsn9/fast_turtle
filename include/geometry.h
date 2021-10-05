@@ -50,6 +50,25 @@ class Line{
 };
 #endif
 
+#ifndef SQUARE_H
+#define SQUARE_H
+class Square{
+	protected:
+		float length, xc, yc, angle;
+		std::vector<Point2d> corners;
+		std::vector<Line> edges;	
+	public:
+		std::vector<Line> get_edges();
+		Square(float length, float xc, float yc, float angle);
+		std::string tostring();
+		float get_xc();
+        float get_yc();
+		float get_angle();
+		float get_length();
+		//bool intersects_square(Square* other);
+};
+#endif
+
 #ifndef CIRCLE_H
 #define CIRCLE_H
 class Circle{
@@ -67,24 +86,7 @@ class Circle{
 		bool inside(float x, float y);
 		bool outside(float x, float y);
 		bool intersects_circle(Circle* other);
+		bool intersects_square(Square other);
 		std::tuple<bool, float, float, float, float> intersects_line(Line line);
-};
-#endif
-
-#ifndef SQUARE_H
-#define SQUARE_H
-class Square{
-	protected:
-		float length, xc, yc, angle;
-		std::vector<Point2d> corners;
-		std::vector<Line> edges;	
-	public:
-		std::vector<Line> get_edges();
-		Square(float length, float xc, float yc, float angle);
-		std::string tostring();
-		float get_xc();
-        float get_yc();
-		float get_angle();
-		float get_length();
 };
 #endif

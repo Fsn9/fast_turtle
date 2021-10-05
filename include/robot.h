@@ -56,7 +56,7 @@ class TurtlebotBurger : public Circle{
         float get_theta();
         float get_controller_period();
         bool check_visibility();
-        void set_visibility(bool value);
+        void set_visibility(bool value);    
         double get_last_v();
         double get_last_w();
         void set_new_v_w(double v, double w);

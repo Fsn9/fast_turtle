@@ -25,6 +25,7 @@ visualization_msgs::MarkerArray obstacle_markers;
 visualization_msgs::MarkerArray wall_markers;
 visualization_msgs::MarkerArray robot_markers;
 visualization_msgs::MarkerArray robot_orientation_markers;
+visualization_msgs::MarkerArray food_markers;
 
 // Marker Publishers
 ros::Publisher world_marker_publisher;
@@ -32,6 +33,7 @@ ros::Publisher obstacle_markers_publisher;
 ros::Publisher wall_markers_publisher;
 ros::Publisher robot_markers_publisher;
 ros::Publisher robot_orientation_markers_publisher;
+ros::Publisher food_markers_publisher; 
 
 // Publishers
 ros::Publisher robots_publisher;
@@ -234,7 +236,31 @@ void init_graphics_and_data(){
         wall_markers.markers.push_back(wall_marker);
         j+=1;
     }
-
+    //Food
+    visualization_msgs::Marker food_marker;
+        for(i = 0; i < ft->get_world()->get_food_items().size(); i++){
+            food_marker.header.frame_id = "world";
+            food_marker.ns = "simulation_markers";
+            food_marker.id = j;
+            food_marker.type = visualization_msgs::Marker::CYLINDER;
+            food_marker.action = visualization_msgs::Marker::ADD;
+            food_marker.pose.position.x = ft->get_world()->get_food_item(i)->get_xc();
+            food_marker.pose.position.y = ft->get_world()->get_food_item(i)->get_yc();
+            food_marker.pose.position.z = 1;
+            food_marker.pose.orientation.x = 0.0;
+            food_marker.pose.orientation.y = 0.0;
+            food_marker.pose.orientation.z = 0.0;
+            food_marker.pose.orientation.w = 1.0;
+            food_marker.scale.x = ft->get_world()->get_food_item(i)->get_diameter();
+            food_marker.scale.y = ft->get_world()->get_food_item(i)->get_diameter();
+            food_marker.scale.z = 0.3;
+            food_marker.color.a = 1.0;
+            food_marker.color.r = 1.0;
+            food_marker.color.g = 0.75;
+            food_marker.color.b = 0.79;
+            food_markers.markers.push_back(food_marker);
+            j+=1;
+        }
 
     laser_scan_msg.angle_min = 0;
     laser_scan_msg.angle_max = M_PI * 2;
@@ -254,6 +280,7 @@ void init_graphics_and_data(){
 }
 
 void repaint(){
+    ft->check_collisions();
     // World marker
     world_marker_publisher.publish(world_marker);
     
@@ -261,6 +288,7 @@ void repaint(){
     for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
         robot_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
         robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
+        if(!ft->get_world()->get_burger(i)->check_visibility()) robot_markers.markers[i].color.g = 1.0;
         //robot_markers.markers[i].pose.position.z = 1;
     }
     robot_markers_publisher.publish(robot_markers);
@@ -337,7 +365,7 @@ int main(int argc, char** argv)
 
 
     // Subscribers for all robots
-    ros::Subscriber sub0 = nh.subscribe("cmd_vel0", 1000, listen_cmd_vel);
+    ros::Subscriber sub0 = nh.subscribe("cmd_vel", 1000, listen_cmd_vel);
     ros::Subscriber sub1 = nh.subscribe("cmd_vel1", 1000, listen_cmd_vel1);
     ros::Subscriber sub2 = nh.subscribe("cmd_vel2", 1000, listen_cmd_vel2);
     ros::Subscriber sub3 = nh.subscribe("cmd_vel3", 1000, listen_cmd_vel3);
