@@ -4,7 +4,7 @@ class MyController : public Controller
 {
     public:
         MyController(int robot_idx) : Controller(robot_idx) {}
-        cmd_vel_ decide_commands()
+        cmd_vel_tbb decide_commands()
         {
             // Get position and orientation
             double pos_x = robot_data_.pos_x;
@@ -18,7 +18,7 @@ class MyController : public Controller
             // Decide commands
             double v = 0.22;
             double w = 0.2;
-            return cmd_vel_{v,w};
+            return cmd_vel_tbb{v,w};
         }
 };
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     MyController my_controller(robot_idx);
 
     // Commands
-    cmd_vel_ commands;
+    cmd_vel_tbb commands;
 
     // Publish at a loop_rate
     int loop_rate = 3; // hz

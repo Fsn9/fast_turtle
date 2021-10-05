@@ -29,7 +29,7 @@ class Controller{
         void listen_robot(const fast_turtle::RobotDataArray& robots_msg);
 
         // Function of deciding commands to be implemented
-        virtual cmd_vel_ decide_commands() = 0;
+        virtual cmd_vel_tbb decide_commands() = 0;
 
         // Publishes commands into /cmd_vel##idx topic
         void publish_commands(double v, double w);
