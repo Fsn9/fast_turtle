@@ -40,14 +40,14 @@ ros::Publisher robots_publisher;
 sensor_msgs::LaserScan laser_scan_msg;
 
 // Vector of real time command velocities for all robots
-std::vector<cmd_vel_> cmd_vels{{0,0},{0,0},{0,0},{0,0}};
+std::vector<cmd_vel_tbb> cmd_vels_tb_burgers{{0,0},{0,0},{0,0},{0,0}};
 
 // Move robot 'idx'
 void move_robot(int idx)
 {
-    if (cmd_vels[idx].v > MAX_LIN_VELOCITY) cmd_vels[idx].v = MAX_LIN_VELOCITY;
-    if (cmd_vels[idx].w > MAX_ANG_VELOCITY) cmd_vels[idx].w = MAX_ANG_VELOCITY;
-    ft->act(cmd_vels[idx].v, cmd_vels[idx].w, idx);
+    if (cmd_vels_tb_burgers[idx].v > MAX_LIN_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].v = MAX_LIN_VELOCITY_TB_BURGER;
+    if (cmd_vels_tb_burgers[idx].w > MAX_ANG_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].w = MAX_ANG_VELOCITY_TB_BURGER;
+    ft->act_turtlebot_burger(cmd_vels_tb_burgers[idx].v, cmd_vels_tb_burgers[idx].w, idx);
 }
 
 // Updates logic of the simulator
@@ -60,8 +60,8 @@ void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 0){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[0].v = msg.linear.x;
-        cmd_vels[0].w = msg.angular.z;
+        cmd_vels_tb_burgers[0].v = msg.linear.x;
+        cmd_vels_tb_burgers[0].w = msg.angular.z;
         std::cout << "[Robot 0 pose]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
     }
 }
@@ -70,8 +70,8 @@ void listen_cmd_vel1(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 1){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[1].v = msg.linear.x;
-        cmd_vels[1].w = msg.angular.z;
+        cmd_vels_tb_burgers[1].v = msg.linear.x;
+        cmd_vels_tb_burgers[1].w = msg.angular.z;
         std::cout << "[Robot 1 pose]: " << ft->get_world()->get_burger(1)->tostring() << "\n";
     }
 }
@@ -80,8 +80,8 @@ void listen_cmd_vel2(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 2){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[2].v = msg.linear.x;
-        cmd_vels[2].w = msg.angular.z;
+        cmd_vels_tb_burgers[2].v = msg.linear.x;
+        cmd_vels_tb_burgers[2].w = msg.angular.z;
         std::cout << "[Robot 2 pose]: " << ft->get_world()->get_burger(2)->tostring() << "\n";
     }
 }
@@ -90,8 +90,8 @@ void listen_cmd_vel3(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 3){
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[3].v = msg.linear.x;
-        cmd_vels[3].w = msg.angular.z;
+        cmd_vels_tb_burgers[3].v = msg.linear.x;
+        cmd_vels_tb_burgers[3].w = msg.angular.z;
         std::cout << "[Robot 3 pose]: " << ft->get_world()->get_burger(3)->tostring() << "\n";
     }
 }

@@ -12,6 +12,4 @@ output: where to log the outputs. "screen" is to the terminal.
   <!-- Nodes to launch-->
   <node pkg="fast_turtle" type="arena01" name="arena01" output="screen" />
   <node type="rviz" name="rviz" pkg="rviz" args="-d $(find fast_turtle)/rviz/scene.rviz" />
-  <!--<node pkg="fast_turtle" type="controller" name="controller" output="screen"/>-->
-  <!--<node pkg="fast_turtle" type="controller_training" name="controller_training" output="screen"/>-->
 </launch> 
