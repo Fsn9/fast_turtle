@@ -151,6 +151,7 @@ bool Circle::intersects_circle(Circle* other){
 	return (this->radius + other->get_radius()) > d && (d > abs(this->radius - other->get_radius()));
 }
 
+
 std::tuple<bool, float, float, float, float> Circle::intersects_line(Line line){
 	float discriminant;
 	if (line.is_vertical()){
@@ -218,4 +219,16 @@ float Square::get_angle(){
 
 float Square::get_length(){
 	return this->length;
+}
+
+bool Circle::intersects_square(Square other){
+	bool intersect = false;
+	for(int i = 0; i<4; i++){
+		for(int j = i+1; j<4; j++){
+			if(std::get<0>(this->intersects_line(other.get_edges()[j]))){
+				intersect = true;
+			}
+		}
+	}
+	return intersect;
 }

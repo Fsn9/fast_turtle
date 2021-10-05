@@ -38,21 +38,39 @@ void FastTurtle::add_food_item(float x, float y, float radius){
     this->w->add_food_item(x,y,radius);
 }
 
-bool FastTurtle::check_collisions(){
-    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        for(int j = i+1; j < ft->get_world()->get_n_burgers(); j++){
-            if(this->get_world()->get_burger(i)->intersects(this->get_world()->get_burger(j))){
-                robot_markers.markers[j].color.a = 0;
-                robot_markers.markers[i].color.a = 0;
-                ft->get_world()->get_burger(i)->set_visibility(false);
-                ft->get_world()->get_burger(j)->set_visibility(false);
-            } //somehow returnar robots que colidiram :)
+void FastTurtle::check_collisions(){
+    for(int i = 0; i < this->get_world()->get_n_burgers(); i++){
+        if(this->get_world()->get_burger(i)->check_visibility()){
+            //check collisions between bots
+            for(int j = i+1; j < this->get_world()->get_n_burgers(); j++){
+                if(this->get_world()->get_burger(j)->check_visibility()){
+                    if(this->get_world()->get_burger(i)->intersects_circle(this->get_world()->get_burger(j))){
+                        this->get_world()->get_burger(i)->set_visibility(false);
+                        this->get_world()->get_burger(j)->set_visibility(false);
+                        break;
+                    } 
+                }
+            }
+            //check collisions with obstacles
+            if(this->get_world()->get_burger(i)->check_visibility()){
+                for(int j = 0; j < this->get_world()->get_round_obstacles().size(); j++){
+                    if(this->get_world()->get_burger(i)->intersects_circle(this->get_world()->get_round_obstacle(j))){
+                        this->get_world()->get_burger(i)->set_visibility(false);
+                        break;
+                    }
+                }
+            }
+            //check collisions with walls
+            if(this->get_world()->get_burger(i)->check_visibility()){
+                for(int j = 0; j < this->get_world()->get_wall_obstacles().size(); j++){
+                    if(this->get_world()->get_burger(i)->intersects_square(*this->get_world()->get_wall_obstacle(j))){
+                        this->get_world()->get_burger(i)->set_visibility(false);
+                        break;
+                    }
+                }
+            }
         }
-    }
-    if(one.intersects_circle(two)){
-        return true;
-    }else{
-        return false;
+
     }
 }
 World* FastTurtle::get_world(){

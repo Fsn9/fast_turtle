@@ -60,7 +60,11 @@ void move_robot(int idx)
 // Updates logic of the simulator
 void update_physics()
 {
-    for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++) move_robot(idx);
+    for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++){
+        if(ft->get_world()->get_burger(idx)->check_visibility()){
+            move_robot(idx);
+        }
+    } 
 }
 
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
@@ -292,26 +296,35 @@ void repaint(){
     
     // Robot position markers
     for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-            robot_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
-            robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
+        robot_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
+        robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
+        //robot_markers.markers[i].pose.position.z = 1;
     }
     
-    //check for collisions between bots
+    //check for collisions and if they collided, make them disapear 
     ft->check_collisions();
+    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
+        if(!ft->get_world()->get_burger(i)->check_visibility()){
+            robot_markers.markers[i].color.a = 0;
+            robot_orientation_markers.markers[i].color.a = 0;
+        }
+    }
     
     
     // Food markers
     for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
         for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
+            
             if(abs(food_markers.markers[i].pose.position.x) < PROXIMITY && abs(food_markers.markers[i].pose.position.y) < PROXIMITY){
                 break;
             }
-            // Caught food
-            if(ft->get_world()->get_food_item(i)->visible && 
+            // Caught food  //only eats food if it's visible and is not holding another food
+            if(ft->get_world()->get_food_item(i)->visible && ft->get_world()->get_burger(j)->check_visibility() &&
                 abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < PROXIMITY && 
                 abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < PROXIMITY && 
                 abs(robot_markers.markers[j].pose.position.x) >= FOOD_LIMIT_X &&
-                abs(robot_markers.markers[j].pose.position.y) >= FOOD_LIMIT_Y){
+                abs(robot_markers.markers[j].pose.position.y) >= FOOD_LIMIT_Y &&
+                robot_markers.markers[j].color.r == 0.0){
                 ft->get_world()->get_food_item(i)->visible = false;
                 ft->get_world()->get_food_item(i)->robot = j;
                 robot_markers.markers[j].color.r = 1.0;
@@ -335,6 +348,15 @@ void repaint(){
                 robot_markers.markers[j].color.b = 1.0;
                 break;
             }
+
+            //object collided while holding food
+            else if(!ft->get_world()->get_burger(j)->check_visibility() && ft->get_world()->get_food_item(i)->robot == j){
+                food_markers.markers[i].color.a = 1;
+                ft->get_world()->get_food_item(i)->visible = true;
+                ft->get_world()->get_food_item(i)->robot = -1;
+                break;
+            }
+
         }
     }
     
@@ -437,6 +459,7 @@ int main(int argc, char** argv)
     //std::cout << "obstaculos " << ft->get_world()->get_round_obstacles().size() << "\n"; 
     ft->add_food_item(-1, 2, FOOD_RADIUS);
     ft->add_food_item(1, 2, FOOD_RADIUS);
+    ft->add_obstacle(1, 3, obstacle_radius, "round");
 
     // Send first world data and graphics data
     publish_data();
