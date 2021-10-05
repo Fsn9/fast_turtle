@@ -47,7 +47,6 @@ class TurtlebotBurger : public Circle{
         double last_w;
     public:
         TurtlebotBurger(float x, float y, float theta, float radius, std::string name, float controller_period);
-        void set_pose(float x, float y, float theta);
         std::string tostring();
         std::tuple<float, float, float> kinematics(float v, float w, double time_step);
         float x();
@@ -62,4 +61,30 @@ class TurtlebotBurger : public Circle{
         Lidar* get_lidar();
         void move(float v, float w, double time_step);
 };
+
+class SimpleDrone : public Circle{
+    private:
+        float height, inv_diameter, diameter, controller_period;
+        Lidar* lidar;
+        std::string model;
+        std::string name;
+        double last_vx;
+        double last_vy;
+    public:
+        SimpleDrone(float x, float y, float height, float radius, std::string name, float controller_period);
+        std::string tostring();
+        std::tuple<float, float> kinematics(float vx, float vy, double time_step);
+        float x();
+        float y();
+        float get_height();
+        float get_controller_period();
+        double get_last_vx();
+        double get_last_vy();
+        void set_new_vx_vy(double vx, double vy);
+        std::string get_name();
+        std::string get_model();
+        Lidar* get_lidar();
+        void move(float v, float w, double time_step);
+};
+
 #endif // ROBOT_H
