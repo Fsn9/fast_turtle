@@ -15,7 +15,7 @@
 #define MIN_DISTANCE 0.12f
 #define MAX_DISTANCE 3.5f
 #define BURGER_RADIUS 0.09f
-#define FOOD_RADIUS 0.05f
+#define FOOD_RADIUS 0.1f
 #define TIME_STEP 0.05f
 #define DEFAULT_CONTROLLER_PERIOD 0.1f
 
