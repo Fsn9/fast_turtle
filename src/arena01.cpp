@@ -247,6 +247,51 @@ void init_graphics_and_data(){
         wall_markers.markers.push_back(wall_marker);
         j+=1;
     }
+    //base walls, don't count as actuall walls
+        wall_marker.header.frame_id = "world";
+        wall_marker.ns = "simulation_markers";
+        wall_marker.id = j;
+        wall_marker.type = visualization_msgs::Marker::CUBE;
+        wall_marker.action = visualization_msgs::Marker::ADD;
+        wall_marker.pose.position.x = -8.0;
+        wall_marker.pose.position.y = -6.0;
+        wall_marker.pose.position.z = 0.5;
+        wall_marker.pose.orientation.x = 0.0;
+        wall_marker.pose.orientation.y = 0.0;
+        wall_marker.pose.orientation.z = 0.0;//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
+        wall_marker.pose.orientation.w = 1.0;
+        wall_marker.scale.x = 4.0;
+        wall_marker.scale.y = 0.01;//ft->get_world()->get_wall_obstacle(i)->get_length();
+        wall_marker.scale.z = 1.0;//ft->get_world()->get_wall_obstacle(i)->get_length();
+        wall_marker.color.a = 1.0;
+        wall_marker.color.r = 0.0;
+        wall_marker.color.g = 1.0;
+        wall_marker.color.b = 0.7;
+        wall_markers.markers.push_back(wall_marker);
+        j+=1;
+
+        wall_marker.header.frame_id = "world";
+        wall_marker.ns = "simulation_markers";
+        wall_marker.id = j;
+        wall_marker.type = visualization_msgs::Marker::CUBE;
+        wall_marker.action = visualization_msgs::Marker::ADD;
+        wall_marker.pose.position.x = -6.0;
+        wall_marker.pose.position.y = -8.0;
+        wall_marker.pose.position.z = 0.5;
+        wall_marker.pose.orientation.x = 0.0;
+        wall_marker.pose.orientation.y = 0.0;
+        wall_marker.pose.orientation.z = 1.0;//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
+        wall_marker.pose.orientation.w = 1.0;
+        wall_marker.scale.x = 4.0;
+        wall_marker.scale.y = 0.01;//ft->get_world()->get_wall_obstacle(i)->get_length();
+        wall_marker.scale.z = 1.0;//ft->get_world()->get_wall_obstacle(i)->get_length();
+        wall_marker.color.a = 1.0;
+        wall_marker.color.r = 0.0;
+        wall_marker.color.g = 1.0;
+        wall_marker.color.b = 0.7;
+        wall_markers.markers.push_back(wall_marker);
+        j+=1;
+
     //Food
     visualization_msgs::Marker food_marker;
         for(i = 0; i < ft->get_world()->get_food_items().size(); i++){
@@ -290,7 +335,7 @@ void init_graphics_and_data(){
     wall_markers_publisher.publish(wall_markers);
 }
 bool inside_base(double x, double y){
-    if(x >= FOOD_LIMIT_X_inf && x <= FOOD_LIMIT_X_sup && y >= FOOD_LIMIT_Y_inf && y <= FOOD_LIMIT_Y_sup) return true;
+    if(x > FOOD_LIMIT_X_inf && x < FOOD_LIMIT_X_sup && y > FOOD_LIMIT_Y_inf && y < FOOD_LIMIT_Y_sup) return true;
     else return false;
 }
 void repaint(){
