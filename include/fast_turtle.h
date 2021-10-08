@@ -8,7 +8,7 @@
 #include <unistd.h> 
 #include <chrono>
 
-#define MAX_LIN_VELOCITY 0.22f
+#define MAX_LIN_VELOCITY 0.5f
 #define MAX_ANG_VELOCITY 2.84f
 
 // Command velocity
@@ -32,8 +32,8 @@ class FastTurtle{
         void add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period = DEFAULT_CONTROLLER_PERIOD);
         void add_obstacle(float x, float y, float radius, std::string type_, bool dynamics) = delete;
         void add_obstacle(float x, float y, float radius, std::string type_);
-        void add_wall(float length, float x, float y, float angle, std::string type_, bool dynamics) = delete;
-        void add_wall(float length, float x, float y, float angle, std::string type_);
+        void add_wall(float x1, float y1, float x2, float y2, bool dynamics) = delete;
+        void add_wall(float x1, float y1, float x2, float y2);
         void add_food_item(float x, float y, float radius, bool dynamics) = delete;
         void add_food_item(float x, float y, float radius);
         World* get_world();  

@@ -41,11 +41,18 @@ class Line{
 		void set_x2(float x2);
 		void set_y1(float y1);
 		void set_y2(float y2);
+		float get_x1();
+		float get_x2();
+		float get_y1();
+		float get_y2();
 		void set_points(float, float, float, float);
 		bool intersects(float x,float y);
 		bool is_vertical();
 		bool is_horizontal();
+		std::tuple<float, float> get_midpoint(); //returns in <x,y> form
+		float get_length();
 		std::tuple<bool, float, float> intersects_line(Line other);
+		//bool intersects_circle_try(Circle* circle);
 		std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
 };
 #endif
@@ -65,7 +72,6 @@ class Square{
         float get_yc();
 		float get_angle();
 		float get_length();
-		//bool intersects_square(Square* other);
 };
 #endif
 

@@ -107,8 +107,6 @@ void listen_cmd_vel3(const geometry_msgs::Twist& msg)
     }
 }
 
-
-
 void init_graphics_and_data(){
     // Counter markers
     int j = 0;
@@ -230,14 +228,14 @@ void init_graphics_and_data(){
         wall_marker.id = j;
         wall_marker.type = visualization_msgs::Marker::CUBE;
         wall_marker.action = visualization_msgs::Marker::ADD;
-        wall_marker.pose.position.x = ft->get_world()->get_wall_obstacle(i)->get_xc();
-        wall_marker.pose.position.y = ft->get_world()->get_wall_obstacle(i)->get_yc();
+        wall_marker.pose.position.x = std::get<0>(ft->get_world()->get_wall_obstacle(i)->get_midpoint());
+        wall_marker.pose.position.y = std::get<1>(ft->get_world()->get_wall_obstacle(i)->get_midpoint());
         wall_marker.pose.position.z = 1.0;
         wall_marker.pose.orientation.x = 0.0;
         wall_marker.pose.orientation.y = 0.0;
-        wall_marker.pose.orientation.z = ft->get_world()->get_wall_obstacle(i)->get_angle();//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
+        wall_marker.pose.orientation.z = ft->get_world()->get_wall_obstacle(i)->is_vertical() ? 1.0 : 0.0;//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
         wall_marker.pose.orientation.w = 1.0;
-        wall_marker.scale.x = ft->get_world()->get_wall_obstacle(i)->get_length();
+        wall_marker.scale.x = 1.0;
         wall_marker.scale.y = 0.01;//ft->get_world()->get_wall_obstacle(i)->get_length();
         wall_marker.scale.z = 2.0;//ft->get_world()->get_wall_obstacle(i)->get_length();
         wall_marker.color.a = 1.0;

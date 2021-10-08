@@ -29,7 +29,7 @@ class World : public Square{
     World(float length, float xc, float yc, float angle);
     std::string tostring();
 		void add_obstacle(float x, float y, float radius, std::string type_);
-		void add_wall(float x, float y, float angle, float length, std::string type_);
+		void add_wall(float x1, float y1, float x2, float y2);
 		void add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period);
 		void add_food_item(float x, float y, float radius);
 		std::vector<RoundObstacle> get_round_obstacles();

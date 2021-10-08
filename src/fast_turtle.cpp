@@ -30,8 +30,8 @@ void FastTurtle::add_obstacle(float x, float y, float radius, std::string type_)
     this->w->add_obstacle(x,y,radius,type_);
 }
 
-void FastTurtle::add_wall(float length, float x, float y, float angle, std::string type_){
-    this->w->add_wall(length,x,y,angle,type_);
+void FastTurtle::add_wall(float x1, float y1, float x2, float y2){
+    this->w->add_wall(x1, y1, x2, y2);
 }
 
 void FastTurtle::add_food_item(float x, float y, float radius){
@@ -47,6 +47,7 @@ void FastTurtle::check_collisions(){
                     if(this->get_world()->get_burger(i)->intersects_circle(this->get_world()->get_burger(j))){
                         this->get_world()->get_burger(i)->set_visibility(false);
                         this->get_world()->get_burger(j)->set_visibility(false);
+                        std::cout << " collision bot";
                         break;
                     } 
                 }
@@ -56,6 +57,7 @@ void FastTurtle::check_collisions(){
                 for(int j = 0; j < this->get_world()->get_round_obstacles().size(); j++){
                     if(this->get_world()->get_burger(i)->intersects_circle(this->get_world()->get_round_obstacle(j))){
                         this->get_world()->get_burger(i)->set_visibility(false);
+                        std::cout << " collision obstacle";
                         break;
                     }
                 }
@@ -63,10 +65,32 @@ void FastTurtle::check_collisions(){
             //check collisions with walls
             if(this->get_world()->get_burger(i)->check_visibility()){
                 for(int j = 0; j < this->get_world()->get_wall_obstacles().size(); j++){
-                    if(this->get_world()->get_burger(i)->intersects_square(*this->get_world()->get_wall_obstacle(j))){
-                        this->get_world()->get_burger(i)->set_visibility(false);
-                        break;
+                    if(std::get<0>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)))){
+                        float x1 = std::get<1>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)));
+                        float y1 = std::get<2>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)));
+                        float x2 = std::get<3>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)));
+                        float y2 = std::get<4>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i))); //pontos do circulo onde a reta intersecta
+                        float xa = this->get_world()->get_wall_obstacle(j)->get_x1();
+                        float ya = this->get_world()->get_wall_obstacle(j)->get_y1();
+                        float xb = this->get_world()->get_wall_obstacle(j)->get_x2();
+                        float yb = this->get_world()->get_wall_obstacle(j)->get_y2(); //extremidades da reta
+                        
+                        float crossproduct_1 = (y1 - ya) * (xb - xa) - (x1 - xa) * (yb - ya);
+                        float crossproduct_2 = (y2 - ya) * (xb - xa) - (x2 - xa) * (yb - ya);
+
+                        float dotproduct_1 = (x1 - xa) * (xb - xa) + (y1 - ya)*(yb - ya);
+                        float dotproduct_2 = (x2 - xa) * (xb - xa) + (y2 - ya)*(yb - ya);
+
+                        float squaredlengthba = (xb - xa)*(xb - xa) + (yb - ya)*(yb - ya);
+                        if ((crossproduct_1 <= 0.0001  &&  dotproduct_1 > 0  &&  dotproduct_1 <= squaredlengthba) || 
+                            (crossproduct_2 <= 0.0001  &&  dotproduct_2 > 0  &&  dotproduct_2 <= squaredlengthba)){
+                                this->get_world()->get_burger(i)->set_visibility(false);
+                                std::cout << " collision wall "; //x: " << std::get<0>(this->get_world()->get_wall_obstacle(j)->get_midpoint()) << " robot x: " << this->get_world()->get_burger(i)->x();
+                                break;
+                            }
+                      
                     }
+                    //std::cout << " no collision wall x: " << std::get<0>(this->get_world()->get_wall_obstacle(j)->get_midpoint()) << " robot x: " << this->get_world()->get_burger(i)->x();
                 }
             }
         }

@@ -53,6 +53,11 @@ void Line::set_y1(float y1){this->y1 = y1;}
 
 void Line::set_y2(float y2){this->y2 = y2;}
 
+float Line::get_x1(){return this->x1;}
+float Line::get_y1(){return this->y1;}
+float Line::get_x2(){return this->x2;}
+float Line::get_y2(){return this->y2;}
+		
 void Line::set_points(float x1, float y1, float x2, float y2){
 	this->x1 = x1;
 	this->y1 = y1;
@@ -89,6 +94,17 @@ bool Line::is_vertical(){return this->vertical;}
 
 bool Line::is_horizontal(){return this->horizontal;}
 
+std::tuple<float, float> Line::get_midpoint(){
+	return {
+		((this->x1 + this->x2)/2),
+		((this->y1 + this->y2)/2)
+	};
+}
+
+float Line::get_length(){
+	return (sqrt(pow(x2 - x1, 2) +
+                pow(y2 - y1, 2) * 1.0));
+}
 std::tuple<bool, float, float> Line::intersects_line(Line other){
 	if (this->slope == other.get_slope()) return {false,0,0};
 	else if(!this->vertical && other.vertical) return {true, other.get_intercept(), this->slope * other.get_intercept() + this->intercept};
@@ -103,7 +119,7 @@ std::tuple<bool, float, float> Line::intersects_line(Line other){
 
 }
 
-std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle* circle){
+std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle* circle){ //x1, y1, x2, y2
 	float discriminant;
 	if (this->vertical){
 		discriminant = pow(circle->get_radius(),2) - pow(this->intercept - circle->get_xc(),2);
@@ -122,6 +138,8 @@ std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle* cir
 		return {true, (a + sqrt_d) / den, (b + this->slope * sqrt_d) / den, (a - sqrt_d) / den, (b - this->slope * sqrt_d) / den};
 	}
 }
+
+
 
 //Circle
 Circle::Circle(float xc, float yc, float radius) : xc(xc), yc(yc), radius(radius), radius_sqr(pow(this->radius,2)) {
@@ -221,14 +239,12 @@ float Square::get_length(){
 	return this->length;
 }
 
-bool Circle::intersects_square(Square other){
+/*bool Circle::intersects_square(Square other){
 	bool intersect = false;
-	for(int i = 0; i<4; i++){
-		for(int j = i+1; j<4; j++){
-			if(std::get<0>(this->intersects_line(other.get_edges()[j]))){
-				intersect = true;
-			}
+	for(int j = 0; j < other.get_edges().size(); j++){
+		if(std::get<0>((other.get_edges()[j].intersects_circle(this)))){
+			intersect = true;
 		}
 	}
 	return intersect;
-}
+}*/
