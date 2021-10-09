@@ -22,19 +22,20 @@ class Controller{
         virtual void publish() = 0;
     protected:
         robot_data get_robot_data();
+        ros::Subscriber listener_;
         ros::Publisher cmd_vel_publisher_;
         virtual void update_commands(double, double) = 0;
+        void set_subscriber(std::string topic_to_listen);
+        ros::NodeHandle nh_;
     private:
         robot_data robot_data_{0,0,0,0,0,0};
         void listen(const fast_turtle::RobotDataArray& robots_msg);
         int robot_idx_;
-        ros::NodeHandle nh_;
-        ros::Subscriber listener_;
 };
 
 class SimpleDroneController : public Controller{
     public:
-        SimpleDroneController(int idx, std::string topic) : Controller(idx, topic){}
+        SimpleDroneController(int idx, std::string topic);
         void publish() override;
     protected:
         void update_commands(double vx, double vy) override;
@@ -45,7 +46,7 @@ class SimpleDroneController : public Controller{
 class TurtlebotBurgerController : public Controller{
     
     public:
-        TurtlebotBurgerController(int idx, std::string topic) : Controller(idx, topic){}
+        TurtlebotBurgerController(int idx, std::string topic);
         void publish() override;
     protected:
         void update_commands(double v, double w) override;
