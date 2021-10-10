@@ -238,13 +238,3 @@ float Square::get_angle(){
 float Square::get_length(){
 	return this->length;
 }
-
-/*bool Circle::intersects_square(Square other){
-	bool intersect = false;
-	for(int j = 0; j < other.get_edges().size(); j++){
-		if(std::get<0>((other.get_edges()[j].intersects_circle(this)))){
-			intersect = true;
-		}
-	}
-	return intersect;
-}*/
