@@ -52,7 +52,6 @@ class Line{
 		std::tuple<float, float> get_midpoint(); //returns in <x,y> form
 		float get_length();
 		std::tuple<bool, float, float> intersects_line(Line other);
-		//bool intersects_circle_try(Circle* circle);
 		std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
 };
 #endif
@@ -92,7 +91,6 @@ class Circle{
 		bool inside(float x, float y);
 		bool outside(float x, float y);
 		bool intersects_circle(Circle* other);
-		bool intersects_square(Square other);
 		std::tuple<bool, float, float, float, float> intersects_line(Line line);
 };
 #endif
