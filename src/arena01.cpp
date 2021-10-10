@@ -49,14 +49,14 @@ ros::Publisher robots_publisher;
 sensor_msgs::LaserScan laser_scan_msg;
 
 // Vector of real time command velocities for all robots
-std::vector<cmd_vel_> cmd_vels{{0,0},{0,0},{0,0},{0,0}};
+std::vector<cmd_vel_tbb> cmd_vels_tb_burgers{{0,0},{0,0},{0,0},{0,0}};
 
 // Move robot 'idx'
 void move_robot(int idx)
 {
-    if (cmd_vels[idx].v > MAX_LIN_VELOCITY) cmd_vels[idx].v = MAX_LIN_VELOCITY;
-    if (cmd_vels[idx].w > MAX_ANG_VELOCITY) cmd_vels[idx].w = MAX_ANG_VELOCITY;
-    ft->act(cmd_vels[idx].v, cmd_vels[idx].w, idx);
+    if (cmd_vels_tb_burgers[idx].v > MAX_LIN_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].v = MAX_LIN_VELOCITY_TB_BURGER;
+    if (cmd_vels_tb_burgers[idx].w > MAX_ANG_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].w = MAX_ANG_VELOCITY_TB_BURGER;
+    ft->act_turtlebot_burger(cmd_vels_tb_burgers[idx].v, cmd_vels_tb_burgers[idx].w, idx);
 }
 
 // Updates logic of the simulator

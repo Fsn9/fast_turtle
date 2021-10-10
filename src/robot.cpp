@@ -101,6 +101,88 @@ void TurtlebotBurger::set_new_v_w(double v, double w){
     this->last_w = w;
 }
 
+SimpleDrone::SimpleDrone(float x, float y, float height, float radius, std::string name, float controller_period) : Circle(x, y, radius)
+{
+    // Attributes
+    this->controller_period = controller_period;
+    this->inv_diameter = 1.0 / (2 * this->radius);
+    this->diameter = this->radius * 2.0;
+    this->height = height;
+    this->name = name;
+    this->model = "simple";
+    this->last_vx = 0.0;
+    this->last_vy = 0.0;
+
+    // Lidar
+    float frequency;
+    this->lidar = new Lidar(frequency, new Point2d(x,y));
+}
+
+float SimpleDrone::x(){
+    return this->xc;
+}
+
+float SimpleDrone::y(){
+    return this->yc;
+}
+
+float SimpleDrone::get_height(){
+    return this->height;
+}
+
+float SimpleDrone::get_controller_period(){
+    return this->controller_period;
+}
+
+std::string SimpleDrone::tostring(){
+    return "(SimpleDrone) Name: " + this->get_name() + " , Model: " + this->get_model() + " , " +
+    Circle::tostring() + ", height: " 
+    + std::to_string(this->height)
+    + ", with " + this->lidar->tostring() + "\n";
+}
+
+std::tuple<float, float> SimpleDrone::kinematics(float vx, float vy, double time_step){    
+    return 
+    {
+        this->xc + vx * time_step,
+        this->yc + vy * time_step
+    };
+}
+
+void SimpleDrone::move(float vx, float vy, double time_step){
+    // Compute position
+    std::tuple<float,float> new_pose = this->kinematics(vx, vy, time_step);
+    // Update position
+    this->xc = std::get<0>(new_pose);
+    this->yc = std::get<1>(new_pose);
+    return;
+}
+
+Lidar* SimpleDrone::get_lidar(){
+    return this->lidar;
+}
+
+std::string SimpleDrone::get_name(){
+    return this->name;
+}
+
+std::string SimpleDrone::get_model(){
+    return this->model;
+}
+
+double SimpleDrone::get_last_vx(){
+    return this->last_vx;
+}
+
+double SimpleDrone::get_last_vy(){
+    return this->last_vy;
+}
+
+void SimpleDrone::set_new_vx_vy(double vx, double vy){
+    this->last_vx = vx;
+    this->last_vy = vy;
+}
+
 void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, float x_robot, float y_robot, float theta_robot){
     std::fill(this->lasers.begin(), this->lasers.end(), MAX_DISTANCE);
     Line laser(0,0,0,0);

@@ -9,6 +9,8 @@ World::World(float length, float xc, float yc, float angle): Square(length, xc, 
 	this->burgers.reserve(MAX_BURGERS); // Max burgers
 	this->n_burgers = 0; // counter of burgers
 	this->food_items.reserve(MAX_FOODS); // Max food
+	this->simple_drones.reserve(MAX_SIMPLE_DRONES);
+	this->n_simple_drones = 0; // counter of burgers
 }
 
 void World::add_obstacle(float x, float y, float radius, std::string type_){
@@ -33,6 +35,13 @@ void World::add_turtlebot_burger(float x, float y, float theta, float radius, st
 	this->n_burgers += 1;
 }
 
+void World::add_simple_drone(float x, float y, float height, float radius, std::string name, float controller_period){
+	std::vector<SimpleDrone>::iterator it; 
+	it = this->simple_drones.begin() + this->n_simple_drones;
+	it = this->simple_drones.insert(it, SimpleDrone(x,y,height,radius,name,controller_period));
+	this->n_simple_drones += 1;
+}
+
 void World::add_food_item(float xc, float yc, float radius){
 	this->food_items.push_back(FoodItem(xc, yc, radius));
 	return;
@@ -40,6 +49,10 @@ void World::add_food_item(float xc, float yc, float radius){
 
 int World::get_n_burgers(){
 	return this->n_burgers;
+}
+
+int World::get_n_simple_drones(){
+	return this->n_simple_drones;
 }
 
 std::vector<RoundObstacle> World::get_round_obstacles(){
@@ -88,4 +101,11 @@ std::vector<FoodItem> World::get_food_items(){
 
 FoodItem* World::get_food_item(int idx){
 	return &this->food_items[idx];
+}
+std::vector<SimpleDrone> World::get_simple_drones(){
+	return this->simple_drones;
+}
+
+SimpleDrone* World::get_simple_drone(int idx){
+	return &this->simple_drones[idx];
 }

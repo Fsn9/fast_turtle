@@ -236,6 +236,11 @@ add_executable(arena01 src/arena01.cpp)
 target_link_libraries(arena01 ${catkin_LIBRARIES} ft)
 add_dependencies(arena01 fast_turtle_generate_messages_cpp)
 
+# It defines the test_drones.cpp as an executable
+add_executable(test_drones src/test_drones.cpp)
+target_link_libraries(test_drones ${catkin_LIBRARIES} ft)
+add_dependencies(test_drones fast_turtle_generate_messages_cpp)
+
 # Link ft library and ros library
 target_link_libraries(ft ${catkin_LIBRARIES})
 
