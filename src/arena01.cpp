@@ -73,8 +73,8 @@ void listen_cmd_vel(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 0){
        // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[0].v = msg.linear.x;
-        cmd_vels[0].w = msg.angular.z;
+        cmd_vels_tb_burgers[0].v = msg.linear.x;
+        cmd_vels_tb_burgers[0].w = msg.angular.z;
        // std::cout << "[Robot 0 pose]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
     }
 }
@@ -83,8 +83,8 @@ void listen_cmd_vel1(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 1){
        // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[1].v = msg.linear.x;
-        cmd_vels[1].w = msg.angular.z;
+        cmd_vels_tb_burgers[1].v = msg.linear.x;
+        cmd_vels_tb_burgers[1].w = msg.angular.z;
       //  std::cout << "[Robot 1 pose]: " << ft->get_world()->get_burger(1)->tostring() << "\n";
     }
 }
@@ -93,8 +93,8 @@ void listen_cmd_vel2(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 2){
        // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[2].v = msg.linear.x;
-        cmd_vels[2].w = msg.angular.z;
+        cmd_vels_tb_burgers[2].v = msg.linear.x;
+        cmd_vels_tb_burgers[2].w = msg.angular.z;
       //  std::cout << "[Robot 2 pose]: " << ft->get_world()->get_burger(2)->tostring() << "\n";
     }
 }
@@ -103,8 +103,8 @@ void listen_cmd_vel3(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_burgers() > 3){
        // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels[3].v = msg.linear.x;
-        cmd_vels[3].w = msg.angular.z;
+        cmd_vels_tb_burgers[3].v = msg.linear.x;
+        cmd_vels_tb_burgers[3].w = msg.angular.z;
        // std::cout << "[Robot 3 pose]: " << ft->get_world()->get_burger(3)->tostring() << "\n";
     }
 }
