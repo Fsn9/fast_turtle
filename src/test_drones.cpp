@@ -21,6 +21,9 @@
 #define FOOD_LIMIT_Y 0.5
 #define PROXIMITY 0.3
 
+// Drone structure parameters
+#define SIMPLE_DRONE_SUPPORTS_THICKNESS 0.01f
+
 // Initialize fast turtle simulator object
 FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 
@@ -28,28 +31,30 @@ FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 visualization_msgs::Marker world_marker;
 visualization_msgs::MarkerArray obstacle_markers;
 visualization_msgs::MarkerArray wall_markers;
-visualization_msgs::MarkerArray robot_markers;
-visualization_msgs::MarkerArray robot_orientation_markers;
+visualization_msgs::MarkerArray tb_burger_markers;
+visualization_msgs::MarkerArray tb_burger_orientation_markers;
 visualization_msgs::MarkerArray simple_drone_markers;
+visualization_msgs::MarkerArray simple_drone_supports_markers;
 visualization_msgs::MarkerArray food_markers;
 
 // Marker Publishers
 ros::Publisher world_marker_publisher;
 ros::Publisher obstacle_markers_publisher;
 ros::Publisher wall_markers_publisher;
-ros::Publisher robot_markers_publisher;
-ros::Publisher robot_orientation_markers_publisher;
+ros::Publisher tb_burger_markers_publisher;
+ros::Publisher tb_burger_orientation_markers_publisher;
 ros::Publisher simple_drone_markers_publisher;
 ros::Publisher food_markers_publisher;
+ros::Publisher simple_drone_supports_markers_publisher;
 
 // Publishers
-ros::Publisher robots_publisher;
+ros::Publisher tb_burgers_publisher;
 ros::Publisher simple_drones_publisher;
 
 // Messages
 sensor_msgs::LaserScan laser_scan_msg;
 
-// Vector of real time command velocities for all robots
+// Vector of real time command velocities for all tb_burgers
 std::vector<cmd_vel_tbb> cmd_vels_tb_burgers{{0,0},{0,0},{0,0},{0,0}};
 std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
 
@@ -79,7 +84,7 @@ void listen_cmd_vel_tbb0(const geometry_msgs::Twist& msg)
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[0].v = msg.linear.x;
         cmd_vels_tb_burgers[0].w = msg.angular.z;
-        std::cout << "[Robot 0 pose]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
+        std::cout << "[Turtlebot Burger 0 pose]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
     }
 }
 
@@ -89,7 +94,7 @@ void listen_cmd_vel_tbb1(const geometry_msgs::Twist& msg)
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[1].v = msg.linear.x;
         cmd_vels_tb_burgers[1].w = msg.angular.z;
-        std::cout << "[Robot 1 pose]: " << ft->get_world()->get_burger(1)->tostring() << "\n";
+        std::cout << "[Turtlebot Burger 1 pose]: " << ft->get_world()->get_burger(1)->tostring() << "\n";
     }
 }
 
@@ -99,7 +104,7 @@ void listen_cmd_vel_tbb2(const geometry_msgs::Twist& msg)
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[2].v = msg.linear.x;
         cmd_vels_tb_burgers[2].w = msg.angular.z;
-        std::cout << "[Robot 2 pose]: " << ft->get_world()->get_burger(2)->tostring() << "\n";
+        std::cout << "[Turtlebot Burger 2 pose]: " << ft->get_world()->get_burger(2)->tostring() << "\n";
     }
 }
 
@@ -109,7 +114,7 @@ void listen_cmd_vel_tbb3(const geometry_msgs::Twist& msg)
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[3].v = msg.linear.x;
         cmd_vels_tb_burgers[3].w = msg.angular.z;
-        std::cout << "[Robot 3 pose]: " << ft->get_world()->get_burger(3)->tostring() << "\n";
+        std::cout << "[Turtlebot Burger 3 pose]: " << ft->get_world()->get_burger(3)->tostring() << "\n";
     }
 }
 
@@ -153,69 +158,70 @@ void init_graphics_and_data(){
     world_marker.color.b = 0.0;
     j+=1;
 
-    // Robots position and orientation
-    visualization_msgs::Marker robot_marker;
+    // Turtlebot Burgerss position and orientation
+    visualization_msgs::Marker tb_burger_marker;
     geometry_msgs::Point arrow_origin, arrow_end;
     geometry_msgs::Quaternion q;
-    visualization_msgs::Marker robot_orientation_marker;
+    visualization_msgs::Marker tb_burger_orientation_marker;
     for(i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        robot_marker.header.frame_id = "world";
-        robot_marker.ns = "simulation_markers";
-        robot_marker.id = j;
-        robot_marker.type = visualization_msgs::Marker::CYLINDER;
-        robot_marker.action = visualization_msgs::Marker::ADD;
-        robot_marker.scale.x = ft->get_world()->get_burger(i)->get_diameter();
-        robot_marker.scale.y = ft->get_world()->get_burger(i)->get_diameter();
-        robot_marker.scale.z = 0.192;
-        robot_marker.color.a = 1.0;
-        robot_marker.color.r = 0.0;
-        robot_marker.color.g = 0.0;
-        robot_marker.color.b = 1.0;
-        robot_marker.pose.position.x = ft->get_world()->get_burger(i)->get_xc();
-        robot_marker.pose.position.y = ft->get_world()->get_burger(i)->get_yc();
-        robot_marker.pose.position.z = robot_marker.scale.z * 0.5;
-        robot_marker.pose.orientation.x = 0.0;
-        robot_marker.pose.orientation.y = 0.0;
-        robot_marker.pose.orientation.z = 0.0;
-        robot_marker.pose.orientation.w = 1.0;
+        tb_burger_marker.header.frame_id = "world";
+        tb_burger_marker.ns = "simulation_markers";
+        tb_burger_marker.id = j;
+        tb_burger_marker.type = visualization_msgs::Marker::CYLINDER;
+        tb_burger_marker.action = visualization_msgs::Marker::ADD;
+        tb_burger_marker.scale.x = ft->get_world()->get_burger(i)->get_diameter();
+        tb_burger_marker.scale.y = ft->get_world()->get_burger(i)->get_diameter();
+        tb_burger_marker.scale.z = 0.192;
+        tb_burger_marker.color.a = 1.0;
+        tb_burger_marker.color.r = 0.0;
+        tb_burger_marker.color.g = 0.0;
+        tb_burger_marker.color.b = 1.0;
+        tb_burger_marker.pose.position.x = ft->get_world()->get_burger(i)->get_xc();
+        tb_burger_marker.pose.position.y = ft->get_world()->get_burger(i)->get_yc();
+        tb_burger_marker.pose.position.z = tb_burger_marker.scale.z * 0.5;
+        tb_burger_marker.pose.orientation.x = 0.0;
+        tb_burger_marker.pose.orientation.y = 0.0;
+        tb_burger_marker.pose.orientation.z = 0.0;
+        tb_burger_marker.pose.orientation.w = 1.0;
 
-        robot_markers.markers.push_back(robot_marker);
+        tb_burger_markers.markers.push_back(tb_burger_marker);
         j+=1;
 
-        robot_orientation_marker.header.frame_id = "robot_" 
+        tb_burger_orientation_marker.header.frame_id = "tb_burger_" 
         + ft->get_world()->get_burger(i)->get_model() + "_" 
         + ft->get_world()->get_burger(i)->get_name();
-        robot_orientation_marker.ns = "simulation_markers";
-        robot_orientation_marker.id = j;
-        robot_orientation_marker.type = visualization_msgs::Marker::ARROW;
-        robot_orientation_marker.action = visualization_msgs::Marker::ADD;
-        robot_orientation_marker.pose.orientation.x = 0.0;
-        robot_orientation_marker.pose.orientation.y = 0.0;
-        robot_orientation_marker.pose.orientation.z = 0.0;
-        robot_orientation_marker.pose.orientation.w = 1.0;
-        robot_orientation_marker.scale.x = 0.02;
-        robot_orientation_marker.scale.y = 0.02;
-        robot_orientation_marker.scale.z = 0.02;
-        robot_orientation_marker.color.a = 1.0;
-        robot_orientation_marker.color.r = 0.0;
-        robot_orientation_marker.color.g = 0.0;
-        robot_orientation_marker.color.b = 0.0;
+        tb_burger_orientation_marker.ns = "simulation_markers";
+        tb_burger_orientation_marker.id = j;
+        tb_burger_orientation_marker.type = visualization_msgs::Marker::ARROW;
+        tb_burger_orientation_marker.action = visualization_msgs::Marker::ADD;
+        tb_burger_orientation_marker.pose.orientation.x = 0.0;
+        tb_burger_orientation_marker.pose.orientation.y = 0.0;
+        tb_burger_orientation_marker.pose.orientation.z = 0.0;
+        tb_burger_orientation_marker.pose.orientation.w = 1.0;
+        tb_burger_orientation_marker.scale.x = 0.02;
+        tb_burger_orientation_marker.scale.y = 0.02;
+        tb_burger_orientation_marker.scale.z = 0.02;
+        tb_burger_orientation_marker.color.a = 1.0;
+        tb_burger_orientation_marker.color.r = 0.0;
+        tb_burger_orientation_marker.color.g = 0.0;
+        tb_burger_orientation_marker.color.b = 0.0;
         arrow_origin.x = 0.0;
         arrow_origin.y = 0.0;
-        arrow_origin.z = robot_marker.scale.z;
+        arrow_origin.z = tb_burger_marker.scale.z;
         arrow_end.x = arrow_origin.x + 0.3;
         arrow_end.y = arrow_origin.y;
         arrow_end.z = arrow_origin.z;
-        robot_orientation_marker.points.clear();    
-        robot_orientation_marker.points.push_back(arrow_origin);
-        robot_orientation_marker.points.push_back(arrow_end);
-        robot_orientation_markers.markers.push_back(robot_orientation_marker);
+        tb_burger_orientation_marker.points.clear();    
+        tb_burger_orientation_marker.points.push_back(arrow_origin);
+        tb_burger_orientation_marker.points.push_back(arrow_end);
+        tb_burger_orientation_markers.markers.push_back(tb_burger_orientation_marker);
         j+=1;   
     }
 
     // Simple drones position
     visualization_msgs::Marker simple_drone_marker;
-    for(i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+    for(i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
         simple_drone_marker.header.frame_id = "world";
         simple_drone_marker.ns = "simulation_markers";
         simple_drone_marker.id = j;
@@ -238,6 +244,39 @@ void init_graphics_and_data(){
         simple_drone_marker.color.b = 0.0;
         simple_drone_markers.markers.push_back(simple_drone_marker);
         j+=1;
+
+        visualization_msgs::Marker sd_wing_marker;
+        visualization_msgs::Marker sd_support_marker;
+        geometry_msgs::Point p;
+        // Four supports for wings
+        for(int sw = 0; sw < 4; sw++)
+        {
+            sd_support_marker.header.frame_id = "simple_drone_" 
+                + ft->get_world()->get_simple_drone(i)->get_model() + "_" 
+                + ft->get_world()->get_simple_drone(i)->get_name();
+            sd_support_marker.ns = "simulation_markers";
+            sd_support_marker.id = j;
+            sd_support_marker.type = visualization_msgs::Marker::LINE_LIST;
+            sd_support_marker.action = visualization_msgs::Marker::ADD;
+            sd_support_marker.scale.x = SIMPLE_DRONE_SUPPORTS_THICKNESS;
+            sd_support_marker.color.a = 1.0;
+            sd_support_marker.color.r = 0.0;
+            sd_support_marker.color.g = 0.0;
+            sd_support_marker.color.b = 0.0;
+            sd_support_marker.pose.orientation.x = 0.0;
+            sd_support_marker.pose.orientation.y = 0.0;
+            sd_support_marker.pose.orientation.z = 0.0;
+            sd_support_marker.pose.orientation.w = 1.0;
+            p.x = 0.0;
+            p.y = 0.0;
+            p.z = ft->get_world()->get_simple_drone(i)->get_height();
+            sd_support_marker.points.push_back(p);
+            p.x = p.x + ft->get_world()->get_simple_drone(i)->get_diameter() * cos(M_PI_4 + sw * M_PI_2);
+            p.y = p.y + ft->get_world()->get_simple_drone(i)->get_diameter() * sin(M_PI_4 + sw * M_PI_2);
+            sd_support_marker.points.push_back(p);
+            simple_drone_supports_markers.markers.push_back(sd_support_marker);
+            j+=1;
+        }   
     }
 
     // Cylinder obstacles
@@ -266,59 +305,6 @@ void init_graphics_and_data(){
         j+=1;
     }
 
-    // Walls
-    visualization_msgs::Marker wall_marker;
-    for(i = 0; i < ft->get_world()->get_wall_obstacles().size(); i++){
-        wall_marker.header.frame_id = "world";
-        wall_marker.ns = "simulation_markers";
-        wall_marker.id = j;
-        wall_marker.type = visualization_msgs::Marker::CUBE;
-        wall_marker.action = visualization_msgs::Marker::ADD;
-        wall_marker.pose.position.x = ft->get_world()->get_wall_obstacle(i)->get_xc();
-        wall_marker.pose.position.y = ft->get_world()->get_wall_obstacle(i)->get_yc();
-        wall_marker.pose.position.z = 1.0;
-        wall_marker.pose.orientation.x = 0.0;
-        wall_marker.pose.orientation.y = 0.0;
-        wall_marker.pose.orientation.z = ft->get_world()->get_wall_obstacle(i)->get_angle();//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
-        wall_marker.pose.orientation.w = 1.0;
-        wall_marker.scale.x = ft->get_world()->get_wall_obstacle(i)->get_length();
-        wall_marker.scale.y = 0.01;//ft->get_world()->get_wall_obstacle(i)->get_length();
-        wall_marker.scale.z = 2.0;//ft->get_world()->get_wall_obstacle(i)->get_length();
-        wall_marker.color.a = 1.0;
-        wall_marker.color.r = 0.7;
-        wall_marker.color.g = 0.7;
-        wall_marker.color.b = 0.7;
-        wall_markers.markers.push_back(wall_marker);
-        j+=1;
-    }
-
-
-    //Food
-    visualization_msgs::Marker food_marker;
-    for(i = 0; i < ft->get_world()->get_food_items().size(); i++){
-        food_marker.header.frame_id = "world";
-        food_marker.ns = "simulation_markers";
-        food_marker.id = j;
-        food_marker.type = visualization_msgs::Marker::CYLINDER;
-        food_marker.action = visualization_msgs::Marker::ADD;
-        food_marker.pose.position.x = ft->get_world()->get_food_item(i)->get_xc();
-        food_marker.pose.position.y = ft->get_world()->get_food_item(i)->get_yc();
-        food_marker.pose.position.z = 1;
-        food_marker.pose.orientation.x = 0.0;
-        food_marker.pose.orientation.y = 0.0;
-        food_marker.pose.orientation.z = 0.0;
-        food_marker.pose.orientation.w = 1.0;
-        food_marker.scale.x = ft->get_world()->get_food_item(i)->get_diameter();
-        food_marker.scale.y = ft->get_world()->get_food_item(i)->get_diameter();
-        food_marker.scale.z = 0.3;
-        food_marker.color.a = 1.0;
-        food_marker.color.r = 1.0;
-        food_marker.color.g = 0.75;
-        food_marker.color.b = 0.79;
-        food_markers.markers.push_back(food_marker);
-        j+=1;
-    }
-
     laser_scan_msg.angle_min = 0;
     laser_scan_msg.angle_max = M_PI * 2;
     laser_scan_msg.angle_increment = 2.0 * M_PI / 360;
@@ -328,20 +314,21 @@ void init_graphics_and_data(){
     laser_scan_msg.scan_time = 0;
 
     world_marker_publisher.publish(world_marker);
-    robot_markers_publisher.publish(robot_markers);
-    robot_orientation_markers_publisher.publish(robot_orientation_markers);
+    tb_burger_markers_publisher.publish(tb_burger_markers);
+    tb_burger_orientation_markers_publisher.publish(tb_burger_orientation_markers);
     obstacle_markers_publisher.publish(obstacle_markers);
     food_markers_publisher.publish(food_markers);
+    simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
 }
 
 void repaint(){
     // World marker
     world_marker_publisher.publish(world_marker);
 
-    // Robot position markers
+    // Turtlebot Burgers position markers
     for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        robot_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
-        robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
+        tb_burger_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
+        tb_burger_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
     }
 
     // Simple drone position markers
@@ -350,63 +337,26 @@ void repaint(){
         simple_drone_markers.markers[i].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
     }
 
-    // Food markers
-    for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
-        for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
-            if(abs(food_markers.markers[i].pose.position.x) < PROXIMITY && abs(food_markers.markers[i].pose.position.y) < PROXIMITY){
-                break;
-            }
-            // Caught food
-            if(ft->get_world()->get_food_item(i)->visible && 
-                abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < PROXIMITY && 
-                abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < PROXIMITY && 
-                abs(robot_markers.markers[j].pose.position.x) >= FOOD_LIMIT_X &&
-                abs(robot_markers.markers[j].pose.position.y) >= FOOD_LIMIT_Y){
-                ft->get_world()->get_food_item(i)->visible = false;
-                ft->get_world()->get_food_item(i)->robot = j;
-                robot_markers.markers[j].color.r = 1.0;
-                robot_markers.markers[j].color.g = 0.75;
-                robot_markers.markers[j].color.b = 0.79;
-                food_markers.markers[i].color.a = 0;
+    // Turtlebot Burgers position markers
+    tb_burger_markers_publisher.publish(tb_burger_markers);
 
-                break;
-            }
-            // Arrived at base, drops food
-            else if(ft->get_world()->get_food_item(i)->visible == false && 
-            ft->get_world()->get_food_item(i)->robot == j && abs(robot_markers.markers[j].pose.position.x) < FOOD_LIMIT_X &&
-            abs(robot_markers.markers[j].pose.position.y) < FOOD_LIMIT_Y){
-                food_markers.markers[i].color.a = 1;
-                food_markers.markers[i].pose.position.x = robot_markers.markers[j].pose.position.x;
-                food_markers.markers[i].pose.position.y = robot_markers.markers[j].pose.position.y;
-                ft->get_world()->get_food_item(i)->visible = true;
-                ft->get_world()->get_food_item(i)->robot = -1;
-                robot_markers.markers[j].color.r = 0.0;
-                robot_markers.markers[j].color.g = 0.0;
-                robot_markers.markers[j].color.b = 1.0;
-                break;
-            }
-        }
-    }
-    // Robot position markers
-    robot_markers_publisher.publish(robot_markers);
-
-    // Robot orientation markers
-    robot_orientation_markers_publisher.publish(robot_orientation_markers);
+    // Turtlebot Burgers orientation markers
+    tb_burger_orientation_markers_publisher.publish(tb_burger_orientation_markers);
 
     // Simple drone markers
     simple_drone_markers_publisher.publish(simple_drone_markers);
 
+    // Simple drone wings markers
+    simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
+
     // Obstacles
     obstacle_markers_publisher.publish(obstacle_markers);
-
-    // Food Markers
-    food_markers_publisher.publish(food_markers);
 }
 
 void publish_data(){
     tf::Transform transform;
     tf::Quaternion q;
-    static tf::TransformBroadcaster tf_br_robot;
+    static tf::TransformBroadcaster tf_br_tb_burger;
     static tf::TransformBroadcaster tf_br_simple_drone;
     static tf::TransformBroadcaster tf_br_map;
 
@@ -416,38 +366,38 @@ void publish_data(){
     transform.setRotation(q);
     tf_br_map.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", "world"));
 
-    // Robots
-    fast_turtle::RobotDataArray robots_msg;
-    fast_turtle::RobotData robot_msg;
+    // Turtlebots
+    fast_turtle::RobotDataArray tb_burgers_msg;
+    fast_turtle::RobotData tb_burger_msg;
     fast_turtle::RobotDataArray simple_drones_msg;
     fast_turtle::RobotData simple_drone_msg;
     for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        // Send tf for robot i
+        // Send tf for tb_burger i
         transform.setOrigin(tf::Vector3(ft->get_world()->get_burger(i)->x(), ft->get_world()->get_burger(i)->y(), 0.0));
         q.setRPY(0, 0, ft->get_world()->get_burger(i)->get_theta());
         transform.setRotation(q);
-        tf_br_robot.sendTransform(tf::StampedTransform(transform
+        tf_br_tb_burger.sendTransform(tf::StampedTransform(transform
         , ros::Time::now()
         , "world"
-        , "robot_"
+        , "tb_burger_"
             + ft->get_world()->get_burger(i)->get_model() + "_"
             + ft->get_world()->get_burger(i)->get_name()
         ));
-        // Send robot data message to topic "robots"
-        robots_msg.header.stamp = ros::Time::now();
-        robot_msg.pose.position.x = ft->get_world()->get_burger(i)->x();
-        robot_msg.pose.position.y = ft->get_world()->get_burger(i)->y();
-        robot_msg.header.stamp = robots_msg.header.stamp;
-        robot_msg.name = ft->get_world()->get_burger(i)->get_name();
-        robot_msg.model = ft->get_world()->get_burger(i)->get_model();
-        robot_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(i)->get_theta());
-        robot_msg.scan.header.frame_id =  "robot_"
+        // Send tb_burger data message to topic "turtlebot_burgers"
+        tb_burgers_msg.header.stamp = ros::Time::now();
+        tb_burger_msg.pose.position.x = ft->get_world()->get_burger(i)->x();
+        tb_burger_msg.pose.position.y = ft->get_world()->get_burger(i)->y();
+        tb_burger_msg.header.stamp = tb_burgers_msg.header.stamp;
+        tb_burger_msg.name = ft->get_world()->get_burger(i)->get_name();
+        tb_burger_msg.model = ft->get_world()->get_burger(i)->get_model();
+        tb_burger_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(i)->get_theta());
+        tb_burger_msg.scan.header.frame_id =  "tb_burger_"
             + ft->get_world()->get_burger(i)->get_model() + "_"
             + ft->get_world()->get_burger(i)->get_name();
-        robot_msg.scan.ranges = ft->get_world()->get_burger(i)->get_lidar()->get_lasers();
-        robots_msg.robots.push_back(robot_msg);
+        tb_burger_msg.scan.ranges = ft->get_world()->get_burger(i)->get_lidar()->get_lasers();
+        tb_burgers_msg.robots.push_back(tb_burger_msg);
     }
-    robots_publisher.publish(robots_msg);
+    tb_burgers_publisher.publish(tb_burgers_msg);
 
     // Drones
     for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
@@ -488,14 +438,15 @@ int main(int argc, char** argv)
     // Node object
     ros::NodeHandle nh;
 
-    // Initialize markers
+    // Marker publishers
     world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker", 0);
-    robot_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("robot_markers",0);
-    robot_orientation_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("robot_orientation_markers",0);
+    tb_burger_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("tb_burger_markers",0);
+    tb_burger_orientation_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("tb_burger_orientation_markers",0);
     food_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("food_markers",0);
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
     wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
     simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers",0);
+    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers",0);
 
     // Subscribers for all robots
     ros::Subscriber sub_tbb0 = nh.subscribe("cmd_vel_tbb0", 1000, listen_cmd_vel_tbb0);
@@ -504,17 +455,15 @@ int main(int argc, char** argv)
     ros::Subscriber sub_tbb3 = nh.subscribe("cmd_vel_tbb3", 1000, listen_cmd_vel_tbb3);
     ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0", 1000, listen_cmd_vel_sd0);
 
-    // Publishers
-    robots_publisher = nh.advertise<fast_turtle::RobotDataArray>("robots", 1000);
+    // Data publishers
+    tb_burgers_publisher = nh.advertise<fast_turtle::RobotDataArray>("turtlebot_burgers", 1000);
     simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
-
-    // Initialize simulator object
-    float obstacle_radius = 0.15;
 
     // Initialize world
     ft->init_world(8, 0, 0, "square");
 
     // Initialize obstacles/objects
+    float obstacle_radius = 0.15;
     ft->add_obstacle(0, -2, obstacle_radius, "round");
     ft->add_obstacle(0, 2, obstacle_radius, "round");
     ft->add_obstacle(-1, -1, obstacle_radius, "round");
