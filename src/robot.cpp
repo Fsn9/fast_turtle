@@ -10,6 +10,7 @@ TurtlebotBurger::TurtlebotBurger(float x, float y, float theta, float radius, st
     this->model = "burger";
     this->last_v = 0.0;
     this->last_w = 0.0;
+    this->visible = true;
 
     // Lidar
     float frequency;
@@ -30,6 +31,14 @@ float TurtlebotBurger::get_theta(){
 
 float TurtlebotBurger::get_controller_period(){
     return this->controller_period;
+}
+
+bool TurtlebotBurger::check_visibility(){
+    return this->visible;
+}
+
+void TurtlebotBurger::set_visibility(bool value){
+    this->visible = value;
 }
 
 std::string TurtlebotBurger::tostring(){

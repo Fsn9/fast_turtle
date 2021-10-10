@@ -15,7 +15,7 @@
 #define MIN_DISTANCE 0.12f
 #define MAX_DISTANCE 3.5f
 #define BURGER_RADIUS 0.09f
-#define FOOD_RADIUS 0.05f
+#define FOOD_RADIUS 0.1f
 #define TIME_STEP 0.05f
 #define DEFAULT_CONTROLLER_PERIOD 0.1f
 
@@ -45,6 +45,7 @@ class TurtlebotBurger : public Circle{
         std::string name;
         double last_v;
         double last_w;
+        bool visible;
     public:
         TurtlebotBurger(float x, float y, float theta, float radius, std::string name, float controller_period);
         std::string tostring();
@@ -53,6 +54,8 @@ class TurtlebotBurger : public Circle{
         float y();
         float get_theta();
         float get_controller_period();
+        bool check_visibility();
+        void set_visibility(bool value);    
         double get_last_v();
         double get_last_w();
         void set_new_v_w(double v, double w);

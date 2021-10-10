@@ -60,7 +60,11 @@ void move_robot(int idx)
 // Updates logic of the simulator
 void update_physics()
 {
-    for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++) move_robot(idx);
+    for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++){
+        if(ft->get_world()->get_burger(idx)->check_visibility()){
+            move_robot(idx);
+        }
+    } 
 }
 
 void listen_cmd_vel(const geometry_msgs::Twist& msg)
@@ -102,8 +106,6 @@ void listen_cmd_vel3(const geometry_msgs::Twist& msg)
         std::cout << "[Robot 3 pose]: " << ft->get_world()->get_burger(3)->tostring() << "\n";
     }
 }
-
-
 
 void init_graphics_and_data(){
     // Counter markers
@@ -226,14 +228,14 @@ void init_graphics_and_data(){
         wall_marker.id = j;
         wall_marker.type = visualization_msgs::Marker::CUBE;
         wall_marker.action = visualization_msgs::Marker::ADD;
-        wall_marker.pose.position.x = ft->get_world()->get_wall_obstacle(i)->get_xc();
-        wall_marker.pose.position.y = ft->get_world()->get_wall_obstacle(i)->get_yc();
+        wall_marker.pose.position.x = std::get<0>(ft->get_world()->get_wall_obstacle(i)->get_midpoint());
+        wall_marker.pose.position.y = std::get<1>(ft->get_world()->get_wall_obstacle(i)->get_midpoint());
         wall_marker.pose.position.z = 1.0;
         wall_marker.pose.orientation.x = 0.0;
         wall_marker.pose.orientation.y = 0.0;
-        wall_marker.pose.orientation.z = ft->get_world()->get_wall_obstacle(i)->get_angle();//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
+        wall_marker.pose.orientation.z = ft->get_world()->get_wall_obstacle(i)->is_vertical() ? 1.0 : 0.0;//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
         wall_marker.pose.orientation.w = 1.0;
-        wall_marker.scale.x = ft->get_world()->get_wall_obstacle(i)->get_length();
+        wall_marker.scale.x = 1.0;
         wall_marker.scale.y = 0.01;//ft->get_world()->get_wall_obstacle(i)->get_length();
         wall_marker.scale.z = 2.0;//ft->get_world()->get_wall_obstacle(i)->get_length();
         wall_marker.color.a = 1.0;
@@ -297,19 +299,30 @@ void repaint(){
         //robot_markers.markers[i].pose.position.z = 1;
     }
     
+    //check for collisions and if they collided, make them disapear 
+    ft->check_collisions();
+    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
+        if(!ft->get_world()->get_burger(i)->check_visibility()){
+            robot_markers.markers[i].color.a = 0;
+            robot_orientation_markers.markers[i].color.a = 0;
+        }
+    }
+    
     
     // Food markers
     for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
         for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
+            
             if(abs(food_markers.markers[i].pose.position.x) < PROXIMITY && abs(food_markers.markers[i].pose.position.y) < PROXIMITY){
                 break;
             }
-            // Caught food
-            if(ft->get_world()->get_food_item(i)->visible && 
+            // Caught food  //only eats food if it's visible and is not holding another food
+            if(ft->get_world()->get_food_item(i)->visible && ft->get_world()->get_burger(j)->check_visibility() &&
                 abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < PROXIMITY && 
                 abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < PROXIMITY && 
                 abs(robot_markers.markers[j].pose.position.x) >= FOOD_LIMIT_X &&
-                abs(robot_markers.markers[j].pose.position.y) >= FOOD_LIMIT_Y){
+                abs(robot_markers.markers[j].pose.position.y) >= FOOD_LIMIT_Y &&
+                robot_markers.markers[j].color.r == 0.0){
                 ft->get_world()->get_food_item(i)->visible = false;
                 ft->get_world()->get_food_item(i)->robot = j;
                 robot_markers.markers[j].color.r = 1.0;
@@ -333,6 +346,15 @@ void repaint(){
                 robot_markers.markers[j].color.b = 1.0;
                 break;
             }
+
+            //object collided while holding food
+            else if(!ft->get_world()->get_burger(j)->check_visibility() && ft->get_world()->get_food_item(i)->robot == j){
+                food_markers.markers[i].color.a = 1;
+                ft->get_world()->get_food_item(i)->visible = true;
+                ft->get_world()->get_food_item(i)->robot = -1;
+                break;
+            }
+
         }
     }
     
@@ -435,6 +457,7 @@ int main(int argc, char** argv)
     //std::cout << "obstaculos " << ft->get_world()->get_round_obstacles().size() << "\n"; 
     ft->add_food_item(-1, 2, FOOD_RADIUS);
     ft->add_food_item(1, 2, FOOD_RADIUS);
+    ft->add_obstacle(1, 3, obstacle_radius, "round");
 
     // Send first world data and graphics data
     publish_data();

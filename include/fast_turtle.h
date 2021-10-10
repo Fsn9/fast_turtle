@@ -11,8 +11,9 @@
 #define MAX_LIN_VELOCITY_TB_BURGER 0.22f
 #define MAX_ANG_VELOCITY_TB_BURGER 2.84f
 #define MAX_LIN_VELOCITY_SIMPLE_DRONE 0.22f
+#define MAX_LIN_VELOCITY 0.5f
+#define MAX_ANG_VELOCITY 2.84f
 
-// Command velocity
 typedef struct cmd_vel_tbb{
     double v;
     double w;
@@ -40,8 +41,8 @@ class FastTurtle{
         void add_simple_drone(float x, float y, float height, float radius, std::string name, float controller_period = DEFAULT_CONTROLLER_PERIOD);
         void add_obstacle(float x, float y, float radius, std::string type_, bool dynamics) = delete;
         void add_obstacle(float x, float y, float radius, std::string type_);
-        void add_wall(float length, float x, float y, float angle, std::string type_, bool dynamics) = delete;
-        void add_wall(float length, float x, float y, float angle, std::string type_);
+        void add_wall(float x1, float y1, float x2, float y2, bool dynamics) = delete;
+        void add_wall(float x1, float y1, float x2, float y2);
         void add_food_item(float x, float y, float radius, bool dynamics) = delete;
         void add_food_item(float x, float y, float radius);
         World* get_world();  
@@ -51,6 +52,7 @@ class FastTurtle{
         void act_simple_drone(float vx, float vy, int idx_robot);
         Observation observe(int idx_robot);
         void sleep() = delete;
+        void check_collisions();
 };
 
 class Observation{

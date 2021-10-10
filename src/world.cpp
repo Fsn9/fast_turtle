@@ -22,12 +22,8 @@ void World::add_obstacle(float x, float y, float radius, std::string type_){
 	return;
 }
 
-void World::add_wall(float length, float x, float y, float angle, std::string type_){
-	if (type_.compare("round") == 0) {}
-	else if (type_.compare("squared") == 0) this->wall_obstacles.push_back(WallObstacle(length, x, y, angle));
-	else{
-		std::cout << "Not valid type";
-	}
+void World::add_wall(float x1, float y1, float x2, float y2){
+	this->wall_obstacles.push_back(WallObstacle(x1, y1, x2, y2));
 	return;
 }
 
