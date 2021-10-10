@@ -10,6 +10,7 @@ TurtlebotBurger::TurtlebotBurger(float x, float y, float theta, float radius, st
     this->model = "burger";
     this->last_v = 0.0;
     this->last_w = 0.0;
+    this->visibility = true;
 
     // Lidar
     float frequency;
