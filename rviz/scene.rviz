@@ -59,6 +59,14 @@ Visualization Manager:
         simulator_markers: true
       Queue Size: 100
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /stats_marker
+      Name: Stats
+      Namespaces:
+        simulator_markers: true
+      Queue Size: 100
+      Value: true
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /obstacle_markers

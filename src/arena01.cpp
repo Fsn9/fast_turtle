@@ -42,6 +42,11 @@ ros::Publisher robot_markers_publisher;
 ros::Publisher robot_orientation_markers_publisher;
 ros::Publisher food_markers_publisher; 
 
+//APAGAR
+visualization_msgs::Marker stats_marker;
+ros::Publisher stats_marker_publisher;
+//--------
+
 // Publishers
 ros::Publisher robots_publisher;
 
@@ -318,6 +323,25 @@ void init_graphics_and_data(){
             j+=1;
         }
 
+    //APAGAR
+    stats_marker.header.frame_id = "map";
+    stats_marker.ns = "simulator_markers";
+    stats_marker.id = j;
+    stats_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+    stats_marker.action = visualization_msgs::Marker::ADD;
+    stats_marker.pose.position.x = 1.0;
+    stats_marker.pose.position.y = 1.0;
+    stats_marker.pose.position.z = 1.0;
+    stats_marker.scale.z = 10.0;
+    stats_marker.color.a = 1.0; 
+    stats_marker.color.r = 1.0;
+    stats_marker.color.g = 1.0;
+    stats_marker.color.b = 1.0;
+    stats_marker.text = "ola senhor";
+
+    
+    //---------    
+
     laser_scan_msg.angle_min = 0;
     laser_scan_msg.angle_max = M_PI * 2;
     laser_scan_msg.angle_increment = 2.0 * M_PI / 360;
@@ -326,6 +350,7 @@ void init_graphics_and_data(){
     laser_scan_msg.time_increment = 0;
     laser_scan_msg.scan_time = 0;
 
+
     //only if using a MESH_RESOURCE world_marker type:
     //world_marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
     world_marker_publisher.publish(world_marker);
@@ -333,6 +358,8 @@ void init_graphics_and_data(){
     robot_orientation_markers_publisher.publish(robot_orientation_markers);
     obstacle_markers_publisher.publish(obstacle_markers);
     wall_markers_publisher.publish(wall_markers);
+    stats_marker_publisher.publish(stats_marker);
+
 }
 bool inside_base(double x, double y){
     if(x > FOOD_LIMIT_X_inf && x < FOOD_LIMIT_X_sup && y > FOOD_LIMIT_Y_inf && y < FOOD_LIMIT_Y_sup) return true;
@@ -420,6 +447,10 @@ void repaint(){
 
     // Food Markers
     food_markers_publisher.publish(food_markers);
+
+    //APAGAR 
+    stats_marker_publisher.publish(stats_marker);
+    //-------
 }
 
 void publish_data(){
@@ -483,6 +514,9 @@ int main(int argc, char** argv)
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
     wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
 
+    //APAGAR
+    stats_marker_publisher = nh.advertise<visualization_msgs::Marker>("stats_marker", 0);
+     //-----
 
     // Subscribers for all robots
     ros::Subscriber sub0 = nh.subscribe("cmd_vel", 1000, listen_cmd_vel);
