@@ -23,6 +23,9 @@
 #define FOOD_LIMIT_Y_inf -10
 #define PROXIMITY 0.3
 
+// Drone structure parameters
+#define SIMPLE_DRONE_SUPPORTS_THICKNESS 0.01f
+
 // Initialize fast turtle simulator object
 FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 
@@ -30,87 +33,77 @@ FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 visualization_msgs::Marker world_marker;
 visualization_msgs::MarkerArray obstacle_markers;
 visualization_msgs::MarkerArray wall_markers;
-visualization_msgs::MarkerArray robot_markers;
-visualization_msgs::MarkerArray robot_orientation_markers;
+visualization_msgs::MarkerArray simple_drone_markers;
+visualization_msgs::MarkerArray simple_drone_supports_markers;
 visualization_msgs::MarkerArray food_markers;
 
 // Marker Publishers
 ros::Publisher world_marker_publisher;
 ros::Publisher obstacle_markers_publisher;
 ros::Publisher wall_markers_publisher;
-ros::Publisher robot_markers_publisher;
-ros::Publisher robot_orientation_markers_publisher;
+ros::Publisher simple_drone_markers_publisher;
 ros::Publisher food_markers_publisher; 
+ros::Publisher simple_drone_supports_markers_publisher;
 
-//APAGAR
+
 visualization_msgs::Marker stats_marker;
 ros::Publisher stats_marker_publisher;
-//--------
 
 // Publishers
-ros::Publisher robots_publisher;
+ros::Publisher simple_drones_publisher;
 
 // Messages
 sensor_msgs::LaserScan laser_scan_msg;
 
 // Vector of real time command velocities for all robots
-std::vector<cmd_vel_tbb> cmd_vels_tb_burgers{{0,0},{0,0},{0,0},{0,0}};
+std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
 
 // Move robot 'idx'
-void move_robot(int idx)
+void move_simple_drones(int idx)
 {
-    if (cmd_vels_tb_burgers[idx].v > MAX_LIN_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].v = MAX_LIN_VELOCITY_TB_BURGER;
-    if (cmd_vels_tb_burgers[idx].w > MAX_ANG_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].w = MAX_ANG_VELOCITY_TB_BURGER;
-    ft->act_turtlebot_burger(cmd_vels_tb_burgers[idx].v, cmd_vels_tb_burgers[idx].w, idx);
+    if (cmd_vels_simple_drones[idx].vx > MAX_LIN_VELOCITY_SIMPLE_DRONE) cmd_vels_simple_drones[idx].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+    if (cmd_vels_simple_drones[idx].vy > MAX_LIN_VELOCITY_SIMPLE_DRONE) cmd_vels_simple_drones[idx].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+    ft->act_simple_drone(cmd_vels_simple_drones[idx].vx, cmd_vels_simple_drones[idx].vy, idx);
 }
 
 // Updates logic of the simulator
 void update_physics()
-{
-    for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++){
-        if(ft->get_world()->get_burger(idx)->check_visibility()){
-            move_robot(idx);
-        }
+{    
+    //if(ft->get_world()->get_burger(idx)->is_visible()){
+    for(int idx = 0; idx < ft->get_world()->get_n_simple_drones(); idx++){
+        if(ft->get_world()->get_simple_drone(idx)->is_visible()) move_simple_drones(idx);
     } 
+        
 }
 
-void listen_cmd_vel(const geometry_msgs::Twist& msg)
+
+void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_burgers() > 0){
-       // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels_tb_burgers[0].v = msg.linear.x;
-        cmd_vels_tb_burgers[0].w = msg.angular.z;
-       // std::cout << "[Robot 0 pose]: " << ft->get_world()->get_burger(0)->tostring() << "\n";
+    if (ft->get_world()->get_n_simple_drones() > 0){
+        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        cmd_vels_simple_drones[0].vx = msg.linear.x;
+        cmd_vels_simple_drones[0].vy = msg.linear.y;
+        std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(0)->tostring() << "\n";
     }
 }
 
-void listen_cmd_vel1(const geometry_msgs::Twist& msg)
+void listen_cmd_vel_sd1(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_burgers() > 1){
-       // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels_tb_burgers[1].v = msg.linear.x;
-        cmd_vels_tb_burgers[1].w = msg.angular.z;
-      //  std::cout << "[Robot 1 pose]: " << ft->get_world()->get_burger(1)->tostring() << "\n";
+    if (ft->get_world()->get_n_simple_drones() > 0){
+        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        cmd_vels_simple_drones[1].vx = msg.linear.x;
+        cmd_vels_simple_drones[1].vy = msg.linear.y;
+        std::cout << "[Simple Drone 1 pose]: " << ft->get_world()->get_simple_drone(1)->tostring() << "\n";
     }
 }
 
-void listen_cmd_vel2(const geometry_msgs::Twist& msg)
+void listen_cmd_vel_sd2(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_burgers() > 2){
-       // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels_tb_burgers[2].v = msg.linear.x;
-        cmd_vels_tb_burgers[2].w = msg.angular.z;
-      //  std::cout << "[Robot 2 pose]: " << ft->get_world()->get_burger(2)->tostring() << "\n";
-    }
-}
-
-void listen_cmd_vel3(const geometry_msgs::Twist& msg)
-{
-    if (ft->get_world()->get_n_burgers() > 3){
-       // ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
-        cmd_vels_tb_burgers[3].v = msg.linear.x;
-        cmd_vels_tb_burgers[3].w = msg.angular.z;
-       // std::cout << "[Robot 3 pose]: " << ft->get_world()->get_burger(3)->tostring() << "\n";
+    if (ft->get_world()->get_n_simple_drones() > 0){
+        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        cmd_vels_simple_drones[2].vx = msg.linear.x;
+        cmd_vels_simple_drones[2].vy = msg.linear.y;
+        std::cout << "[Simple Drone 2 pose]: " << ft->get_world()->get_simple_drone(2)->tostring() << "\n";
     }
 }
 
@@ -142,64 +135,65 @@ void init_graphics_and_data(){
     world_marker.color.b = 0.0;
     j+=1;
 
-    // Robots position and orientatio 
-    visualization_msgs::Marker robot_marker;
-    geometry_msgs::Point arrow_origin, arrow_end;
-    geometry_msgs::Quaternion q;
-    visualization_msgs::Marker robot_orientation_marker;
-    for(i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        // Robot - cilindros que sao os turtlebots
-        robot_marker.header.frame_id = "world";
-        robot_marker.ns = "simulation_markers";
-        robot_marker.id = j;
-        robot_marker.type = visualization_msgs::Marker::CYLINDER;
-        robot_marker.action = visualization_msgs::Marker::ADD;
-        robot_marker.pose.position.x = ft->get_world()->get_burger(i)->get_xc();
-        robot_marker.pose.position.y = ft->get_world()->get_burger(i)->get_yc();
-        robot_marker.pose.position.z = 1;//0.192 * 0.5;
-        robot_marker.pose.orientation.x = 0.0;
-        robot_marker.pose.orientation.y = 0.0;
-        robot_marker.pose.orientation.z = 0.0;
-        robot_marker.pose.orientation.w = 1.0;
-        robot_marker.scale.x = ft->get_world()->get_burger(i)->get_diameter();
-        robot_marker.scale.y = ft->get_world()->get_burger(i)->get_diameter();
-        robot_marker.scale.z = 0.192;
-        robot_marker.color.a = 1.0;
-        robot_marker.color.r = 0.0;
-        robot_marker.color.g = 0.0;
-        robot_marker.color.b = 1.0;
-        robot_markers.markers.push_back(robot_marker);
+    // Simple drones position
+    visualization_msgs::Marker simple_drone_marker;
+    for(i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
+        simple_drone_marker.header.frame_id = "world";
+        simple_drone_marker.ns = "simulation_markers";
+        simple_drone_marker.id = j;
+        simple_drone_marker.type = visualization_msgs::Marker::CYLINDER;
+        simple_drone_marker.action = visualization_msgs::Marker::ADD;
+        simple_drone_marker.scale.x = ft->get_world()->get_simple_drone(i)->get_diameter();
+        simple_drone_marker.scale.y = ft->get_world()->get_simple_drone(i)->get_diameter();
+        simple_drone_marker.scale.z = 0.05;
+        simple_drone_marker.pose.position.x = ft->get_world()->get_simple_drone(i)->get_xc();
+        simple_drone_marker.pose.position.y = ft->get_world()->get_simple_drone(i)->get_yc();
+        simple_drone_marker.pose.position.z = ft->get_world()->get_simple_drone(i)->get_height() + simple_drone_marker.scale.z * 0.5;
+        simple_drone_marker.pose.orientation.x = 0.0;
+        simple_drone_marker.pose.orientation.y = 0.0;
+        simple_drone_marker.pose.orientation.z = 0.0;
+        simple_drone_marker.pose.orientation.w = 1.0;
+
+        simple_drone_marker.color.a = 1.0;
+        simple_drone_marker.color.r = 0.0;
+        simple_drone_marker.color.g = 0.0;
+        simple_drone_marker.color.b = 0.0;
+        simple_drone_markers.markers.push_back(simple_drone_marker);
         j+=1;
-        // Robot orientation - setinha em cima do robot
-        robot_orientation_marker.header.frame_id = "robot_" 
-        + ft->get_world()->get_burger(i)->get_model() + "_" 
-        + ft->get_world()->get_burger(i)->get_name();
-        robot_orientation_marker.ns = "simulation_markers";
-        robot_orientation_marker.id = j;
-        robot_orientation_marker.type = visualization_msgs::Marker::ARROW;
-        robot_orientation_marker.action = visualization_msgs::Marker::ADD;
-        robot_orientation_marker.pose.orientation.x = 0.0;
-        robot_orientation_marker.pose.orientation.y = 0.0;
-        robot_orientation_marker.pose.orientation.z = 0.0;
-        robot_orientation_marker.pose.orientation.w = 1.0;
-        robot_orientation_marker.scale.x = 0.02;
-        robot_orientation_marker.scale.y = 0.02;
-        robot_orientation_marker.scale.z = 0.02;
-        robot_orientation_marker.color.a = 1.0;
-        robot_orientation_marker.color.r = 0.0;
-        robot_orientation_marker.color.g = 1.0;
-        robot_orientation_marker.color.b = 0.0;
-        arrow_origin.x = 0.0;
-        arrow_origin.y = 0.0;
-        arrow_origin.z = robot_marker.scale.z;
-        arrow_end.x = arrow_origin.x + 0.3;
-        arrow_end.y = arrow_origin.y;
-        arrow_end.z = arrow_origin.z;
-        robot_orientation_marker.points.clear();    
-        robot_orientation_marker.points.push_back(arrow_origin);
-        robot_orientation_marker.points.push_back(arrow_end);
-        robot_orientation_markers.markers.push_back(robot_orientation_marker);
-        j+=1;   
+
+        visualization_msgs::Marker sd_wing_marker;
+        visualization_msgs::Marker sd_support_marker;
+        geometry_msgs::Point p;
+        // Four supports for wings
+        for(int sw = 0; sw < 4; sw++)
+        {
+            sd_support_marker.header.frame_id = "simple_drone_" 
+                + ft->get_world()->get_simple_drone(i)->get_model() + "_" 
+                + ft->get_world()->get_simple_drone(i)->get_name();
+            sd_support_marker.ns = "simulation_markers";
+            sd_support_marker.id = j;
+            sd_support_marker.type = visualization_msgs::Marker::LINE_LIST;
+            sd_support_marker.action = visualization_msgs::Marker::ADD;
+            sd_support_marker.scale.x = SIMPLE_DRONE_SUPPORTS_THICKNESS;
+            sd_support_marker.color.a = 1.0;
+            sd_support_marker.color.r = 0.0;
+            sd_support_marker.color.g = 0.0;
+            sd_support_marker.color.b = 0.0;
+            sd_support_marker.pose.orientation.x = 0.0;
+            sd_support_marker.pose.orientation.y = 0.0;
+            sd_support_marker.pose.orientation.z = 0.0;
+            sd_support_marker.pose.orientation.w = 1.0;
+            p.x = 0.0;
+            p.y = 0.0;
+            p.z = ft->get_world()->get_simple_drone(i)->get_height();
+            sd_support_marker.points.push_back(p);
+            p.x = p.x + ft->get_world()->get_simple_drone(i)->get_diameter() * cos(M_PI_4 + sw * M_PI_2);
+            p.y = p.y + ft->get_world()->get_simple_drone(i)->get_diameter() * sin(M_PI_4 + sw * M_PI_2);
+            sd_support_marker.points.push_back(p);
+            simple_drone_supports_markers.markers.push_back(sd_support_marker);
+            j+=1;
+        }   
     }
 
     // Obstacles - cilindros obstaculos
@@ -323,24 +317,20 @@ void init_graphics_and_data(){
             j+=1;
         }
 
-    //APAGAR
-    stats_marker.header.frame_id = "map";
+    stats_marker.header.frame_id = "world";
     stats_marker.ns = "simulator_markers";
     stats_marker.id = j;
     stats_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
     stats_marker.action = visualization_msgs::Marker::ADD;
-    stats_marker.pose.position.x = 1.0;
-    stats_marker.pose.position.y = 1.0;
+    stats_marker.pose.position.x = -8.0;
+    stats_marker.pose.position.y = -8.0;
     stats_marker.pose.position.z = 1.0;
-    stats_marker.scale.z = 10.0;
+    stats_marker.scale.z = 0.3;
     stats_marker.color.a = 1.0; 
     stats_marker.color.r = 1.0;
     stats_marker.color.g = 1.0;
     stats_marker.color.b = 1.0;
-    stats_marker.text = "ola senhor";
-
-    
-    //---------    
+    stats_marker.text = "Stats: \n Number of food_items eaten: 20\n Number of food items left: 10\n Time left: 20:00s";
 
     laser_scan_msg.angle_min = 0;
     laser_scan_msg.angle_max = M_PI * 2;
@@ -354,10 +344,9 @@ void init_graphics_and_data(){
     //only if using a MESH_RESOURCE world_marker type:
     //world_marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
     world_marker_publisher.publish(world_marker);
-    robot_markers_publisher.publish(robot_markers);
-    robot_orientation_markers_publisher.publish(robot_orientation_markers);
     obstacle_markers_publisher.publish(obstacle_markers);
     wall_markers_publisher.publish(wall_markers);
+    simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
     stats_marker_publisher.publish(stats_marker);
 
 }
@@ -370,40 +359,39 @@ void repaint(){
     // World marker
     world_marker_publisher.publish(world_marker);
     
-    // Robot position markers
-    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        robot_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
-        robot_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
-        //robot_markers.markers[i].pose.position.z = 1;
+    // Simple drone position markers
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+        simple_drone_markers.markers[i].pose.position.x = ft->get_world()->get_simple_drone(i)->x();
+        simple_drone_markers.markers[i].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
     }
 
     //check for collisions and if they collided, make them disapear 
     ft->check_collisions();
-    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        if(!ft->get_world()->get_burger(i)->check_visibility()){
-            robot_markers.markers[i].color.a = 0;
-            robot_orientation_markers.markers[i].color.a = 0;
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+        if(!ft->get_world()->get_burger(i)->is_visible()){
+            simple_drone_markers.markers[i].color.a = 0;
+            simple_drone_supports_markers.markers[i].color.a = 0;
         }
     }
      
     // Food markers
     for(int i = 0; i < ft->get_world()->get_food_items().size(); i++){
-        for(int j = 0; j < ft->get_world()->get_n_burgers(); j++){
+        for(int j = 0; j < ft->get_world()->get_n_simple_drones(); j++){
             
             if(inside_base(food_markers.markers[i].pose.position.x,food_markers.markers[i].pose.position.y)){
                 break;
             }
             // Caught food  //only eats food if it's visible and is not holding another food
-            if(ft->get_world()->get_food_item(i)->visible && ft->get_world()->get_burger(j)->check_visibility() &&
-                abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < PROXIMITY && 
-                abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < PROXIMITY && 
-                !inside_base(robot_markers.markers[j].pose.position.x, robot_markers.markers[j].pose.position.y) &&
-                robot_markers.markers[j].color.r == 0.0){
+            if(ft->get_world()->get_food_item(i)->visible && ft->get_world()->get_simple_drone(j)->is_visible() &&
+                abs(simple_drone_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < PROXIMITY && 
+                abs(simple_drone_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < PROXIMITY && 
+                !inside_base(simple_drone_markers.markers[j].pose.position.x, simple_drone_markers.markers[j].pose.position.y) &&
+                simple_drone_markers.markers[j].color.r == 0.0){
                 ft->get_world()->get_food_item(i)->visible = false;
                 ft->get_world()->get_food_item(i)->robot = j;
-                robot_markers.markers[j].color.r = 1.0;
-                robot_markers.markers[j].color.g = 0.75;
-                robot_markers.markers[j].color.b = 0.79;
+                simple_drone_markers.markers[j].color.r = 1.0;
+                simple_drone_markers.markers[j].color.g = 0.75;
+                simple_drone_markers.markers[j].color.b = 0.79;
                 food_markers.markers[i].color.a = 0;
 
                 break;
@@ -411,20 +399,20 @@ void repaint(){
             // Arrived at base, drops food
             else if(ft->get_world()->get_food_item(i)->visible == false && 
             ft->get_world()->get_food_item(i)->robot == j && 
-            inside_base(robot_markers.markers[j].pose.position.x, robot_markers.markers[j].pose.position.y)){
+            inside_base(simple_drone_markers.markers[j].pose.position.x, simple_drone_markers.markers[j].pose.position.y)){
                 food_markers.markers[i].color.a = 1;
-                food_markers.markers[i].pose.position.x = robot_markers.markers[j].pose.position.x;
-                food_markers.markers[i].pose.position.y = robot_markers.markers[j].pose.position.y;
+                food_markers.markers[i].pose.position.x = simple_drone_markers.markers[j].pose.position.x;
+                food_markers.markers[i].pose.position.y = simple_drone_markers.markers[j].pose.position.y;
                 ft->get_world()->get_food_item(i)->visible = true;
                 ft->get_world()->get_food_item(i)->robot = -1;
-                robot_markers.markers[j].color.r = 0.0;
-                robot_markers.markers[j].color.g = 0.0;
-                robot_markers.markers[j].color.b = 1.0;
+                simple_drone_markers.markers[j].color.r = 0.0;
+                simple_drone_markers.markers[j].color.g = 0.0;
+                simple_drone_markers.markers[j].color.b = 1.0;
                 break;
             }
 
             //object collided while holding food
-            else if(!ft->get_world()->get_burger(j)->check_visibility() && ft->get_world()->get_food_item(i)->robot == j){
+            else if(!ft->get_world()->get_burger(j)->is_visible() && ft->get_world()->get_food_item(i)->robot == j){
                 food_markers.markers[i].color.a = 1;
                 ft->get_world()->get_food_item(i)->visible = true;
                 ft->get_world()->get_food_item(i)->robot = -1;
@@ -433,11 +421,11 @@ void repaint(){
 
         }
     }
+    // Simple drone markers
+    simple_drone_markers_publisher.publish(simple_drone_markers);
 
-    robot_markers_publisher.publish(robot_markers);
-
-    // Robot orientation markers
-    robot_orientation_markers_publisher.publish(robot_orientation_markers);
+    // Simple drone wings markers
+    simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
 
     // Obstacles
     obstacle_markers_publisher.publish(obstacle_markers);
@@ -448,15 +436,14 @@ void repaint(){
     // Food Markers
     food_markers_publisher.publish(food_markers);
 
-    //APAGAR 
+    // Stats Markers
     stats_marker_publisher.publish(stats_marker);
-    //-------
+  
 }
-
 void publish_data(){
     tf::Transform transform;
     tf::Quaternion q;
-    static tf::TransformBroadcaster tf_br_robot;
+    static tf::TransformBroadcaster tf_br_simple_drone;
     static tf::TransformBroadcaster tf_br_map;
 
     // World
@@ -465,38 +452,39 @@ void publish_data(){
     transform.setRotation(q);
     tf_br_map.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", "world"));
 
-    // Robots
-    fast_turtle::RobotDataArray robots_msg;
-    fast_turtle::RobotData robot_msg;
-    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        // Send tf for robot i
-        transform.setOrigin(tf::Vector3(ft->get_world()->get_burger(i)->x(), ft->get_world()->get_burger(i)->y(), 1.0-0.192/2));
-        q.setRPY(0, 0, ft->get_world()->get_burger(i)->get_theta());
+    // Drones
+    fast_turtle::RobotDataArray simple_drones_msg;
+    fast_turtle::RobotData simple_drone_msg;
+
+    // Drones
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+        // Send tf for drone i
+        transform.setOrigin(tf::Vector3(ft->get_world()->get_simple_drone(i)->x(), ft->get_world()->get_simple_drone(i)->y(), 0.0));
+        q.setRPY(0, 0, 0);
         transform.setRotation(q);
-        tf_br_robot.sendTransform(tf::StampedTransform(transform
+        tf_br_simple_drone.sendTransform(tf::StampedTransform(transform
         , ros::Time::now()
         , "world"
-        , "robot_" 
-            + ft->get_world()->get_burger(i)->get_model() + "_" 
-            + ft->get_world()->get_burger(i)->get_name()
+        , "simple_drone_"
+            + ft->get_world()->get_simple_drone(i)->get_model() + "_"
+            + ft->get_world()->get_simple_drone(i)->get_name()
         ));
-        // Send robot data message to topic "robots"
-        robots_msg.header.stamp = ros::Time::now();
-        robot_msg.pose.position.x = ft->get_world()->get_burger(i)->x();
-        robot_msg.pose.position.y = ft->get_world()->get_burger(i)->y();
-        robot_msg.header.stamp = robots_msg.header.stamp;
-        robot_msg.name = ft->get_world()->get_burger(i)->get_name();
-        robot_msg.model = ft->get_world()->get_burger(i)->get_model();
-        robot_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(i)->get_theta());
-        robot_msg.scan.header.frame_id =  "robot_" 
-            + ft->get_world()->get_burger(i)->get_model() + "_" 
-            + ft->get_world()->get_burger(i)->get_name();
-        robot_msg.scan.ranges = ft->get_world()->get_burger(i)->get_lidar()->get_lasers();
-        robots_msg.robots.push_back(robot_msg); 
+        // Send robot data message to topic "drones"
+        simple_drones_msg.header.stamp = ros::Time::now();
+        simple_drone_msg.pose.position.x = ft->get_world()->get_simple_drone(i)->x();
+        simple_drone_msg.pose.position.y = ft->get_world()->get_simple_drone(i)->y();
+        simple_drone_msg.header.stamp = simple_drones_msg.header.stamp;
+        simple_drone_msg.name = ft->get_world()->get_simple_drone(i)->get_name();
+        simple_drone_msg.model = ft->get_world()->get_simple_drone(i)->get_model();
+        simple_drone_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
+        simple_drone_msg.scan.header.frame_id =  "simple_drone_"
+            + ft->get_world()->get_simple_drone(i)->get_model() + "_"
+            + ft->get_world()->get_simple_drone(i)->get_name();
+        simple_drone_msg.scan.ranges = ft->get_world()->get_simple_drone(i)->get_lidar()->get_lasers();
+        simple_drones_msg.robots.push_back(simple_drone_msg);
     }
-    robots_publisher.publish(robots_msg);
+    simple_drones_publisher.publish(simple_drones_msg);
 }
-
 int main(int argc, char** argv)
 {
     // Init node
@@ -508,24 +496,20 @@ int main(int argc, char** argv)
 
     // Initialize markers
     world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker", 0);
-    robot_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("robot_markers",0);
-    robot_orientation_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("robot_orientation_markers",0);
     food_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("food_markers",0);
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
     wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
-
-    //APAGAR
     stats_marker_publisher = nh.advertise<visualization_msgs::Marker>("stats_marker", 0);
-     //-----
+    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers",0);
+    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers",0);
 
     // Subscribers for all robots
-    ros::Subscriber sub0 = nh.subscribe("cmd_vel", 1000, listen_cmd_vel);
-    ros::Subscriber sub1 = nh.subscribe("cmd_vel1", 1000, listen_cmd_vel1);
-    ros::Subscriber sub2 = nh.subscribe("cmd_vel2", 1000, listen_cmd_vel2);
-    ros::Subscriber sub3 = nh.subscribe("cmd_vel3", 1000, listen_cmd_vel3);
+    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0", 1000, listen_cmd_vel_sd0);
+    ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1", 1000, listen_cmd_vel_sd1);
+    ros::Subscriber sub_sd2 = nh.subscribe("cmd_vel_sd2", 1000, listen_cmd_vel_sd2);
 
     // Publishers
-    robots_publisher = nh.advertise<fast_turtle::RobotDataArray>("robots", 1000);
+    simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
 
     // Initialize simulator object
     float obstacle_radius = 0.15;
@@ -574,9 +558,10 @@ int main(int argc, char** argv)
     ft->add_food_item(-8, 1, FOOD_RADIUS); 
     
     // Drones
-    ft->add_turtlebot_burger(0.5, -9, M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
-    ft->add_turtlebot_burger(-0.5, -9, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
-    ft->add_turtlebot_burger(1.5, -9, M_PI_2, BURGER_RADIUS, "raphael", 0.2);
+    ft->add_simple_drone(-0.5, -9.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_simple_drone(0.5, -9.5, 0.5, BURGER_RADIUS, "drone1", 0.2);
+    ft->add_simple_drone(1.5, -9.5, 0.5, BURGER_RADIUS, "drone2", 0.2); 
+
 
     // Send first world data and graphics data
     publish_data();
@@ -604,4 +589,3 @@ int main(int argc, char** argv)
     }
 
 }
-

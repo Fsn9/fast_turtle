@@ -33,7 +33,7 @@ float TurtlebotBurger::get_controller_period(){
     return this->controller_period;
 }
 
-bool TurtlebotBurger::check_visibility(){
+bool TurtlebotBurger::is_visible(){
     return this->visible;
 }
 
@@ -133,6 +133,15 @@ float SimpleDrone::get_height(){
 float SimpleDrone::get_controller_period(){
     return this->controller_period;
 }
+
+bool SimpleDrone::is_visible(){
+    return this->visible;
+}
+
+void SimpleDrone::set_visibility(bool value){
+    this->visible = value;
+}
+
 
 std::string SimpleDrone::tostring(){
     return "(SimpleDrone) Name: " + this->get_name() + " , Model: " + this->get_model() + " , " +

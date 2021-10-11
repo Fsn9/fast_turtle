@@ -1,4 +1,4 @@
-// Simulator library
+/*// Simulator library
 #include "fast_turtle.h"
 // ROS main library
 #include <ros/ros.h>
@@ -61,7 +61,7 @@ void move_robot(int idx)
 void update_physics()
 {
     for(int idx = 0; idx < ft->get_world()->get_n_burgers(); idx++){
-        if(ft->get_world()->get_burger(idx)->check_visibility()){
+        if(ft->get_world()->get_burger(idx)->is_visible()){
             move_robot(idx);
         }
     } 
@@ -302,7 +302,7 @@ void repaint(){
     //check for collisions and if they collided, make them disapear 
     ft->check_collisions();
     for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
-        if(!ft->get_world()->get_burger(i)->check_visibility()){
+        if(!ft->get_world()->get_burger(i)->is_visible()){
             robot_markers.markers[i].color.a = 0;
             robot_orientation_markers.markers[i].color.a = 0;
         }
@@ -317,7 +317,7 @@ void repaint(){
                 break;
             }
             // Caught food  //only eats food if it's visible and is not holding another food
-            if(ft->get_world()->get_food_item(i)->visible && ft->get_world()->get_burger(j)->check_visibility() &&
+            if(ft->get_world()->get_food_item(i)->visible && ft->get_world()->get_burger(j)->is_visible() &&
                 abs(robot_markers.markers[j].pose.position.x - food_markers.markers[i].pose.position.x) < PROXIMITY && 
                 abs(robot_markers.markers[j].pose.position.y - food_markers.markers[i].pose.position.y) < PROXIMITY && 
                 abs(robot_markers.markers[j].pose.position.x) >= FOOD_LIMIT_X &&
@@ -348,7 +348,7 @@ void repaint(){
             }
 
             //object collided while holding food
-            else if(!ft->get_world()->get_burger(j)->check_visibility() && ft->get_world()->get_food_item(i)->robot == j){
+            else if(!ft->get_world()->get_burger(j)->is_visible() && ft->get_world()->get_food_item(i)->robot == j){
                 food_markers.markers[i].color.a = 1;
                 ft->get_world()->get_food_item(i)->visible = true;
                 ft->get_world()->get_food_item(i)->robot = -1;
@@ -485,4 +485,4 @@ int main(int argc, char** argv)
     }
 
 }
-
+*/
