@@ -1,4 +1,4 @@
-/*// Simulator library
+// Simulator library
 #include "fast_turtle.h"
 // ROS main library
 #include <ros/ros.h>
@@ -485,4 +485,4 @@ int main(int argc, char** argv)
     }
 
 }
-*/
+

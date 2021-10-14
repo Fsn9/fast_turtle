@@ -112,6 +112,7 @@ SimpleDrone::SimpleDrone(float x, float y, float height, float radius, std::stri
     this->model = "simple";
     this->last_vx = 0.0;
     this->last_vy = 0.0;
+    this->visible = true;
 
     // Lidar
     float frequency;
