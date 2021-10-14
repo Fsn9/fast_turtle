@@ -28,7 +28,7 @@ class Lidar{
         Lidar(float frequency, Point2d* position);
         std::vector<float> get_lasers();
         void display_lasers();
-        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, float x_robot, float y_robot, float theta_robot);
+        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot);
         std::string tostring();
         bool in_between(float xi, float xm, float xf);
         std::tuple<float, float> get_nearest_points(float xr, float yr, float x1, float y1, float x2, float y2);

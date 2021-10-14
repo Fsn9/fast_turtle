@@ -183,7 +183,7 @@ void SimpleDrone::set_new_vx_vy(double vx, double vy){
     this->last_vy = vy;
 }
 
-void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, float x_robot, float y_robot, float theta_robot){
+void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot){
     std::fill(this->lasers.begin(), this->lasers.end(), MAX_DISTANCE);
     Line laser(0,0,0,0);
     bool in_sight;
@@ -197,7 +197,7 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
     {
         std::tuple<float, float, float, float> laser_points = this->get_laser_points(ray, x_robot, y_robot, theta_robot);
         laser.set_points(std::get<0>(laser_points), std::get<1>(laser_points), std::get<2>(laser_points), std::get<3>(laser_points));
-        // Go through all obstacles
+        // Obstacles scanning
         for(int o = 0; o < round_obstacles.size(); o++)
         {
             // Check intersections
@@ -234,10 +234,9 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
                     ) + BURGER_RADIUS;
                     this->lasers[ray] = std::min(distance, this->lasers[ray]);
                 }
-
             }
         }
-        // Go through 
+        // World edges scanning
         for(int e = 0; e < edges.size(); e++)
         {
             intersection_line = edges[e].intersects_line(laser);
@@ -263,7 +262,33 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
                     this->lasers[ray] = std::min(distance, this->lasers[ray]);
                 }
             }
-            
+        }
+        // Wall obstacles scanning
+        for(int w = 0; w < walls.size(); w++)
+        {
+            intersection_line = walls[w].intersects_line(laser);
+            // If intersects with world walls
+            if (std::get<0>(intersection_line))
+            {
+                in_sight = this->in_sight(
+                    std::get<0>(laser_points),
+                    std::get<1>(laser_points),
+                    std::get<2>(laser_points),
+                    std::get<3>(laser_points),
+                    std::get<1>(intersection_line),
+                    std::get<2>(intersection_line)
+                );
+                if(in_sight)
+                {
+                    distance = distance_between_points(
+                    std::get<0>(laser_points),
+                    std::get<1>(laser_points),
+                    std::get<1>(intersection_line),
+                    std::get<2>(intersection_line)
+                    ) + BURGER_RADIUS;
+                    this->lasers[ray] = std::min(distance, this->lasers[ray]);
+                }
+            }
         }
     }
 }
