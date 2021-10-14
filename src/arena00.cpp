@@ -498,33 +498,36 @@ int main(int argc, char** argv)
     ft->init_world(14, 0, 0, "square");
     
     // Obstaculos
-    ft->add_obstacle(-6, 4, obstacle_radius, "round");
-    ft->add_obstacle(2, 8, obstacle_radius, "round");
-    ft->add_obstacle(-2, -2, obstacle_radius, "round");
-    ft->add_obstacle(2, -4, obstacle_radius, "round");
-    ft->add_obstacle(6, -6, obstacle_radius, "round");
-    ft->add_wall(0, -10, 0, -8); //bpartida dos robots
-    ft->add_wall(-1, -10, -1, -8);
-    ft->add_wall(1, -10, 1, -8);
-    ft->add_wall(2, -10, 2, -8);
-    ft->add_wall(-6, 6, -6, 8); //canto superior esq
-    ft->add_wall(-8, 6, -6, 6);
-    ft->add_wall(-6, 0, -6, 2); //L da esq
-    ft->add_wall(-6, 0, -4, 0);
-    ft->add_wall(-6, -4, -6, -2); //traço sozinho
-    ft->add_wall(8, -2, 10, -2); //canto inferior dir
-    ft->add_wall(8, -4, 8, -2);
-    ft->add_wall(-2, 4, -2, 6); //U ao contrario do topo
-    ft->add_wall(-2, 6, 0, 6);
-    ft->add_wall(0, 4, 0, 6);
-    ft->add_wall(2, 0, 2, 2); //S deitado
-    ft->add_wall(2, 0, 4, 0);
-    ft->add_wall(4, 0, 4, 2);
-    ft->add_wall(4, 2, 6, 2);
-    ft->add_wall(6, 0, 6, 2);
-    ft->add_wall(6, 6, 6, 8); //U do canto superior dir
-    ft->add_wall(6, 6, 8, 6);
-    ft->add_wall(8, 6, 8, 8);
+    ft->add_obstacle(1, 5, obstacle_radius, "round");
+    ft->add_obstacle(1, -3, obstacle_radius, "round");
+    //ft->add_obstacle(-2, -2, obstacle_radius, "round");
+    //ft->add_obstacle(2, -4, obstacle_radius, "round");
+    //ft->add_obstacle(6, -6, obstacle_radius, "round");
+    ft->add_wall(0, -7, 0, -5); //bpartida dos robots
+    ft->add_wall(-1, -7, -1, -5);
+    ft->add_wall(1, -7, 1, -5);
+    ft->add_wall(2, -7, 2, -5);
+    ft->add_wall(-3, 5, -3, 3); //canto superior esq
+    ft->add_wall(-5, 3, -3, 3);
+    ft->add_wall(3, 3, 3, 1); //L da dir
+    ft->add_wall(3, 1, 5, 1);
+    ft->add_wall(-3, -1, -1, -1); //traço sozinho
+    ft->add_wall(5, -1, 5, -3); //traço sozinho
+    ft->add_wall(5, 5, 5, 7); //traço sozinho
+    
+    //ft->add_wall(8, -2, 10, -2); //canto inferior dir
+    //ft->add_wall(8, -4, 8, -2);
+    //ft->add_wall(-2, 4, -2, 6); //U ao contrario do topo
+    //ft->add_wall(-2, 6, 0, 6);
+    //ft->add_wall(0, 4, 0, 6);
+    //ft->add_wall(2, 0, 2, 2); //S deitado
+    //ft->add_wall(2, 0, 4, 0);
+    //ft->add_wall(4, 0, 4, 2);
+    //ft->add_wall(4, 2, 6, 2);
+    //ft->add_wall(6, 0, 6, 2);
+    //ft->add_wall(6, 6, 6, 8); //U do canto superior dir
+    //ft->add_wall(6, 6, 8, 6);
+    //ft->add_wall(8, 6, 8, 8);
     
     // Paredes da bounding box
     ft->add_wall(7, -7, 7, 7); //direita
@@ -533,16 +536,16 @@ int main(int argc, char** argv)
     ft->add_wall(-7, 7, 7, 7); //cima
 
     //Comida
-    ft->add_food_item(8, -8, FOOD_RADIUS);
-    ft->add_food_item(-8, 8, FOOD_RADIUS); 
-    ft->add_food_item(7, 7, FOOD_RADIUS); 
-    ft->add_food_item(0, -3, FOOD_RADIUS); 
-    ft->add_food_item(-8, 1, FOOD_RADIUS); 
+    ft->add_food_item(-4, 4, FOOD_RADIUS);
+    ft->add_food_item(6, 6, FOOD_RADIUS); 
+    ft->add_food_item(4, 2, FOOD_RADIUS); 
+    ft->add_food_item(-2, 0, FOOD_RADIUS); 
+    ft->add_food_item(6, -2, FOOD_RADIUS); 
     
     // Drones
-    ft->add_turtlebot_burger(0.5, -9, M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
-    ft->add_turtlebot_burger(-0.5, -9, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
-    ft->add_turtlebot_burger(1.5, -9, M_PI_2, BURGER_RADIUS, "raphael", 0.2);
+    ft->add_turtlebot_burger(0.5, -6, M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
+    ft->add_turtlebot_burger(-0.5, -6, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
+    ft->add_turtlebot_burger(1.5, -6, M_PI_2, BURGER_RADIUS, "raphael", 0.2);
 
     // Send first world data and graphics data
     publish_data();
