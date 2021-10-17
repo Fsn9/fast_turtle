@@ -112,6 +112,7 @@ SimpleDrone::SimpleDrone(float x, float y, float height, float radius, std::stri
     this->model = "simple";
     this->last_vx = 0.0;
     this->last_vy = 0.0;
+    this->theta = M_PI_2;
 
     // Lidar
     float frequency;
@@ -124,6 +125,10 @@ float SimpleDrone::x(){
 
 float SimpleDrone::y(){
     return this->yc;
+}
+
+float SimpleDrone::get_theta(){
+    return this->theta;
 }
 
 float SimpleDrone::get_height(){
@@ -183,9 +188,9 @@ void SimpleDrone::set_new_vx_vy(double vx, double vy){
     this->last_vy = vy;
 }
 
-void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot){
+void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot){
     std::fill(this->lasers.begin(), this->lasers.end(), MAX_DISTANCE);
-    Line laser(0,0,0,0);
+    LineSegment laser(0,0,0,0);
     bool in_sight;
     std::tuple<bool, float, float, float, float> intersection_obstacle;
     std::tuple<bool, float, float> intersection_line;
