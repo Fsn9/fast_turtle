@@ -1,13 +1,12 @@
 #include "geometry.h"
+#include "utils.h"
 
-// Constants
 #define TO_DEG 180.0 / M_PI
 #define TO_RAD M_PI / 180.0
 #define HIGHEST_SLOPE 1e3
 #define DENOMINATOR_TOLERANCE 0.01
 #define INTERSECTION_POINT_TOLERANCE 0.01
 
-// Classes
 //Point2d
 Point2d::Point2d(float x, float y){
 	this->data << x,y;
@@ -26,6 +25,8 @@ void Point2d::rotate(float degrees){
 
 // Line	
 Line::Line(float x1,float y1,float x2, float y2){
+	this->horizontal = false;
+	this->vertical = false;
 	this->set_points(x1,y1,x2,y2);
 }
 
@@ -57,6 +58,16 @@ float Line::get_x1(){return this->x1;}
 float Line::get_y1(){return this->y1;}
 float Line::get_x2(){return this->x2;}
 float Line::get_y2(){return this->y2;}
+
+float* Line::get_ordered_points_x()
+{
+	return ordered_points_x_;
+}
+
+float* Line::get_ordered_points_y()
+{
+	return ordered_points_y_;
+}
 		
 void Line::set_points(float x1, float y1, float x2, float y2){
 	this->x1 = x1;
@@ -67,6 +78,12 @@ void Line::set_points(float x1, float y1, float x2, float y2){
 	this->denominator = x2-x1;
 	this->horizontal = false;
 	this->vertical = false;
+	ordered_points_x_[0] = x1;
+	ordered_points_x_[1] = x2;
+	ordered_points_y_[0] = y1;
+	ordered_points_y_[1] = y2;
+	std::sort(ordered_points_x_, ordered_points_x_ + individual_size<float*>(ordered_points_x_));
+	std::sort(ordered_points_y_, ordered_points_y_ + individual_size<float*>(ordered_points_y_));
 	// If line is not vertical
 	if (this->denominator != 0 || abs(this->denominator) >= DENOMINATOR_TOLERANCE){
 		this->slope = numerator / (double)denominator;
@@ -96,8 +113,8 @@ bool Line::is_horizontal(){return this->horizontal;}
 
 std::tuple<float, float> Line::get_midpoint(){
 	return {
-		((this->x1 + this->x2)/2),
-		((this->y1 + this->y2)/2)
+		0.5 * (this->x1 + this->x2),
+		0.5 * (this->y1 + this->y2)
 	};
 }
 
@@ -139,7 +156,37 @@ std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle* cir
 	}
 }
 
+//Line Segment
+LineSegment::LineSegment(float x1, float y1, float x2, float y2) : Line(x1,x2,y1,y2){}
 
+std::tuple<bool, float, float, float, float> LineSegment::intersects_circle(Circle* circle)
+{
+	std::tuple<bool, float, float, float, float> points = Line::intersects_circle(circle);
+	if(std::get<0>(points))
+	{
+		if(!in_between(ordered_points_x_[0], std::get<1>(points), ordered_points_x_[1])
+		|| !in_between(ordered_points_x_[0], std::get<3>(points), ordered_points_x_[1])
+		|| !in_between(ordered_points_y_[0], std::get<2>(points), ordered_points_y_[1])
+		|| !in_between(ordered_points_y_[0], std::get<4>(points), ordered_points_y_[1]))
+		{
+			return {false, std::get<1>(points), std::get<2>(points), std::get<3>(points),std::get<4>(points)};
+		}
+	}
+	return points;
+}
+std::tuple<bool, float, float> LineSegment::intersects_line(Line other)
+{
+	std::tuple<bool, float, float> points = Line::intersects_line(other);
+	if(std::get<0>(points))
+	{
+		if(!in_between(ordered_points_x_[0], std::get<1>(points), ordered_points_x_[1]) 
+		|| !in_between(ordered_points_y_[0], std::get<2>(points), ordered_points_y_[1]))
+		{
+			return {false, std::get<1>(points), std::get<2>(points)};
+		}
+	}
+	return points;
+}
 
 //Circle
 Circle::Circle(float xc, float yc, float radius) : xc(xc), yc(yc), radius(radius), radius_sqr(pow(this->radius,2)) {
@@ -201,10 +248,10 @@ Square::Square(float length, float xc, float yc, float angle) : length(length), 
 	// Edges
 	for(int idx = 0; idx < this->corners.size(); idx++){
 		if (idx == this->corners.size() - 1) {
-			this->edges.push_back(Line(this->corners[idx].get_x(), this->corners[idx].get_y(), this->corners[0].get_x(), this->corners[0].get_y()));
+			this->edges.push_back(LineSegment(this->corners[idx].get_x(), this->corners[idx].get_y(), this->corners[0].get_x(), this->corners[0].get_y()));
 		}
 		else{
-			this->edges.push_back(Line(this->corners[idx].get_x(), this->corners[idx].get_y(), this->corners[idx + 1].get_x(), this->corners[idx + 1].get_y()));
+			this->edges.push_back(LineSegment(this->corners[idx].get_x(), this->corners[idx].get_y(), this->corners[idx + 1].get_x(), this->corners[idx + 1].get_y()));
 		}
 	}	
 }
@@ -216,7 +263,7 @@ std::string Square::tostring(){
 	return repr_;
 }
 
-std::vector<Line> Square::get_edges(){
+std::vector<LineSegment> Square::get_edges(){
 	return this->edges;
 }
 
