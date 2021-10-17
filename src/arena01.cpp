@@ -38,7 +38,8 @@ visualization_msgs::MarkerArray wall_markers;
 visualization_msgs::MarkerArray simple_drone_markers;
 visualization_msgs::MarkerArray simple_drone_supports_markers;
 visualization_msgs::MarkerArray food_markers;
-visualization_msgs::MarkerArray stats_markers;                            // stats
+visualization_msgs::Marker stats_marker;                            // stats
+//visualization_msgs::MarkerArray stats_markers;
 
 // Marker Publishers
 ros::Publisher world_marker_publisher;
@@ -318,25 +319,27 @@ void init_graphics_and_data(){
             j+=1;
         }
 
-    visualization_msgs::Marker stats_marker;
-    stats_marker.header.frame_id = "world";
-    stats_marker.ns = "simulation_markers";
-    stats_marker.id = j;
-    stats_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
-    stats_marker.action = visualization_msgs::Marker::ADD;
-    stats_marker.pose.position.x = -8.0;
-    stats_marker.pose.position.y = -8.0;
-    stats_marker.pose.position.z = 1.0;
-    stats_marker.scale.z = 0.3;
-    stats_marker.color.a = 1.0; 
-    stats_marker.color.r = 1.0;
-    stats_marker.color.g = 1.0;
-    stats_marker.color.b = 1.0;
-    stats_marker.text = "Stats: \n Number of food_items eaten: 20\n Number of food items left: 10\n Time left: 20:00s";
-    stats_markers.markers.push_back(stats_marker);
-    j+=1;
-
-
+    //visualization_msgs::MarkerArray stats_markers;
+    //visualization_msgs::Marker stats_marker;
+    //for (i=0; i!=1 ;i++){
+        stats_marker.header.frame_id = "world";
+        stats_marker.ns = "simulation_markers";
+        stats_marker.id = j;
+        stats_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+        stats_marker.action = visualization_msgs::Marker::ADD;
+        stats_marker.pose.position.x = ft->get_world()->get_simple_drone(0)->get_xc(); //-8.0;
+        stats_marker.pose.position.y = ft->get_world()->get_simple_drone(0)->get_yc(); //-8.0;
+        stats_marker.pose.position.z = 1.0;
+        stats_marker.scale.z = 0.3;
+        stats_marker.color.a = 1.0; 
+        stats_marker.color.r = 1.0;
+        stats_marker.color.g = 1.0;
+        stats_marker.color.b = 1.0;
+        stats_marker.text = "Stats: \n Number of food_items eaten: 20\n Number of food items left: 10\n Time left: 20:00s";
+        //stats_markers.markers.push_back(stats_marker);
+        j+=1;
+    //}
+    /*
     for(i = 1; i < ft->get_world()->get_n_simple_drones()+1; i++)
     {
         stats_marker.header.frame_id = "world";
@@ -344,9 +347,9 @@ void init_graphics_and_data(){
         stats_marker.id = j;
         stats_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
         stats_marker.action = visualization_msgs::Marker::ADD;
-        stats_marker.pose.position.x = ft->get_world()->get_simple_drone(i-1)->get_xc();
-        stats_marker.pose.position.y = ft->get_world()->get_simple_drone(i-1)->get_yc();
-        stats_marker.pose.position.z = ft->get_world()->get_simple_drone(i-1)->get_height() + simple_drone_marker.scale.z * 0.5;
+        stats_marker.pose.position.x = 2.0; //ft->get_world()->get_simple_drone(i-1)->get_xc();
+        stats_marker.pose.position.y = 2.0; //ft->get_world()->get_simple_drone(i-1)->get_yc();
+        stats_marker.pose.position.z = 2.0; //ft->get_world()->get_simple_drone(i-1)->get_height() + simple_drone_marker.scale.z * 0.5;
         stats_marker.scale.z = 0.3;
         stats_marker.color.a = 1.0; 
         stats_marker.color.r = 1.0;
@@ -356,7 +359,7 @@ void init_graphics_and_data(){
         stats_markers.markers.push_back(stats_marker);
         j+=1;
     }
-
+    */
 
     laser_scan_msg.angle_min = 0;
     laser_scan_msg.angle_max = M_PI * 2;
@@ -373,7 +376,8 @@ void init_graphics_and_data(){
     obstacle_markers_publisher.publish(obstacle_markers);
     wall_markers_publisher.publish(wall_markers);
     simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
-    stats_markers_publisher.publish(stats_markers);
+    stats_markers_publisher.publish(stats_marker);
+    //stats_markers_publisher.publish(stats_markers);
 
 }
 bool inside_base(double x, double y){
@@ -389,8 +393,8 @@ void repaint(){
     for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
         simple_drone_markers.markers[i].pose.position.x = ft->get_world()->get_simple_drone(i)->x();
         simple_drone_markers.markers[i].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
-        stats_markers.markers[i+1].pose.position.x = ft->get_world()->get_simple_drone(i)->x();
-        stats_markers.markers[i+1].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
+        stats_marker.pose.position.x = ft->get_world()->get_simple_drone(0)->x();
+        stats_marker.pose.position.y = ft->get_world()->get_simple_drone(0)->y();
     }
 
     //check for collisions and if they collided, make them disapear 
@@ -467,8 +471,8 @@ void repaint(){
     food_markers_publisher.publish(food_markers);
 
     // Stats Markers
-    stats_markers_publisher.publish(stats_markers);
-  
+    stats_markers_publisher.publish(stats_marker);
+    //stats_markers_publisher.publish(stats_markers);
 }
 void publish_data(){
     tf::Transform transform;
@@ -529,7 +533,8 @@ int main(int argc, char** argv)
     food_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("food_markers",0);
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
     wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
-    stats_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("stats_markers", 0);
+    stats_markers_publisher = nh.advertise<visualization_msgs::Marker>("stats_marker", 0);
+    //stats_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("stats_markers", 0);
     simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers",0);
     simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers",0);
 
