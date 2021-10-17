@@ -217,7 +217,7 @@ void FastTurtle::act_simple_drone(float vx, float vy, int idx_simple_drone){
         this->w->get_wall_obstacles(), 
         this->get_world()->get_simple_drone(idx_simple_drone)->get_xc(), 
         this->get_world()->get_simple_drone(idx_simple_drone)->get_yc(), 
-        0
+        this->get_world()->get_simple_drone(idx_simple_drone)->get_theta()
     );
 }
 
