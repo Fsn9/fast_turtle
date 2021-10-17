@@ -25,7 +25,7 @@
 #define SIMPLE_DRONE_SUPPORTS_THICKNESS 0.01f
 
 // Initialize fast turtle simulator object
-FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
+FastTurtle *ft = new FastTurtle(SIMULATION_FPS);
 
 // Markers
 visualization_msgs::Marker world_marker;
@@ -44,8 +44,8 @@ ros::Publisher wall_markers_publisher;
 ros::Publisher tb_burger_markers_publisher;
 ros::Publisher tb_burger_orientation_markers_publisher;
 ros::Publisher simple_drone_markers_publisher;
-ros::Publisher food_markers_publisher;
 ros::Publisher simple_drone_supports_markers_publisher;
+ros::Publisher laser_scan_publisher;
 
 // Publishers
 ros::Publisher tb_burgers_publisher;
@@ -55,8 +55,8 @@ ros::Publisher simple_drones_publisher;
 sensor_msgs::LaserScan laser_scan_msg;
 
 // Vector of real time command velocities for all tb_burgers
-std::vector<cmd_vel_tbb> cmd_vels_tb_burgers{{0,0},{0,0},{0,0},{0,0}};
-std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
+std::vector<cmd_vel_tbb> cmd_vels_tb_burgers{{0, 0}, {0, 0}, {0, 0}, {0, 0}};
+std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
 void move_tb_burgers(int idx)
 {
@@ -80,7 +80,8 @@ void update_physics()
 
 void listen_cmd_vel_tbb0(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_burgers() > 0){
+    if (ft->get_world()->get_n_burgers() > 0)
+    {
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[0].v = msg.linear.x;
         cmd_vels_tb_burgers[0].w = msg.angular.z;
@@ -90,7 +91,8 @@ void listen_cmd_vel_tbb0(const geometry_msgs::Twist& msg)
 
 void listen_cmd_vel_tbb1(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_burgers() > 1){
+    if (ft->get_world()->get_n_burgers() > 1)
+    {
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[1].v = msg.linear.x;
         cmd_vels_tb_burgers[1].w = msg.angular.z;
@@ -100,7 +102,8 @@ void listen_cmd_vel_tbb1(const geometry_msgs::Twist& msg)
 
 void listen_cmd_vel_tbb2(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_burgers() > 2){
+    if (ft->get_world()->get_n_burgers() > 2)
+    {
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[2].v = msg.linear.x;
         cmd_vels_tb_burgers[2].w = msg.angular.z;
@@ -110,7 +113,8 @@ void listen_cmd_vel_tbb2(const geometry_msgs::Twist& msg)
 
 void listen_cmd_vel_tbb3(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_burgers() > 3){
+    if (ft->get_world()->get_n_burgers() > 3)
+    {
         ROS_INFO("Received commands v: %f and w: %f", msg.linear.x, msg.angular.z);
         cmd_vels_tb_burgers[3].v = msg.linear.x;
         cmd_vels_tb_burgers[3].w = msg.angular.z;
@@ -120,7 +124,8 @@ void listen_cmd_vel_tbb3(const geometry_msgs::Twist& msg)
 
 void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
 {
-    if (ft->get_world()->get_n_simple_drones() > 0){
+    if (ft->get_world()->get_n_simple_drones() > 0)
+    {
         ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
         cmd_vels_simple_drones[0].vx = msg.linear.x;
         cmd_vels_simple_drones[0].vy = msg.linear.y;
@@ -128,9 +133,8 @@ void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
     }
 }
 
-
-
-void init_graphics_and_data(){
+void init_graphics_and_data()
+{
     // Counter markers
     int j = 0;
     // For int variable
@@ -152,18 +156,19 @@ void init_graphics_and_data(){
     world_marker.scale.x = ft->get_world()->get_length();
     world_marker.scale.y = ft->get_world()->get_length();
     world_marker.scale.z = 0.0001;
-    world_marker.color.a = 0.5; 
+    world_marker.color.a = 0.5;
     world_marker.color.r = 1.0;
     world_marker.color.g = 0.0;
     world_marker.color.b = 0.0;
-    j+=1;
+    j += 1;
 
-    // Turtlebot Burgerss position and orientation
+    // Turtlebot Burgers position and orientation
     visualization_msgs::Marker tb_burger_marker;
     geometry_msgs::Point arrow_origin, arrow_end;
     geometry_msgs::Quaternion q;
     visualization_msgs::Marker tb_burger_orientation_marker;
-    for(i = 0; i < ft->get_world()->get_n_burgers(); i++){
+    for (i = 0; i < ft->get_world()->get_n_burgers(); i++)
+    {
         tb_burger_marker.header.frame_id = "world";
         tb_burger_marker.ns = "simulation_markers";
         tb_burger_marker.id = j;
@@ -211,7 +216,7 @@ void init_graphics_and_data(){
         arrow_end.x = arrow_origin.x + 0.3;
         arrow_end.y = arrow_origin.y;
         arrow_end.z = arrow_origin.z;
-        tb_burger_orientation_marker.points.clear();    
+        tb_burger_orientation_marker.points.clear();
         tb_burger_orientation_marker.points.push_back(arrow_origin);
         tb_burger_orientation_marker.points.push_back(arrow_end);
         tb_burger_orientation_markers.markers.push_back(tb_burger_orientation_marker);
@@ -220,7 +225,7 @@ void init_graphics_and_data(){
 
     // Simple drones position
     visualization_msgs::Marker simple_drone_marker;
-    for(i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    for (i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
     {
         simple_drone_marker.header.frame_id = "world";
         simple_drone_marker.ns = "simulation_markers";
@@ -249,11 +254,9 @@ void init_graphics_and_data(){
         visualization_msgs::Marker sd_support_marker;
         geometry_msgs::Point p;
         // Four supports for wings
-        for(int sw = 0; sw < 4; sw++)
+        for (int sw = 0; sw < 4; sw++)
         {
-            sd_support_marker.header.frame_id = "simple_drone_" 
-                + ft->get_world()->get_simple_drone(i)->get_model() + "_" 
-                + ft->get_world()->get_simple_drone(i)->get_name();
+            sd_support_marker.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(i)->get_model() + "_" + ft->get_world()->get_simple_drone(i)->get_name();
             sd_support_marker.ns = "simulation_markers";
             sd_support_marker.id = j;
             sd_support_marker.type = visualization_msgs::Marker::LINE_LIST;
@@ -281,7 +284,8 @@ void init_graphics_and_data(){
 
     // Cylinder obstacles
     visualization_msgs::Marker obstacle_marker;
-    for(i = 0; i < ft->get_world()->get_round_obstacles().size(); i++){
+    for (i = 0; i < ft->get_world()->get_round_obstacles().size(); i++)
+    {
         obstacle_marker.header.frame_id = "world";
         obstacle_marker.ns = "simulation_markers";
         obstacle_marker.id = j;
@@ -302,6 +306,33 @@ void init_graphics_and_data(){
         obstacle_marker.color.g = 1.0;
         obstacle_marker.color.b = 1.0;
         obstacle_markers.markers.push_back(obstacle_marker);
+        j += 1;
+    }
+
+    // Walls
+    visualization_msgs::Marker wall_marker;
+    for(i = 0; i < ft->get_world()->get_wall_obstacles().size(); i++){
+        wall_marker.header.frame_id = "world";
+        wall_marker.ns = "simulation_markers";
+        wall_marker.id = j;
+        wall_marker.type = visualization_msgs::Marker::CUBE;
+        wall_marker.action = visualization_msgs::Marker::ADD;
+        wall_marker.pose.position.x = std::get<0>(ft->get_world()->get_wall_obstacle(i)->get_midpoint());
+        wall_marker.pose.position.y = std::get<1>(ft->get_world()->get_wall_obstacle(i)->get_midpoint());
+        wall_marker.pose.position.z = 1.0;
+        wall_marker.pose.orientation.x = 0.0;
+        wall_marker.pose.orientation.y = 0.0;
+        //wall_marker.pose.orientation.z = ft->get_world()->get_wall_obstacle(i)->is_vertical() ? 1.0 : 0.0;//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
+        wall_marker.pose.orientation.z = 0.0;
+        wall_marker.pose.orientation.w = 1.0;
+        wall_marker.scale.x = ft->get_world()->get_wall_obstacle(i)->get_length();
+        wall_marker.scale.y = 0.01;
+        wall_marker.scale.z = 2.0;
+        wall_marker.color.a = 1.0;
+        wall_marker.color.r = 0.7;
+        wall_marker.color.g = 0.7;
+        wall_marker.color.b = 0.7;
+        wall_markers.markers.push_back(wall_marker);
         j+=1;
     }
 
@@ -309,7 +340,7 @@ void init_graphics_and_data(){
     laser_scan_msg.angle_max = M_PI * 2;
     laser_scan_msg.angle_increment = 2.0 * M_PI / 360;
     laser_scan_msg.range_min = MIN_DISTANCE;
-    laser_scan_msg.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg.range_max = MAX_DISTANCE + 1e-4;
     laser_scan_msg.time_increment = 0;
     laser_scan_msg.scan_time = 0;
 
@@ -317,26 +348,33 @@ void init_graphics_and_data(){
     tb_burger_markers_publisher.publish(tb_burger_markers);
     tb_burger_orientation_markers_publisher.publish(tb_burger_orientation_markers);
     obstacle_markers_publisher.publish(obstacle_markers);
-    food_markers_publisher.publish(food_markers);
+    wall_markers_publisher.publish(wall_markers);
     simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
 }
 
-void repaint(){
+void repaint()
+{
     // World marker
     world_marker_publisher.publish(world_marker);
 
     // Turtlebot Burgers position markers
-    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
+    for (int i = 0; i < ft->get_world()->get_n_burgers(); i++)
+    {
         tb_burger_markers.markers[i].pose.position.x = ft->get_world()->get_burger(i)->x();
         tb_burger_markers.markers[i].pose.position.y = ft->get_world()->get_burger(i)->y();
     }
 
     // Simple drone position markers
-    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+    for (int i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
         simple_drone_markers.markers[i].pose.position.x = ft->get_world()->get_simple_drone(i)->x();
         simple_drone_markers.markers[i].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
     }
 
+    // Laser scan update
+    laser_scan_msg.ranges = ft->get_world()->get_simple_drone(0)->get_lidar()->get_lasers();
+    laser_scan_msg.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(0)->get_model() + "_" + ft->get_world()->get_simple_drone(0)->get_name();
+    
     // Turtlebot Burgers position markers
     tb_burger_markers_publisher.publish(tb_burger_markers);
 
@@ -351,9 +389,16 @@ void repaint(){
 
     // Obstacles
     obstacle_markers_publisher.publish(obstacle_markers);
+
+    // Walls
+    wall_markers_publisher.publish(wall_markers);
+
+    // Laser scan
+    laser_scan_publisher.publish(laser_scan_msg);
 }
 
-void publish_data(){
+void publish_data()
+{
     tf::Transform transform;
     tf::Quaternion q;
     static tf::TransformBroadcaster tf_br_tb_burger;
@@ -362,7 +407,7 @@ void publish_data(){
 
     // World
     transform.setOrigin(tf::Vector3(0.0, 0.0, 0.0));
-    q.setRPY(0,0,0);
+    q.setRPY(0, 0, 0);
     transform.setRotation(q);
     tf_br_map.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", "world"));
 
@@ -371,18 +416,13 @@ void publish_data(){
     fast_turtle::RobotData tb_burger_msg;
     fast_turtle::RobotDataArray simple_drones_msg;
     fast_turtle::RobotData simple_drone_msg;
-    for(int i = 0; i < ft->get_world()->get_n_burgers(); i++){
+    for (int i = 0; i < ft->get_world()->get_n_burgers(); i++)
+    {
         // Send tf for tb_burger i
         transform.setOrigin(tf::Vector3(ft->get_world()->get_burger(i)->x(), ft->get_world()->get_burger(i)->y(), 0.0));
         q.setRPY(0, 0, ft->get_world()->get_burger(i)->get_theta());
         transform.setRotation(q);
-        tf_br_tb_burger.sendTransform(tf::StampedTransform(transform
-        , ros::Time::now()
-        , "world"
-        , "tb_burger_"
-            + ft->get_world()->get_burger(i)->get_model() + "_"
-            + ft->get_world()->get_burger(i)->get_name()
-        ));
+        tf_br_tb_burger.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "tb_burger_" + ft->get_world()->get_burger(i)->get_model() + "_" + ft->get_world()->get_burger(i)->get_name()));
         // Send tb_burger data message to topic "turtlebot_burgers"
         tb_burgers_msg.header.stamp = ros::Time::now();
         tb_burger_msg.pose.position.x = ft->get_world()->get_burger(i)->x();
@@ -391,27 +431,20 @@ void publish_data(){
         tb_burger_msg.name = ft->get_world()->get_burger(i)->get_name();
         tb_burger_msg.model = ft->get_world()->get_burger(i)->get_model();
         tb_burger_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_burger(i)->get_theta());
-        tb_burger_msg.scan.header.frame_id =  "tb_burger_"
-            + ft->get_world()->get_burger(i)->get_model() + "_"
-            + ft->get_world()->get_burger(i)->get_name();
+        tb_burger_msg.scan.header.frame_id = "tb_burger_" + ft->get_world()->get_burger(i)->get_model() + "_" + ft->get_world()->get_burger(i)->get_name();
         tb_burger_msg.scan.ranges = ft->get_world()->get_burger(i)->get_lidar()->get_lasers();
         tb_burgers_msg.robots.push_back(tb_burger_msg);
     }
     tb_burgers_publisher.publish(tb_burgers_msg);
 
     // Drones
-    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+    for (int i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
         // Send tf for drone i
         transform.setOrigin(tf::Vector3(ft->get_world()->get_simple_drone(i)->x(), ft->get_world()->get_simple_drone(i)->y(), 0.0));
-        q.setRPY(0, 0, 0);
+        q.setRPY(0, 0, ft->get_world()->get_simple_drone(i)->get_theta());
         transform.setRotation(q);
-        tf_br_simple_drone.sendTransform(tf::StampedTransform(transform
-        , ros::Time::now()
-        , "world"
-        , "simple_drone_"
-            + ft->get_world()->get_simple_drone(i)->get_model() + "_"
-            + ft->get_world()->get_simple_drone(i)->get_name()
-        ));
+        tf_br_simple_drone.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "simple_drone_" + ft->get_world()->get_simple_drone(i)->get_model() + "_" + ft->get_world()->get_simple_drone(i)->get_name()));
         // Send robot data message to topic "drones"
         simple_drones_msg.header.stamp = ros::Time::now();
         simple_drone_msg.pose.position.x = ft->get_world()->get_simple_drone(i)->x();
@@ -419,17 +452,15 @@ void publish_data(){
         simple_drone_msg.header.stamp = simple_drones_msg.header.stamp;
         simple_drone_msg.name = ft->get_world()->get_simple_drone(i)->get_name();
         simple_drone_msg.model = ft->get_world()->get_simple_drone(i)->get_model();
-        simple_drone_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
-        simple_drone_msg.scan.header.frame_id =  "simple_drone_"
-            + ft->get_world()->get_simple_drone(i)->get_model() + "_"
-            + ft->get_world()->get_simple_drone(i)->get_name();
+        simple_drone_msg.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, ft->get_world()->get_simple_drone(i)->get_theta());
+        simple_drone_msg.scan.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(i)->get_model() + "_" + ft->get_world()->get_simple_drone(i)->get_name();
         simple_drone_msg.scan.ranges = ft->get_world()->get_simple_drone(i)->get_lidar()->get_lasers();
         simple_drones_msg.robots.push_back(simple_drone_msg);
     }
     simple_drones_publisher.publish(simple_drones_msg);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     // Init node
     ros::init(argc, argv, "test_drones");
@@ -440,14 +471,14 @@ int main(int argc, char** argv)
 
     // Marker publishers
     world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker", 0);
-    tb_burger_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("tb_burger_markers",0);
-    tb_burger_orientation_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("tb_burger_orientation_markers",0);
-    food_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("food_markers",0);
-    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
-    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
-    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers",0);
-    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers",0);
-
+    tb_burger_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("tb_burger_markers", 0);
+    tb_burger_orientation_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("tb_burger_orientation_markers", 0);
+    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers", 0);
+    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers", 0);
+    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers", 0);
+    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers", 0);
+    laser_scan_publisher = nh.advertise<sensor_msgs::LaserScan>("scan", 0);
+    
     // Subscribers for all robots
     ros::Subscriber sub_tbb0 = nh.subscribe("cmd_vel_tbb0", 1000, listen_cmd_vel_tbb0);
     ros::Subscriber sub_tbb1 = nh.subscribe("cmd_vel_tbb1", 1000, listen_cmd_vel_tbb1);
@@ -468,11 +499,8 @@ int main(int argc, char** argv)
     ft->add_obstacle(0, 2, obstacle_radius, "round");
     ft->add_obstacle(-1, -1, obstacle_radius, "round");
     ft->add_obstacle(-1, -2, obstacle_radius, "round");
-    ft->add_turtlebot_burger(-1, 0, -M_PI_2, BURGER_RADIUS, "michelangelo", 0.1);
-    ft->add_turtlebot_burger(1, 0, M_PI_2, BURGER_RADIUS, "leonardo", 0.2);
-    ft->add_turtlebot_burger(0, 0, M_PI_2, BURGER_RADIUS, "rafael", 0.2);
-    ft->add_simple_drone(-2.5, 0, 0.5, BURGER_RADIUS, "drone0", 0.2);
-    ft->add_simple_drone(-2.5, 2, 0.5, BURGER_RADIUS, "drone1", 0.2);
+    ft->add_simple_drone(1, 0, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_wall(2, 0, 2, 2);
 
     // Send first world data and graphics data
     publish_data();
@@ -482,7 +510,8 @@ int main(int argc, char** argv)
     ros::Rate loop_rate(SIMULATION_FPS);
 
     // Main cycle
-    while(ros::ok()){
+    while (ros::ok())
+    {
         // Updates logic
         update_physics();
 
@@ -498,6 +527,4 @@ int main(int argc, char** argv)
         // Sleep
         loop_rate.sleep();
     }
-
 }
-
