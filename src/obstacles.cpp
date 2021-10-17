@@ -8,12 +8,12 @@ std::string RoundObstacle::tostring(){
     return "(RoundObstacle) " + Circle::tostring() + ")\n";
 }
 
-WallObstacle::WallObstacle(float x1, float y1, float x2, float y2) : Line(x1, y1, x2, y2){
+WallObstacle::WallObstacle(float x1, float y1, float x2, float y2) : LineSegment(x1, y1, x2, y2){
 	this->dynamics = dynamics;
 }
 
 std::string WallObstacle::tostring(){
-    return "(WallObstacle) " + Line::tostring() + ")\n";
+    return "(WallObstacle) " + LineSegment::tostring() + ")\n";
 }
 
 FoodItem::FoodItem(float xc, float yc, float radius) : Circle(xc, yc, radius){

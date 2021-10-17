@@ -8,3 +8,13 @@ float normalize_angle(float angle){
     else if(angle < - M_PI) angle = angle + 2 * M_PI;
     return angle;
 }
+
+int individual_size(float* cont)
+{
+    return sizeof(cont) / sizeof(cont[0]);
+}
+
+bool in_between(float min_val, float val, float max_val)
+{
+    return (min_val <= val) && (val <= max_val);
+}
