@@ -37,7 +37,7 @@ void FastTurtle::add_simple_drone(float x, float y, float height, float radius, 
         this->w->add_simple_drone(x,y,height,radius,name,controller_period);
     }
     else{
-        throw std::invalid_argument("No more simple_drones allowed. Maximum is: " + std::to_string(MAX_SIMPLE_DRONES));
+        throw std::invalid_argument("No more simple drones allowed. Maximum is: " + std::to_string(MAX_SIMPLE_DRONES));
     }
 }
 
@@ -54,37 +54,37 @@ void FastTurtle::add_food_item(float x, float y, float radius){
 }
 
 void FastTurtle::check_collisions(){
-    for(int i = 0; i < this->get_world()->get_n_burgers(); i++){
-        if(this->get_world()->get_burger(i)->check_visibility()){
+    for(int i = 0; i < this->get_world()->get_n_simple_drones(); i++){
+        if(this->get_world()->get_simple_drone(i)->is_visible()){
             //check collisions between bots
-            for(int j = i+1; j < this->get_world()->get_n_burgers(); j++){
-                if(this->get_world()->get_burger(j)->check_visibility()){
-                    if(this->get_world()->get_burger(i)->intersects_circle(this->get_world()->get_burger(j))){
-                        this->get_world()->get_burger(i)->set_visibility(false);
-                        this->get_world()->get_burger(j)->set_visibility(false);
+            for(int j = i+1; j < this->get_world()->get_n_simple_drones(); j++){
+                if(this->get_world()->get_simple_drone(j)->is_visible()){
+                    if(this->get_world()->get_simple_drone(i)->intersects_circle(this->get_world()->get_simple_drone(j))){
+                        this->get_world()->get_simple_drone(i)->set_visibility(false);
+                        this->get_world()->get_simple_drone(j)->set_visibility(false);
                         std::cout << " collision bot";
                         break;
                     } 
                 }
             }
             //check collisions with obstacles
-            if(this->get_world()->get_burger(i)->check_visibility()){
+            if(this->get_world()->get_simple_drone(i)->is_visible()){
                 for(int j = 0; j < this->get_world()->get_round_obstacles().size(); j++){
-                    if(this->get_world()->get_burger(i)->intersects_circle(this->get_world()->get_round_obstacle(j))){
-                        this->get_world()->get_burger(i)->set_visibility(false);
+                    if(this->get_world()->get_simple_drone(i)->intersects_circle(this->get_world()->get_round_obstacle(j))){
+                        this->get_world()->get_simple_drone(i)->set_visibility(false);
                         std::cout << " collision obstacle";
                         break;
                     }
                 }
             }
             //check collisions with walls
-            if(this->get_world()->get_burger(i)->check_visibility()){
+            if(this->get_world()->get_simple_drone(i)->is_visible()){
                 for(int j = 0; j < this->get_world()->get_wall_obstacles().size(); j++){
-                    if(std::get<0>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)))){
-                        float x1 = std::get<1>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)));
-                        float y1 = std::get<2>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)));
-                        float x2 = std::get<3>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i)));
-                        float y2 = std::get<4>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_burger(i))); //pontos do circulo onde a reta intersecta
+                    if(std::get<0>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)))){
+                        float x1 = std::get<1>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)));
+                        float y1 = std::get<2>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)));
+                        float x2 = std::get<3>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)));
+                        float y2 = std::get<4>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i))); //pontos do circulo onde a reta intersecta
                         float xa = this->get_world()->get_wall_obstacle(j)->get_x1();
                         float ya = this->get_world()->get_wall_obstacle(j)->get_y1();
                         float xb = this->get_world()->get_wall_obstacle(j)->get_x2();
@@ -99,7 +99,7 @@ void FastTurtle::check_collisions(){
                         float squaredlengthba = (xb - xa)*(xb - xa) + (yb - ya)*(yb - ya);
                         if ((crossproduct_1 <= 0.0001  &&  dotproduct_1 > 0  &&  dotproduct_1 <= squaredlengthba) || 
                             (crossproduct_2 <= 0.0001  &&  dotproduct_2 > 0  &&  dotproduct_2 <= squaredlengthba)){
-                                this->get_world()->get_burger(i)->set_visibility(false);
+                                this->get_world()->get_simple_drone(i)->set_visibility(false);
                                 std::cout << " collision wall "; //x: " << std::get<0>(this->get_world()->get_wall_obstacle(j)->get_midpoint()) << " robot x: " << this->get_world()->get_burger(i)->x();
                                 break;
                             }
@@ -183,35 +183,35 @@ void FastTurtle::act_turtlebot_burger(float v, float w, int idx_tb_robot){
     );
 }
 
-void FastTurtle::act_simple_drone(float vx, float vy, int idx_simple_drone){
-    if (idx_simple_drone < 0 || idx_simple_drone > this->w->get_n_simple_drones() - 1){
-        throw std::invalid_argument("invalid simple_drone index of " + 
-        std::to_string(idx_simple_drone) +". It needs to be >= 0 or < " + 
+void FastTurtle::act_simple_drone(float vx, float vy, int idx_robot){
+    if (idx_robot < 0 || idx_robot > this->w->get_n_simple_drones() - 1){
+        throw std::invalid_argument("invalid burger index of " + 
+        std::to_string(idx_robot) +". It needs to be >= 0 or < " + 
         std::to_string(this->w->get_simple_drones().size()));
     }
     // Check current time
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
-    // Measure time passed since simple_drone last actuation time
-    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times_simple_drones[idx_simple_drone]).count() * 1e-9;
+    // Measure time passed since burger last actuation time
+    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times_simple_drones[idx_robot]).count() * 1e-9;
 
     // If duration is bigger than the controller rate, then controller can act
-    if(elapsed > this->w->get_simple_drone(idx_simple_drone)->get_controller_period()){
+    if(elapsed > this->w->get_simple_drone(idx_robot)->get_controller_period()){
         // Update last time
-        this->last_times_simple_drones[idx_simple_drone] = now;
+        this->last_times_simple_drones[idx_robot] = now;
         // Update last twist valuesact
-        this->w->get_simple_drone(idx_simple_drone)->set_new_vx_vy(vx,vy);
+        this->w->get_simple_drone(idx_robot)->set_new_vx_vy(vx,vy);
     }
 
-    // Move simple_drone
-    this->w->get_simple_drone(idx_simple_drone)->move(
-        this->w->get_simple_drone(idx_simple_drone)->get_last_vx(),
-        this->w->get_simple_drone(idx_simple_drone)->get_last_vy(),
+    // Move drone
+    this->w->get_simple_drone(idx_robot)->move(
+        this->w->get_simple_drone(idx_robot)->get_last_vx(),
+        this->w->get_simple_drone(idx_robot)->get_last_vy(),
         this->simulation_dt
     );
 
     // Update simple_drone lidar
-    this->w->get_simple_drone(idx_simple_drone)->get_lidar()->update_lidar_heavy(
+    this->w->get_simple_drone(idx_robot)->get_lidar()->update_lidar_heavy(
         this->w->get_round_obstacles(), 
         this->w->get_edges(),
         this->w->get_wall_obstacles(), 

@@ -54,7 +54,7 @@ class TurtlebotBurger : public Circle{
         float y();
         float get_theta();
         float get_controller_period();
-        bool check_visibility();
+        bool is_visible();
         void set_visibility(bool value);    
         double get_last_v();
         double get_last_w();
@@ -73,6 +73,7 @@ class SimpleDrone : public Circle{
         std::string name;
         double last_vx;
         double last_vy;
+        bool visible;
     public:
         SimpleDrone(float x, float y, float height, float radius, std::string name, float controller_period);
         std::string tostring();
@@ -82,6 +83,8 @@ class SimpleDrone : public Circle{
         float get_theta();
         float get_height();
         float get_controller_period();
+        bool is_visible();
+        void set_visibility(bool value);
         double get_last_vx();
         double get_last_vy();
         void set_new_vx_vy(double vx, double vy);
