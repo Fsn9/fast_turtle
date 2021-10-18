@@ -5,7 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /TF1/Frames1
-        - /LaserScan1
       Splitter Ratio: 0.5
     Tree Height: 539
   - Class: rviz/Selection
@@ -62,14 +61,6 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /stats_markers
-      Name: Stats
-      Namespaces:
-        simulator_markers: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
       Marker Topic: /obstacle_markers
       Name: Round Obstacles
       Namespaces:
@@ -101,14 +92,6 @@ Visualization Manager:
           Value: true
         simple_drone_simple_drone0:
           Value: true
-        simple_drone_simple_drone1:
-          Value: true
-        tb_burger_burger_leonardo:
-          Value: true
-        tb_burger_burger_michelangelo:
-          Value: true
-        tb_burger_burger_rafael:
-          Value: true
         world:
           Value: true
       Marker Alpha: 1
@@ -122,14 +105,6 @@ Visualization Manager:
           world:
             simple_drone_simple_drone0:
               {}
-            simple_drone_simple_drone1:
-              {}
-            tb_burger_burger_leonardo:
-              {}
-            tb_burger_burger_michelangelo:
-              {}
-            tb_burger_burger_rafael:
-              {}
       Update Interval: 0
       Value: true
     - Class: rviz/MarkerArray
@@ -137,7 +112,7 @@ Visualization Manager:
       Marker Topic: /tb_burger_markers
       Name: Robots
       Namespaces:
-        simulation_markers: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -145,7 +120,7 @@ Visualization Manager:
       Marker Topic: /tb_burger_orientation_markers
       Name: Robot Orientations
       Namespaces:
-        simulation_markers: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray

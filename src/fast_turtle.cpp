@@ -145,79 +145,79 @@ Observation FastTurtle::observe(int idx_robot){
 }
 
 // Acts with twist message in robot with idx_robot
-void FastTurtle::act_turtlebot_burger(float v, float w, int idx_tb_robot){
-    if (idx_tb_robot < 0 || idx_tb_robot > this->w->get_n_burgers() - 1){
+void FastTurtle::act_turtlebot_burger(float v, float w, int idx_tbb){
+    if (idx_tbb < 0 || idx_tbb > this->w->get_n_burgers() - 1){
         throw std::invalid_argument("invalid tb_robot index of " + 
-        std::to_string(idx_tb_robot) +". It needs to be >= 0 or < " + 
+        std::to_string(idx_tbb) +". It needs to be >= 0 or < " + 
         std::to_string(this->w->get_burgers().size()));
     }
     // Check current time
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
     // Measure time passed since tb_robot last actuation time
-    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times_tb_robots[idx_tb_robot]).count() * 1e-9;
+    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times_tb_robots[idx_tbb]).count() * 1e-9;
 
     // If duration is bigger than the controller rate, then controller can act
-    if(elapsed > this->w->get_burger(idx_tb_robot)->get_controller_period()){
+    if(elapsed > this->w->get_burger(idx_tbb)->get_controller_period()){
         // Update last time
-        this->last_times_tb_robots[idx_tb_robot] = now;
+        this->last_times_tb_robots[idx_tbb] = now;
         // Update last twist values
-        this->w->get_burger(idx_tb_robot)->set_new_v_w(v,w);
+        this->w->get_burger(idx_tbb)->set_new_v_w(v,w);
     }
 
     // Move tb_robot
-    this->w->get_burger(idx_tb_robot)->move(
-        this->w->get_burger(idx_tb_robot)->get_last_v(),
-        this->w->get_burger(idx_tb_robot)->get_last_w(),
+    this->w->get_burger(idx_tbb)->move(
+        this->w->get_burger(idx_tbb)->get_last_v(),
+        this->w->get_burger(idx_tbb)->get_last_w(),
         this->simulation_dt
     );
 
     // Update tb_robot lidar
-    this->w->get_burger(idx_tb_robot)->get_lidar()->update_lidar_heavy(
+    this->w->get_burger(idx_tbb)->get_lidar()->update_lidar_heavy(
         this->w->get_round_obstacles(), 
         this->w->get_edges(), 
         this->w->get_wall_obstacles(),
-        this->get_world()->get_burger(idx_tb_robot)->get_xc(), 
-        this->get_world()->get_burger(idx_tb_robot)->get_yc(), 
-        this->get_world()->get_burger(idx_tb_robot)->get_theta()
+        this->get_world()->get_burger(idx_tbb)->get_xc(), 
+        this->get_world()->get_burger(idx_tbb)->get_yc(), 
+        this->get_world()->get_burger(idx_tbb)->get_theta()
     );
 }
 
-void FastTurtle::act_simple_drone(float vx, float vy, int idx_robot){
-    if (idx_robot < 0 || idx_robot > this->w->get_n_simple_drones() - 1){
+void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
+    if (idx_sd < 0 || idx_sd > this->w->get_n_simple_drones() - 1){
         throw std::invalid_argument("invalid burger index of " + 
-        std::to_string(idx_robot) +". It needs to be >= 0 or < " + 
+        std::to_string(idx_sd) +". It needs to be >= 0 or < " + 
         std::to_string(this->w->get_simple_drones().size()));
     }
     // Check current time
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
     // Measure time passed since burger last actuation time
-    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times_simple_drones[idx_robot]).count() * 1e-9;
+    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times_simple_drones[idx_sd]).count() * 1e-9;
 
     // If duration is bigger than the controller rate, then controller can act
-    if(elapsed > this->w->get_simple_drone(idx_robot)->get_controller_period()){
+    if(elapsed > this->w->get_simple_drone(idx_sd)->get_controller_period()){
         // Update last time
-        this->last_times_simple_drones[idx_robot] = now;
+        this->last_times_simple_drones[idx_sd] = now;
         // Update last twist valuesact
-        this->w->get_simple_drone(idx_robot)->set_new_vx_vy(vx,vy);
+        this->w->get_simple_drone(idx_sd)->set_new_vx_vy(vx,vy);
     }
 
     // Move drone
-    this->w->get_simple_drone(idx_robot)->move(
-        this->w->get_simple_drone(idx_robot)->get_last_vx(),
-        this->w->get_simple_drone(idx_robot)->get_last_vy(),
+    this->w->get_simple_drone(idx_sd)->move(
+        this->w->get_simple_drone(idx_sd)->get_last_vx(),
+        this->w->get_simple_drone(idx_sd)->get_last_vy(),
         this->simulation_dt
     );
 
     // Update simple_drone lidar
-    this->w->get_simple_drone(idx_robot)->get_lidar()->update_lidar_heavy(
+    this->w->get_simple_drone(idx_sd)->get_lidar()->update_lidar_heavy(
         this->w->get_round_obstacles(), 
         this->w->get_edges(),
         this->w->get_wall_obstacles(), 
-        this->get_world()->get_simple_drone(idx_simple_drone)->get_xc(), 
-        this->get_world()->get_simple_drone(idx_simple_drone)->get_yc(), 
-        this->get_world()->get_simple_drone(idx_simple_drone)->get_theta()
+        this->get_world()->get_simple_drone(idx_sd)->get_xc(), 
+        this->get_world()->get_simple_drone(idx_sd)->get_yc(), 
+        this->get_world()->get_simple_drone(idx_sd)->get_theta()
     );
 }
 

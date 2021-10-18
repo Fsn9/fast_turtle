@@ -336,11 +336,7 @@ void Lidar::display_lasers(){
 bool Lidar::in_between(float xi, float xm, float xf){
     return (xi <= xm && xm <= xf) || (xf <= xm && xm <= xi);
 }
-/*
-template <typename T> bool Lidar::in_sight(float x_sight, float y_sight, float x_forward, float y_forward, float x_object, float y_object, T object){
-    return true;
-}
-*/
+
 bool Lidar::in_sight(float x_min, float y_min, float x_max, float y_max, float x_obs, float y_obs){
     // Check after if it is needed to add the last condition
     return this->in_between(x_min, x_obs, x_max) && this->in_between(y_min, y_obs, y_max);
