@@ -402,7 +402,7 @@ void repaint(){
     //check for collisions and if they collided, make them disapear 
     ft->check_collisions();
     for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
-        if(!ft->get_world()->get_burger(i)->is_visible()){
+        if(!ft->get_world()->get_simple_drone(i)->is_visible()){
             simple_drone_markers.markers[i].color.a = 0;
             simple_drone_supports_markers.markers[i].color.a = 0;
         }
@@ -446,7 +446,7 @@ void repaint(){
             }
 
             //object collided while holding food
-            else if(!ft->get_world()->get_burger(j)->is_visible() && ft->get_world()->get_food_item(i)->robot == j){
+            else if(!ft->get_world()->get_simple_drone(j)->is_visible() && ft->get_world()->get_food_item(i)->robot == j){
                 food_markers.markers[i].color.a = 1;
                 ft->get_world()->get_food_item(i)->visible = true;
                 ft->get_world()->get_food_item(i)->robot = -1;
