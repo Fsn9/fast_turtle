@@ -14,7 +14,7 @@ class RoundObstacle : public Obstacle, public Circle{
         std::string tostring();
 };
 
-class WallObstacle : public Obstacle, public Line{
+class WallObstacle : public Obstacle, public LineSegment{
     public:
         WallObstacle(float x1, float y1, float x2, float y2);
         std::string tostring();

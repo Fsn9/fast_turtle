@@ -28,7 +28,7 @@ class Lidar{
         Lidar(float frequency, Point2d* position);
         std::vector<float> get_lasers();
         void display_lasers();
-        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<Line> edges, float x_robot, float y_robot, float theta_robot);
+        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot);
         std::string tostring();
         bool in_between(float xi, float xm, float xf);
         std::tuple<float, float> get_nearest_points(float xr, float yr, float x1, float y1, float x2, float y2);
@@ -67,7 +67,7 @@ class TurtlebotBurger : public Circle{
 
 class SimpleDrone : public Circle{
     private:
-        float height, inv_diameter, diameter, controller_period;
+        float theta, height, inv_diameter, diameter, controller_period;
         Lidar* lidar;
         std::string model;
         std::string name;
@@ -80,6 +80,7 @@ class SimpleDrone : public Circle{
         std::tuple<float, float> kinematics(float vx, float vy, double time_step);
         float x();
         float y();
+        float get_theta();
         float get_height();
         float get_controller_period();
         bool is_visible();

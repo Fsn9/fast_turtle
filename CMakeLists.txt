@@ -214,17 +214,20 @@ include_directories(
 # Include headers
 include_directories(include)
 
-# Library definition
+# Libraries definition
 add_library(ft STATIC
   src/fast_turtle.cpp
-  src/geometry.cpp
   src/goal.cpp
+  src/geometry.cpp
+  src/utils.cpp
   src/obstacles.cpp
   src/robot.cpp
-  src/utils.cpp
   src/world.cpp
   src/controller.cpp
 )
+
+# Link libraries
+target_link_libraries(ft ${catkin_LIBRARIES})
 
 # It defines the live_simulation.cpp as an executable
 add_executable(live_simulation src/live_simulation.cpp)
@@ -236,13 +239,15 @@ add_executable(arena01 src/arena01.cpp)
 target_link_libraries(arena01 ${catkin_LIBRARIES} ft)
 add_dependencies(arena01 fast_turtle_generate_messages_cpp)
 
+# It defines the arena00.cpp as an executable
+add_executable(arena00 src/arena00.cpp)
+target_link_libraries(arena00 ${catkin_LIBRARIES} ft)
+add_dependencies(arena00 fast_turtle_generate_messages_cpp)
+
 # It defines the test_drones.cpp as an executable
 add_executable(test_drones src/test_drones.cpp)
 target_link_libraries(test_drones ${catkin_LIBRARIES} ft)
 add_dependencies(test_drones fast_turtle_generate_messages_cpp)
-
-# Link ft library and ros library
-target_link_libraries(ft ${catkin_LIBRARIES})
 
 # It defines the my_controller.cpp as an executable
 add_executable(my_controller src/my_controller.cpp)
