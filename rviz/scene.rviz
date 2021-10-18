@@ -59,9 +59,9 @@ Visualization Manager:
         simulator_markers: true
       Queue Size: 100
       Value: true
-    - Class: rviz/Marker
+    - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /stats_marker
+      Marker Topic: /stats_markers
       Name: Stats
       Namespaces:
         simulator_markers: true
