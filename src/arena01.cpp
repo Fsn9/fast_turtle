@@ -545,6 +545,17 @@ int main(int argc, char** argv)
     ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1", 1000, listen_cmd_vel_sd1);
     ros::Subscriber sub_sd2 = nh.subscribe("cmd_vel_sd2", 1000, listen_cmd_vel_sd2);
 
+    ros::Subscriber sub_team1 = nh.subscribe("cmd_vel_team1", 1000, listen_cmd_vel_team1);
+    ros::Subscriber sub_team2 = nh.subscribe("cmd_vel_team2", 1000, listen_cmd_vel_team2);
+    ros::Subscriber sub_team3 = nh.subscribe("cmd_vel_team3", 1000, listen_cmd_vel_team3);
+    ros::Subscriber sub_team4 = nh.subscribe("cmd_vel_team4", 1000, listen_cmd_vel_team4);
+    ros::Subscriber sub_team5 = nh.subscribe("cmd_vel_team5", 1000, listen_cmd_vel_team5);
+    ros::Subscriber sub_team6 = nh.subscribe("cmd_vel_team6", 1000, listen_cmd_vel_team6);
+    ros::Subscriber sub_team7 = nh.subscribe("cmd_vel_team7", 1000, listen_cmd_vel_team7);
+    ros::Subscriber sub_team8 = nh.subscribe("cmd_vel_team8", 1000, listen_cmd_vel_team8);
+    ros::Subscriber sub_team9 = nh.subscribe("cmd_vel_team9", 1000, listen_cmd_vel_team9);
+    ros::Subscriber sub_team10 = nh.subscribe("cmd_vel_team10", 1000, listen_cmd_vel_team10);
+
     // Publishers
     simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
 
@@ -558,10 +569,10 @@ int main(int argc, char** argv)
     ft->add_obstacle(-2, -2, obstacle_radius, "round");
     ft->add_obstacle(2, -4, obstacle_radius, "round");
     ft->add_obstacle(6, -6, obstacle_radius, "round");
-    ft->add_wall(0, -10, 0, -8); //bpartida dos robots
-    ft->add_wall(-1, -10, -1, -8);
-    ft->add_wall(1, -10, 1, -8);
-    ft->add_wall(2, -10, 2, -8);
+    //ft->add_wall(0, -10, 0, -8); //bpartida dos robots
+    //ft->add_wall(-1, -10, -1, -8);
+    //ft->add_wall(1, -10, 1, -8);
+    //ft->add_wall(2, -10, 2, -8);
     ft->add_wall(-6, 6, -6, 8); //canto superior esq
     ft->add_wall(-8, 6, -6, 6);
     ft->add_wall(-6, 0, -6, 2); //L da esq
@@ -594,11 +605,65 @@ int main(int argc, char** argv)
     ft->add_food_item(0, -3, FOOD_RADIUS); 
     ft->add_food_item(-8, 1, FOOD_RADIUS); 
     
-    // Drones
+    // Drones #1
     ft->add_simple_drone(-0.5, -9.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
-    ft->add_simple_drone(0.5, -9.5, 0.5, BURGER_RADIUS, "drone1", 0.2);
-    ft->add_simple_drone(1.5, -9.5, 0.5, BURGER_RADIUS, "drone2", 0.2); 
+    ft->add_simple_drone(-0.5, -9.0, 0.5, BURGER_RADIUS, "drone1", 0.2);
+    ft->add_simple_drone(-0.5, -8.5, 0.5, BURGER_RADIUS, "drone2", 0.2); 
+    ft->add_simple_drone(-0.5, -8.0, 0.5, BURGER_RADIUS, "drone3", 0.2); 
 
+    // Drones #2
+    ft->add_simple_drone(0.0, -9.5, 0.5, BURGER_RADIUS, "drone4", 0.2);
+    ft->add_simple_drone(0.0, -9.0, 0.5, BURGER_RADIUS, "drone5", 0.2);
+    ft->add_simple_drone(0.0, -8.5, 0.5, BURGER_RADIUS, "drone6", 0.2); 
+    ft->add_simple_drone(0.0, -8.0, 0.5, BURGER_RADIUS, "drone7", 0.2); 
+
+    // Drones #3
+    ft->add_simple_drone(0.5, -9.5, 0.5, BURGER_RADIUS, "drone8", 0.2);
+    ft->add_simple_drone(0.5, -9.0, 0.5, BURGER_RADIUS, "drone9", 0.2);
+    ft->add_simple_drone(0.5, -8.5, 0.5, BURGER_RADIUS, "drone10", 0.2); 
+    ft->add_simple_drone(0.5, -8.0, 0.5, BURGER_RADIUS, "drone11", 0.2); 
+
+    // Drones #4
+    ft->add_simple_drone(1.0, -9.5, 0.5, BURGER_RADIUS, "drone12", 0.2);
+    ft->add_simple_drone(1.0, -9.0, 0.5, BURGER_RADIUS, "drone13", 0.2);
+    ft->add_simple_drone(1.0, -8.5, 0.5, BURGER_RADIUS, "drone14", 0.2); 
+    ft->add_simple_drone(1.0, -8.0, 0.5, BURGER_RADIUS, "drone15", 0.2); 
+
+    // Drones #5
+    ft->add_simple_drone(1.5, -9.5, 0.5, BURGER_RADIUS, "drone16", 0.2);
+    ft->add_simple_drone(1.5, -9.0, 0.5, BURGER_RADIUS, "drone17", 0.2);
+    ft->add_simple_drone(1.5, -8.5, 0.5, BURGER_RADIUS, "drone18", 0.2); 
+    ft->add_simple_drone(1.5, -8.0, 0.5, BURGER_RADIUS, "drone19", 0.2); 
+
+    // Drones #6
+    ft->add_simple_drone(2.0, -9.5, 0.5, BURGER_RADIUS, "drone20", 0.2);
+    ft->add_simple_drone(2.0, -9.0, 0.5, BURGER_RADIUS, "drone21", 0.2);
+    ft->add_simple_drone(2.0, -8.5, 0.5, BURGER_RADIUS, "drone22", 0.2); 
+    ft->add_simple_drone(2.0, -8.0, 0.5, BURGER_RADIUS, "drone23", 0.2); 
+
+    // Drones #7
+    ft->add_simple_drone(2.5, -9.5, 0.5, BURGER_RADIUS, "drone24", 0.2);
+    ft->add_simple_drone(2.5, -9.0, 0.5, BURGER_RADIUS, "drone25", 0.2);
+    ft->add_simple_drone(2.5, -8.5, 0.5, BURGER_RADIUS, "drone26", 0.2); 
+    ft->add_simple_drone(2.5, -8.0, 0.5, BURGER_RADIUS, "drone27", 0.2); 
+
+    // Drones #8
+    ft->add_simple_drone(3.0, -9.5, 0.5, BURGER_RADIUS, "drone28", 0.2);
+    ft->add_simple_drone(3.0, -9.0, 0.5, BURGER_RADIUS, "drone29", 0.2);
+    ft->add_simple_drone(3.0, -8.5, 0.5, BURGER_RADIUS, "drone30", 0.2); 
+    ft->add_simple_drone(3.0, -8.0, 0.5, BURGER_RADIUS, "drone31", 0.2); 
+
+    // Drones #9
+    ft->add_simple_drone(3.5, -9.5, 0.5, BURGER_RADIUS, "drone32", 0.2);
+    ft->add_simple_drone(3.5, -9.0, 0.5, BURGER_RADIUS, "drone33", 0.2);
+    ft->add_simple_drone(3.5, -8.5, 0.5, BURGER_RADIUS, "drone34", 0.2); 
+    ft->add_simple_drone(3.5, -8.0, 0.5, BURGER_RADIUS, "drone35", 0.2); 
+
+    // Drones #10
+    ft->add_simple_drone(4.0, -9.5, 0.5, BURGER_RADIUS, "drone36", 0.2);
+    ft->add_simple_drone(4.0, -9.0, 0.5, BURGER_RADIUS, "drone37", 0.2);
+    ft->add_simple_drone(4.0, -8.5, 0.5, BURGER_RADIUS, "drone38", 0.2); 
+    ft->add_simple_drone(4.0, -8.0, 0.5, BURGER_RADIUS, "drone39", 0.2); 
 
     // Send first world data and graphics data
     publish_data();
