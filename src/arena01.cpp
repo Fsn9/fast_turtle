@@ -12,6 +12,7 @@
 #include "sensor_msgs/LaserScan.h"
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
+#include <string.h>
 
 // #include <time.h>
 
@@ -27,6 +28,17 @@
 
 // Drone structure parameters
 #define SIMPLE_DRONE_SUPPORTS_THICKNESS 0.01f
+
+int teste[4] = {0,1,2,3};
+
+struct team {
+    int drones[4];
+    int rgb[3];
+};
+
+// // Teams
+// struct team Team;
+
 
 // Initialize fast turtle simulator object
 FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
@@ -58,8 +70,10 @@ ros::Publisher simple_drones_publisher;
 sensor_msgs::LaserScan laser_scan_msg;
 
 // Vector of real time command velocities for all robots
-std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
-
+//std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
+std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}
+,{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}
+,{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
 // Move robot 'idx'
 void move_simple_drones(int idx)
 {
@@ -115,6 +129,39 @@ void init_graphics_and_data(){
     // For int variable
     int i = 0;
 
+    struct team Team[9];
+
+    Team[0].drones = {0,1,2,3};
+    Team[0].rgb = {0.5,0.2,0.1};
+    
+    Team[1].drones = {4,5,6,7};
+    Team[1].rgb = {0.5,0.2,0.1};
+    
+    Team[2].drones = {8,9,10,11};
+    Team[2].rgb = {0.5,0.2,0.1};
+    
+    Team[3].drones = {12,13,14,15};
+    Team[3].rgb = {0.5,0.2,0.1};
+    
+    Team[4].drones = {16,17,18,19};
+    Team[4].rgb = {0.5,0.2,0.1};
+    
+    Team[5].drones = {20,21,22,23};
+    Team[5].rgb = {0.5,0.2,0.1};
+    
+    Team[6].drones = {24,25,26,27};
+    Team[6].rgb = {0.5,0.2,0.1};
+    
+    Team[7].drones = {28,29,30,31};
+    Team[7].rgb = {0.5,0.2,0.1};
+    
+    Team[8].drones = {32,33,34,35};
+    Team[8].rgb = {0.5,0.2,0.1};
+    
+    Team[9].drones = {36,37,38,39};
+    Team[9].rgb = {0.5,0.2,0.1};
+    
+
     // World marker
     world_marker.header.frame_id = "world";
     world_marker.ns = "simulator_markers";
@@ -141,6 +188,16 @@ void init_graphics_and_data(){
     visualization_msgs::Marker simple_drone_marker;
     for(i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
     {
+        int dist;
+        int pos;
+        for (int h = 0; h < 9; h++){
+            dist = std::find(std::begin(Team[h].drones), std::end(Team[h].drones), i);
+            if (dist != std::end(Team[h].drones)) {
+                pos = std::distance(Team[h].drones, dist);
+                break;
+            } 
+        }
+
         simple_drone_marker.header.frame_id = "world";
         simple_drone_marker.ns = "simulation_markers";
         simple_drone_marker.id = j;
@@ -179,9 +236,9 @@ void init_graphics_and_data(){
             sd_support_marker.action = visualization_msgs::Marker::ADD;
             sd_support_marker.scale.x = SIMPLE_DRONE_SUPPORTS_THICKNESS;
             sd_support_marker.color.a = 1.0;
-            sd_support_marker.color.r = 0.0;
-            sd_support_marker.color.g = 0.0;
-            sd_support_marker.color.b = 0.0;
+            sd_support_marker.color.r = Team[pos].rgb[0];//0.0;
+            sd_support_marker.color.g = Team[pos].rgb[1]; //0.0;
+            sd_support_marker.color.b = Team[pos].rgb[2]; //0.0;
             sd_support_marker.pose.orientation.x = 0.0;
             sd_support_marker.pose.orientation.y = 0.0;
             sd_support_marker.pose.orientation.z = 0.0;
