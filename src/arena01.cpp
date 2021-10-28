@@ -25,15 +25,27 @@
 #define FOOD_LIMIT_Y_sup -6
 #define FOOD_LIMIT_Y_inf -10
 #define PROXIMITY 0.3
+#define RED {1,0,0}
+#define GREEN {0,1,0}
+#define BLUE {0,0,1}
+#define YELLOW {1,1,0}
+#define ORANGE {1,0.65,0}
+#define WHITE {1,1,1}
+#define GREY {0.5,0.5,0.5}
+#define PINK {1,0,1}
+#define CYAN {0,1,1}
+#define PURPLE {0.5,0,0.5}
+
+
 
 // Drone structure parameters
 #define SIMPLE_DRONE_SUPPORTS_THICKNESS 0.01f
 
-int teste[4] = {0,1,2,3};
+float colors[10][3]={RED,GREEN,BLUE,YELLOW,ORANGE,WHITE,GREY,PINK,CYAN,PURPLE};
 
-struct team {
-    int drones[4];
-    int rgb[3];
+struct drone {
+    int team;
+    float rgb[3];
 };
 
 // // Teams
@@ -128,39 +140,24 @@ void init_graphics_and_data(){
     int j = 0;
     // For int variable
     int i = 0;
+    int T = 1;
 
-    struct team Team[9];
-
-    Team[0].drones = {0,1,2,3};
-    Team[0].rgb = {0.5,0.2,0.1};
-    
-    Team[1].drones = {4,5,6,7};
-    Team[1].rgb = {0.5,0.2,0.1};
-    
-    Team[2].drones = {8,9,10,11};
-    Team[2].rgb = {0.5,0.2,0.1};
-    
-    Team[3].drones = {12,13,14,15};
-    Team[3].rgb = {0.5,0.2,0.1};
-    
-    Team[4].drones = {16,17,18,19};
-    Team[4].rgb = {0.5,0.2,0.1};
-    
-    Team[5].drones = {20,21,22,23};
-    Team[5].rgb = {0.5,0.2,0.1};
-    
-    Team[6].drones = {24,25,26,27};
-    Team[6].rgb = {0.5,0.2,0.1};
-    
-    Team[7].drones = {28,29,30,31};
-    Team[7].rgb = {0.5,0.2,0.1};
-    
-    Team[8].drones = {32,33,34,35};
-    Team[8].rgb = {0.5,0.2,0.1};
-    
-    Team[9].drones = {36,37,38,39};
-    Team[9].rgb = {0.5,0.2,0.1};
-    
+    // Assigning Drones to Teams
+    int num = 1;
+    int count = 0;
+    struct drone Drones[40];
+    for(int k = 0; k < ft->get_world()->get_n_simple_drones(); k++){
+        Drones[k].rgb[0] = colors[num-1][0];
+        Drones[k].rgb[1] = colors[num-1][1];
+        Drones[k].rgb[2] = colors[num-1][2];
+        Drones[k].team = num; 
+        if (count == 3){
+            num++;
+            count = 0;
+        } else {
+            count++;
+        }
+    }
 
     // World marker
     world_marker.header.frame_id = "world";
@@ -188,16 +185,16 @@ void init_graphics_and_data(){
     visualization_msgs::Marker simple_drone_marker;
     for(i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
     {
-        int dist;
-        int pos;
-        for (int h = 0; h < 9; h++){
-            dist = std::find(std::begin(Team[h].drones), std::end(Team[h].drones), i);
-            if (dist != std::end(Team[h].drones)) {
-                pos = std::distance(Team[h].drones, dist);
-                break;
-            } 
-        }
-
+        // int dist;
+        // int pos;
+        // for (int h = 0; h < 9; h++){
+        //     dist = std::find(std::begin(Team[h].drones), std::end(Team[h].drones), i);
+        //     if (dist != std::end(Team[h].drones)) {
+        //         pos = std::distance(Team[h].drones, dist);
+        //         break;
+        //     } 
+        // }
+        
         simple_drone_marker.header.frame_id = "world";
         simple_drone_marker.ns = "simulation_markers";
         simple_drone_marker.id = j;
@@ -236,9 +233,9 @@ void init_graphics_and_data(){
             sd_support_marker.action = visualization_msgs::Marker::ADD;
             sd_support_marker.scale.x = SIMPLE_DRONE_SUPPORTS_THICKNESS;
             sd_support_marker.color.a = 1.0;
-            sd_support_marker.color.r = Team[pos].rgb[0];//0.0;
-            sd_support_marker.color.g = Team[pos].rgb[1]; //0.0;
-            sd_support_marker.color.b = Team[pos].rgb[2]; //0.0;
+            sd_support_marker.color.r = Drones[i].rgb[0];//0.0;
+            sd_support_marker.color.g = Drones[i].rgb[1]; //0.0;
+            sd_support_marker.color.b = Drones[i].rgb[2]; //0.0;
             sd_support_marker.pose.orientation.x = 0.0;
             sd_support_marker.pose.orientation.y = 0.0;
             sd_support_marker.pose.orientation.z = 0.0;
@@ -602,16 +599,16 @@ int main(int argc, char** argv)
     ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1", 1000, listen_cmd_vel_sd1);
     ros::Subscriber sub_sd2 = nh.subscribe("cmd_vel_sd2", 1000, listen_cmd_vel_sd2);
 
-    ros::Subscriber sub_team1 = nh.subscribe("cmd_vel_team1", 1000, listen_cmd_vel_team1);
-    ros::Subscriber sub_team2 = nh.subscribe("cmd_vel_team2", 1000, listen_cmd_vel_team2);
-    ros::Subscriber sub_team3 = nh.subscribe("cmd_vel_team3", 1000, listen_cmd_vel_team3);
-    ros::Subscriber sub_team4 = nh.subscribe("cmd_vel_team4", 1000, listen_cmd_vel_team4);
-    ros::Subscriber sub_team5 = nh.subscribe("cmd_vel_team5", 1000, listen_cmd_vel_team5);
-    ros::Subscriber sub_team6 = nh.subscribe("cmd_vel_team6", 1000, listen_cmd_vel_team6);
-    ros::Subscriber sub_team7 = nh.subscribe("cmd_vel_team7", 1000, listen_cmd_vel_team7);
-    ros::Subscriber sub_team8 = nh.subscribe("cmd_vel_team8", 1000, listen_cmd_vel_team8);
-    ros::Subscriber sub_team9 = nh.subscribe("cmd_vel_team9", 1000, listen_cmd_vel_team9);
-    ros::Subscriber sub_team10 = nh.subscribe("cmd_vel_team10", 1000, listen_cmd_vel_team10);
+    // ros::Subscriber sub_team1 = nh.subscribe("cmd_vel_team1", 1000, listen_cmd_vel_team1);
+    // ros::Subscriber sub_team2 = nh.subscribe("cmd_vel_team2", 1000, listen_cmd_vel_team2);
+    // ros::Subscriber sub_team3 = nh.subscribe("cmd_vel_team3", 1000, listen_cmd_vel_team3);
+    // ros::Subscriber sub_team4 = nh.subscribe("cmd_vel_team4", 1000, listen_cmd_vel_team4);
+    // ros::Subscriber sub_team5 = nh.subscribe("cmd_vel_team5", 1000, listen_cmd_vel_team5);
+    // ros::Subscriber sub_team6 = nh.subscribe("cmd_vel_team6", 1000, listen_cmd_vel_team6);
+    // ros::Subscriber sub_team7 = nh.subscribe("cmd_vel_team7", 1000, listen_cmd_vel_team7);
+    // ros::Subscriber sub_team8 = nh.subscribe("cmd_vel_team8", 1000, listen_cmd_vel_team8);
+    // ros::Subscriber sub_team9 = nh.subscribe("cmd_vel_team9", 1000, listen_cmd_vel_team9);
+    // ros::Subscriber sub_team10 = nh.subscribe("cmd_vel_team10", 1000, listen_cmd_vel_team10);
 
     // Publishers
     simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
@@ -662,6 +659,7 @@ int main(int argc, char** argv)
     ft->add_food_item(0, -3, FOOD_RADIUS); 
     ft->add_food_item(-8, 1, FOOD_RADIUS); 
     
+    // Teams of Drones
     // Drones #1
     ft->add_simple_drone(-0.5, -9.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
     ft->add_simple_drone(-0.5, -9.0, 0.5, BURGER_RADIUS, "drone1", 0.2);
