@@ -223,6 +223,7 @@ add_library(ft STATIC
   src/obstacles.cpp
   src/robot.cpp
   src/world.cpp
+  src/swarm_robotics.cpp
   src/controller.cpp
 )
 

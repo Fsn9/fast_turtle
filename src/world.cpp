@@ -109,3 +109,13 @@ std::vector<SimpleDrone> World::get_simple_drones(){
 SimpleDrone* World::get_simple_drone(int idx){
 	return &this->simple_drones[idx];
 }
+
+std::vector<std::string> World::get_robot_names()
+{
+	std::vector<std::string> names;
+	for(SimpleDrone robot : this->simple_drones)
+	{
+		names.emplace_back(robot.get_name());
+	}
+	return names;
+}
