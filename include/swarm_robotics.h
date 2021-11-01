@@ -23,6 +23,7 @@ class SwarmTeam // a swarm team is a specific kind of swarm
         bool is_robot_enlisted(std::string name);
         void start_time(std::string robot_name);
         void increase_lifetime(double step);
+        std::map<std::string, bool> get_robots_state();
     private:
         int id_;
         unsigned int num_alive_;
@@ -46,6 +47,7 @@ class SwarmCompetition // has swarm teams
         std::shared_ptr<SwarmTeam> get_team(std::string robot_name);
         std::string log();
         std::string log_lifetimes();
+        std::map<std::string, int> get_robot_list();
     private:
         bool is_robot_enlisted(std::string name);
         std::map<std::string, int> robot_list_; 

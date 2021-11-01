@@ -545,7 +545,6 @@ int main(int argc, char **argv)
         // Sleep
         loop_rate.sleep();
 
-        std::cout << sc->log_lifetimes();
         sc->step();
     }
 }

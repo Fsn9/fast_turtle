@@ -154,6 +154,16 @@ std::vector<std::shared_ptr<SwarmTeam>> SwarmCompetition::get_teams()
     return teams_;
 }
 
+std::map<std::string, int> SwarmCompetition::get_robot_list()
+{
+    return robot_list_;
+}
+
+std::map<std::string, bool> SwarmTeam::get_robots_state()
+{
+    return robots_;
+}
+
 int SwarmTeam::get_id()
 {
     return id_;
