@@ -7,9 +7,23 @@
 
 const int ROBOTS_PER_TEAM = 5;
 const int NUM_TEAMS = 8;
+const float RANGE_MAX = 1;
 
 class SwarmTeam // a swarm team is a specific kind of swarm
 {
+    class RobotState
+    {
+        public:
+            RobotState();
+            RobotState(bool alive, bool leader);
+            bool is_alive();
+            bool is_leader();
+            void kick_out();
+            void declare_leader();
+        private:
+            bool alive_;
+            bool leader_;
+    };
     public:
         SwarmTeam(int id);
         int get_id();
@@ -23,14 +37,16 @@ class SwarmTeam // a swarm team is a specific kind of swarm
         bool is_robot_enlisted(std::string name);
         void start_time(std::string robot_name);
         void increase_lifetime(double step);
-        std::map<std::string, bool> get_robots_state();
+        std::map<std::string, std::shared_ptr<RobotState>> get_robots_state();
+        std::string get_leader();
     private:
         int id_;
         unsigned int num_alive_;
         double lifetime_; // seconds
         int foods_collected_; // max_foods
         bool started_; // started competition
-        std::map<std::string, bool> robots_;
+        std::map<std::string, std::shared_ptr<RobotState>> robots_;
+        void pass_leadership();
 };
 
 class SwarmCompetition // has swarm teams

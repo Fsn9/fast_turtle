@@ -59,9 +59,62 @@ bool SwarmTeam::is_robot_enlisted(std::string name)
     return robots_.find(name) != robots_.end();
 }
 
+SwarmTeam::RobotState::RobotState()
+{
+    alive_ = true;
+    leader_ = false;
+}
+
+SwarmTeam::RobotState::RobotState(bool alive, bool leader)
+{
+    alive_ = alive;
+    leader_ = leader;
+}
+
+bool SwarmTeam::RobotState::is_leader()
+{
+    return leader_;
+}
+
+bool SwarmTeam::RobotState::is_alive()
+{
+    return alive_;
+}
+
+void SwarmTeam::RobotState::kick_out()
+{
+    alive_ = false;
+    if(leader_)
+    {
+        leader_ = false;
+    }
+}
+
+void SwarmTeam::RobotState::declare_leader()
+{
+    leader_ = true;
+}
+
+std::string SwarmTeam::get_leader()
+{
+    for(std::pair<std::string, std::shared_ptr<RobotState>> r : robots_)
+    {
+        if(r.second->is_leader())
+        {
+            return r.first;
+        }
+    }
+    return "none";
+}
+
 void SwarmTeam::enlist(std::string robot_name)
 {
-    robots_.insert({robot_name, true});
+    std::shared_ptr<RobotState> rs = std::make_shared<RobotState>();
+    if(robots_.empty())
+    {
+        rs->declare_leader();
+    }
+    robots_.insert({robot_name, rs});
 }
 
 void SwarmCompetition::the_robot_lost(std::string robot_name)
@@ -78,12 +131,26 @@ void SwarmCompetition::the_robot_lost(std::string robot_name)
 
 void SwarmTeam::the_robot_lost(std::string robot_name)
 {
-    std::map<std::string, bool>::iterator it = robots_.find(robot_name);
+    std::map<std::string, std::shared_ptr<RobotState>>::iterator it = robots_.find(robot_name);
     if(it != robots_.end())
     {
-        it->second = false;
+        it->second->kick_out();   
+        pass_leadership();    
         --num_alive_;
     }
+}
+
+void SwarmTeam::pass_leadership()
+{
+    for(std::pair<std::string, std::shared_ptr<RobotState>> r : robots_)
+    {
+        if(r.second->is_alive() && !r.second->is_leader())
+        {
+            r.second->declare_leader();
+            return;
+        }
+    }
+    std::cout << "Team " << get_id() << " is dead\n";
 }
 
 void SwarmCompetition::food_was_captured(std::string robot_name)
@@ -159,7 +226,7 @@ std::map<std::string, int> SwarmCompetition::get_robot_list()
     return robot_list_;
 }
 
-std::map<std::string, bool> SwarmTeam::get_robots_state()
+std::map<std::string, std::shared_ptr<SwarmTeam::RobotState>> SwarmTeam::get_robots_state()
 {
     return robots_;
 }
@@ -203,6 +270,7 @@ std::string SwarmCompetition::log()
         oss << "\tLifetime: " << team->get_lifetime() << "\n";
         oss << "\tNumber of robots alive: "<< team->get_num_alive() << "\n";
         oss << "\tHas started: " << team->has_started() << "\n";
+        oss << "\tLeader: " << team->get_leader() << "\n";
     }
     return oss.str();
 }
