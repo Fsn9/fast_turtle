@@ -28,7 +28,7 @@
 
 // Initialize fast turtle simulator object
 FastTurtle *ft = new FastTurtle(SIMULATION_FPS);
-SwarmCompetition* sc = new SwarmCompetition();
+SwarmCompetition* sc = new SwarmCompetition(SIMULATION_FPS);
 
 // Markers
 visualization_msgs::Marker world_marker;
@@ -511,9 +511,14 @@ int main(int argc, char **argv)
 
     // Add robots into teams
     sc->enlist("drone0", 0);
-    sc->enlist("drone1", 0);
+    sc->enlist("drone1", 3);
 
+    sc->start_time("drone0");
+    sc->start_time("drone1");
+    sc->food_was_captured("drone0");
     sc->the_robot_lost("drone0");
+
+    std::cout << sc->log();
 
     // Send first world data and graphics data
     publish_data();
@@ -539,5 +544,8 @@ int main(int argc, char **argv)
 
         // Sleep
         loop_rate.sleep();
+
+        std::cout << sc->log_lifetimes();
+        sc->step();
     }
 }

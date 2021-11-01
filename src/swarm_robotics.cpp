@@ -9,14 +9,14 @@ SwarmTeam::SwarmTeam(int id)
     started_ = false;
 }
 
-SwarmCompetition::SwarmCompetition()
+SwarmCompetition::SwarmCompetition(unsigned int simulation_fps)
 {
+    simulation_dt_ = 1.0 / simulation_fps;
     for(int i = 0; i < NUM_TEAMS; i++)
     {
-        SwarmTeam st(i);
+        std::shared_ptr<SwarmTeam> st = std::make_shared<SwarmTeam>(i);
         teams_.emplace_back(st);
     }
-
 }
 
 void SwarmCompetition::init(std::vector<std::string> robot_names)
@@ -35,7 +35,7 @@ void SwarmCompetition::enlist(std::string robot_name, int team_id)
         {
             std::map<std::string, int>::iterator it = robot_list_.find(robot_name);
             it->second = team_id;
-            teams_[team_id].enlist(robot_name);
+            (*teams_[team_id]).enlist(robot_name);
         }
         else
         {
@@ -66,11 +66,12 @@ void SwarmTeam::enlist(std::string robot_name)
 
 void SwarmCompetition::the_robot_lost(std::string robot_name)
 {
-    for(SwarmTeam team : teams_)
+    for(std::shared_ptr<SwarmTeam> team : teams_)
     {
-        if(team.is_robot_enlisted(robot_name))
+        if((*team).is_robot_enlisted(robot_name))
         {   
-            team.the_robot_lost(robot_name);
+            (*team).the_robot_lost(robot_name);
+            return;
         }
     }
 }
@@ -81,10 +82,74 @@ void SwarmTeam::the_robot_lost(std::string robot_name)
     if(it != robots_.end())
     {
         it->second = false;
+        --num_alive_;
     }
 }
 
-std::vector<SwarmTeam> SwarmCompetition::get_teams()
+void SwarmCompetition::food_was_captured(std::string robot_name)
+{
+    for(std::shared_ptr<SwarmTeam> team : teams_)
+    {
+        if((*team).is_robot_enlisted(robot_name))
+        {
+            (*team).food_was_captured(robot_name);
+            return;
+        }
+    }
+}
+
+void SwarmTeam::food_was_captured(std::string robot_name)
+{
+    ++foods_collected_;
+}
+
+void SwarmCompetition::start_time(std::string robot_name)
+{
+    for(std::shared_ptr<SwarmTeam> team : teams_)
+    {
+        if((*team).is_robot_enlisted(robot_name))
+        {
+            (*team).start_time(robot_name);
+            return;
+        }
+    }
+}
+
+void SwarmTeam::start_time(std::string robot_name)
+{
+    if(!started_)
+    {
+        started_ = true;
+    }
+}
+
+void SwarmTeam::increase_lifetime(double step)
+{
+    lifetime_ += step;
+}
+
+void SwarmCompetition::step()
+{
+    for(std::shared_ptr<SwarmTeam> team : teams_)
+    {
+        if((*team).has_started())
+        {
+            (*team).increase_lifetime(simulation_dt_);
+        }
+    }
+}
+
+std::shared_ptr<SwarmTeam> SwarmCompetition::get_team(std::string robot_name)
+{
+    int team_id;
+    if(is_robot_enlisted(robot_name))
+    {
+        team_id = robot_list_.find(robot_name)->second;    
+    }
+    return teams_[team_id];
+}
+
+std::vector<std::shared_ptr<SwarmTeam>> SwarmCompetition::get_teams()
 {
     return teams_;
 }
@@ -114,16 +179,32 @@ bool SwarmTeam::has_started()
     return started_;
 }
 
-/*
-void Swarm::add_robot(SwarmRobot sd)
+std::string SwarmCompetition::log()
 {
-    robots_.emplace_back(sd);
+    std::ostringstream oss;
+    oss << "Swarm Competition log\n";
+    oss << "NUM TEAMS: " << NUM_TEAMS << "\n";
+    oss << "NUM ROBOTS PER TEAM" << ROBOTS_PER_TEAM << "\n";
+    oss << "Teams: \n";
+    for(std::shared_ptr<SwarmTeam> team : teams_)
+    {
+        oss << "\t# Team " << team->get_id() << "\n";
+        oss << "\tFoods collected: " << team->get_foods_collected() << "\n";
+        oss << "\tLifetime: " << team->get_lifetime() << "\n";
+        oss << "\tNumber of robots alive: "<< team->get_num_alive() << "\n";
+        oss << "\tHas started: " << team->has_started() << "\n";
+    }
+    return oss.str();
 }
 
-std::vector<SwarmRobot> Swarm::get_robots()
+std::string SwarmCompetition::log_lifetimes()
 {
-    return robots_;
+    std::ostringstream oss;
+    oss << "Swarm Competition lifetimes log\n";
+    for(std::shared_ptr<SwarmTeam> team : teams_)
+    {
+        oss << "\t# Team " << team->get_id() << "\n";
+        oss << "\tLifetime: " << team->get_lifetime() << "\n";
+    }
+    return oss.str();
 }
-*/
-
-
