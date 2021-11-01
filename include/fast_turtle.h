@@ -33,6 +33,7 @@ class FastTurtle{
         std::vector<std::chrono::steady_clock::time_point> last_times_simple_drones; // keeps track of the controller drones last actuation times
         unsigned int simulation_fps;
         double simulation_dt;
+        float default_scan_[N_LASERS];
     public:
         FastTurtle();
         FastTurtle(unsigned int simulation_fps);
@@ -46,6 +47,7 @@ class FastTurtle{
         void add_food_item(float x, float y, float radius, bool dynamics) = delete;
         void add_food_item(float x, float y, float radius);
         World* get_world();  
+        float* get_laser(std::string robot_name);
         std::vector<float> observe_robot_pose(int idx_robot);
         std::vector<float> observe_robot_lidar(int idx_robot);
         void act_turtlebot_burger(float v, float w, int idx_robot);

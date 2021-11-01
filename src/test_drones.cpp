@@ -502,7 +502,7 @@ int main(int argc, char **argv)
     ft->add_obstacle(0, 2, obstacle_radius, "round");
     ft->add_obstacle(-1, -1, obstacle_radius, "round");
     ft->add_obstacle(-1, -2, obstacle_radius, "round");
-    ft->add_simple_drone(1, 0, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_simple_drone(1, 1.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
     ft->add_simple_drone(2, 1, 0.5, BURGER_RADIUS, "drone1", 0.2);
     ft->add_simple_drone(-2, 1, 0.5, BURGER_RADIUS, "drone2", 0.2);
     ft->add_simple_drone(2, -2, 0.5, BURGER_RADIUS, "drone3", 0.2);
@@ -547,6 +547,13 @@ int main(int argc, char **argv)
 
         // Sleep
         loop_rate.sleep();
+
+        std::cout << "lasers:\n";
+        float* lasers = ft->get_laser("drone0");
+        for(int i=0; i<360; i++)
+        {
+            printf("laser(%d) = %f\n", i, lasers[i]);
+        }
 
         sc->step();
     }
