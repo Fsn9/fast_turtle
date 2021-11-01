@@ -513,6 +513,8 @@ int main(int argc, char **argv)
     sc->enlist("drone0", 0);
     sc->enlist("drone1", 0);
 
+    sc->the_robot_lost("drone0");
+
     // Send first world data and graphics data
     publish_data();
     init_graphics_and_data();
