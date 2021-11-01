@@ -1,5 +1,7 @@
 // Simulator library
 #include "fast_turtle.h"
+// Swarm Robotics
+#include "swarm_robotics.h"
 // ROS main library
 #include <ros/ros.h>
 // TF
@@ -26,6 +28,7 @@
 
 // Initialize fast turtle simulator object
 FastTurtle *ft = new FastTurtle(SIMULATION_FPS);
+SwarmCompetition* sc = new SwarmCompetition(SIMULATION_FPS);
 
 // Markers
 visualization_msgs::Marker world_marker;
@@ -499,8 +502,26 @@ int main(int argc, char **argv)
     ft->add_obstacle(0, 2, obstacle_radius, "round");
     ft->add_obstacle(-1, -1, obstacle_radius, "round");
     ft->add_obstacle(-1, -2, obstacle_radius, "round");
-    ft->add_simple_drone(1, 0, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_simple_drone(1, 1.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_simple_drone(2, 1, 0.5, BURGER_RADIUS, "drone1", 0.2);
+    ft->add_simple_drone(-2, 1, 0.5, BURGER_RADIUS, "drone2", 0.2);
+    ft->add_simple_drone(2, -2, 0.5, BURGER_RADIUS, "drone3", 0.2);
     ft->add_wall(2, 0, 2, 2);
+    
+    // Initialize swarm competition giving the robot names
+    sc->init(ft->get_world()->get_robot_names());
+
+    // Add robots into teams
+    sc->enlist("drone0", 0);
+    sc->enlist("drone1", 0);
+    sc->enlist("drone2", 0);
+    sc->enlist("drone3", 2);
+
+    sc->start_time("drone0");
+    sc->start_time("drone2");
+    sc->food_was_captured("drone0");
+    sc->the_robot_lost("drone0");
+    sc->the_robot_lost("drone1");
 
     // Send first world data and graphics data
     publish_data();
@@ -526,5 +547,14 @@ int main(int argc, char **argv)
 
         // Sleep
         loop_rate.sleep();
+
+        std::cout << "lasers:\n";
+        float* lasers = ft->get_laser("drone0");
+        for(int i=0; i<360; i++)
+        {
+            printf("laser(%d) = %f\n", i, lasers[i]);
+        }
+
+        sc->step();
     }
 }

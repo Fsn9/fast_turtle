@@ -93,4 +93,24 @@ class SimpleDrone : public Circle{
         void move(float v, float w, double time_step);
 };
 
+/*
+// TO DO: it should inherit from Robot
+class SwarmRobot : public SimpleDrone// a robot belonging to a swarm. it could be a leader
+{
+    public:
+        std::tuple<float, float> get_nearest_drone(); // return x,y nearest drone
+        std::tuple<float, float> get_nearest_obstacle(); // return x,y nearest obstacle/wall
+    protected:
+        bool leader;
+};
+
+class Swarm // has robot names and their interconnection
+{
+    public:
+        void add_robot(SwarmRobot sd);
+        std::vector<SwarmRobot> get_robots();
+    protected:
+        std::vector<SwarmRobot> robots_;
+};
+*/
 #endif // ROBOT_H
