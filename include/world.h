@@ -12,7 +12,7 @@
 #include "robot.h"
 
 #define MAX_BURGERS 10u
-#define MAX_SIMPLE_DRONES 10u
+#define MAX_SIMPLE_DRONES 50u
 #define MAX_ROUND_OBSTACLES 30u
 #define MAX_WALL_OBSTACLES 30u
 #define MAX_FOODS 5u
