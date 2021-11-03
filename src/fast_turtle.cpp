@@ -1,13 +1,11 @@
 #include "fast_turtle.h"
+#include <algorithm>
 
 FastTurtle::FastTurtle(){
     std::cout << "--Fast Turtle simulator created --\n";
     this->last_times_tb_robots.reserve(MAX_BURGERS);
     this->last_times_simple_drones.reserve(MAX_SIMPLE_DRONES);
-    for(float l : default_scan_)
-    {
-        l = MAX_DISTANCE;
-    }
+    std::fill(default_scan_.begin(), default_scan_.begin() + N_LASERS, MAX_DISTANCE);
 }
 
 FastTurtle::FastTurtle(unsigned int simulation_fps){
@@ -225,14 +223,13 @@ void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
     );
 }
 
-float* FastTurtle::get_laser(std::string robot_name)
+std::vector<float> FastTurtle::get_laser(std::string robot_name)
 {
-    int n_drones = this->w->get_n_simple_drones();
-    for(int i = 0; i < n_drones; i++)
+    for(SimpleDrone sd : this->w->get_simple_drones())
     {
-        if(this->w->get_simple_drone(i)->get_name() == robot_name)
+        if(sd.get_name() == robot_name)
         {
-            return &this->w->get_simple_drone(i)->get_lidar()->get_lasers()[0];
+            return sd.get_lidar()->get_lasers();
         }
     }
     return default_scan_;

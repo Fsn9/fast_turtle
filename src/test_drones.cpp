@@ -548,13 +548,7 @@ int main(int argc, char **argv)
         // Sleep
         loop_rate.sleep();
 
-        std::cout << "lasers:\n";
-        float* lasers = ft->get_laser("drone0");
-        for(int i=0; i<360; i++)
-        {
-            printf("laser(%d) = %f\n", i, lasers[i]);
-        }
-
+        // Update swarm competitions
         sc->step();
     }
 }

@@ -305,6 +305,7 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
                 }
             }
         }
+        std::max(distance, MIN_DISTANCE);
     }
 }
 

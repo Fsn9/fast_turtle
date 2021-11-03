@@ -55,19 +55,19 @@ int main(int argc, char **argv)
     // Define my controller
     int tbb_idx = 1;
     int sd_idx = 0;
-    TBB1_Controller tbb1_controller(tbb_idx, "cmd_vel_tbb1");
+    //TBB1_Controller tbb1_controller(tbb_idx, "cmd_vel_tbb1");
     SD0_Controller sd0_controller(sd_idx, "cmd_vel_sd0");
 
     // Publish at a loop_rate (in hz)
-    int loop_rate = 3; 
-    ros::Rate rate(loop_rate);    
+    int loop_rate = 3;
+    ros::Rate rate(loop_rate);
 
     // Infinite cycle to read and publish commands
     while(ros::ok())
     {
-        tbb1_controller.decide();
+        //tbb1_controller.decide();
         sd0_controller.decide();
-        tbb1_controller.publish();
+        //tbb1_controller.publish();
         sd0_controller.publish();
         rate.sleep();
         ros::spinOnce();
