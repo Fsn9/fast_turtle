@@ -48,7 +48,7 @@ class Line{
 		bool intersects(float x,float y);
 		bool is_vertical();
 		bool is_horizontal();
-		std::tuple<float, float> get_midpoint(); //returns in <x,y> form
+		std::tuple<float, float> get_midpoint();
 		float get_length();
 		virtual std::tuple<bool, float, float> intersects_line(Line other);
 		virtual std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
@@ -71,7 +71,7 @@ class Square{
 		Square(float length, float xc, float yc, float angle);
 		std::string tostring();
 		float get_xc();
-        float get_yc();
+		float get_yc();
 		float get_angle();
 		float get_length();
 };
@@ -82,8 +82,8 @@ class Circle{
 	public:
 		Circle(float xc, float yc, float radius);
 		std::string tostring();
-        float get_xc();
-        float get_yc();
+		float get_xc();
+		float get_yc();
 		float get_radius();
 		float get_diameter();
 		float equation(float x, float y);
@@ -93,4 +93,4 @@ class Circle{
 		bool intersects_circle(Circle* other);
 		std::tuple<bool, float, float, float, float> intersects_line(Line line);
 };
-#endif
+#endif // GEOMETRY_H

@@ -1,6 +1,8 @@
 #ifndef SWARM_ROBOTICS_H
 #define SWARM_ROBOTICS_H
+
 #include "robot.h"
+
 #include <map>
 #include <array>
 #include <memory>
@@ -9,7 +11,7 @@ const int ROBOTS_PER_TEAM = 5;
 const int NUM_TEAMS = 8;
 const float RANGE_MAX = 1;
 
-class SwarmTeam // a swarm team is a specific kind of swarm
+class SwarmTeam
 {
     class RobotState
     {
@@ -42,14 +44,14 @@ class SwarmTeam // a swarm team is a specific kind of swarm
     private:
         int id_;
         unsigned int num_alive_;
-        double lifetime_; // seconds
-        int foods_collected_; // max_foods
-        bool started_; // started competition
+        double lifetime_;
+        int foods_collected_;
+        bool started_;
         std::map<std::string, std::shared_ptr<RobotState>> robots_;
         void pass_leadership();
 };
 
-class SwarmCompetition // has swarm teams
+class SwarmCompetition
 {
     public:
         SwarmCompetition(unsigned int simulation_fps);
@@ -71,4 +73,4 @@ class SwarmCompetition // has swarm teams
         float simulation_dt_;
 };
 
-#endif
+#endif // SWARMS_ROBOTICS_H

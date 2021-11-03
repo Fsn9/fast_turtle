@@ -17,6 +17,8 @@ std::string WallObstacle::tostring(){
 }
 
 FoodItem::FoodItem(float xc, float yc, float radius) : Circle(xc, yc, radius){
+    visible = true;
+    robot = -1;
     this->dynamics = dynamics;
 }
 

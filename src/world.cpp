@@ -1,8 +1,6 @@
 #include "world.h"
-/* World */
-// World class
+
 World::World(float length, float xc, float yc, float angle): Square(length, xc, yc, angle){
-	// TO DO: Get values below from json or xml file
 	this->lines.reserve(4); // Max edges
 	this->round_obstacles.reserve(MAX_ROUND_OBSTACLES); // Max round obstacles
 	this->wall_obstacles.reserve(MAX_WALL_OBSTACLES); // Max wall obstacles
@@ -110,6 +108,7 @@ SimpleDrone* World::get_simple_drone(int idx){
 	return &this->simple_drones[idx];
 }
 
+// For now we work with drones only
 std::vector<std::string> World::get_robot_names()
 {
 	std::vector<std::string> names;

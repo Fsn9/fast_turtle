@@ -1,10 +1,7 @@
 #ifndef FAST_TURTLE_H
 #define FAST_TURTLE_H
 
-// ROS
-// Simulator classes
 #include "world.h"
-// CPP API libraries
 #include <unistd.h> 
 #include <chrono>
 
