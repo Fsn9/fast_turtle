@@ -176,7 +176,8 @@ void FastTurtle::act_turtlebot_burger(float v, float w, int idx_tbb){
 
     // Update tb_robot lidar
     this->w->get_burger(idx_tbb)->get_lidar()->update_lidar_heavy(
-        this->w->get_round_obstacles(), 
+        this->w->get_round_obstacles(),
+        this->w->get_simple_drones(), 
         this->w->get_edges(), 
         this->w->get_wall_obstacles(),
         this->get_world()->get_burger(idx_tbb)->get_xc(), 
@@ -215,6 +216,7 @@ void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
     // Update simple_drone lidar
     this->w->get_simple_drone(idx_sd)->get_lidar()->update_lidar_heavy(
         this->w->get_round_obstacles(), 
+        this->w->get_simple_drones(),
         this->w->get_edges(),
         this->w->get_wall_obstacles(), 
         this->get_world()->get_simple_drone(idx_sd)->get_xc(), 

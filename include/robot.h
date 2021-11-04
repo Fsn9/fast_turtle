@@ -19,6 +19,7 @@
 #define TIME_STEP 0.05f
 #define DEFAULT_CONTROLLER_PERIOD 0.1f
 
+class SimpleDrone; // in the future sd and tbb will extend Robot
 class Lidar{
     private:
         float frequency, min_distance, max_distance;
@@ -28,7 +29,7 @@ class Lidar{
         Lidar(float frequency, Point2d* position);
         std::vector<float> get_lasers();
         void display_lasers();
-        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot);
+        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<SimpleDrone> simple_drones ,std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot);
         std::string tostring();
         bool in_between(float xi, float xm, float xf);
         std::tuple<float, float> get_nearest_points(float xr, float yr, float x1, float y1, float x2, float y2);
