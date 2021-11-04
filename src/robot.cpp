@@ -159,8 +159,8 @@ std::string SimpleDrone::tostring(){
 std::tuple<float, float> SimpleDrone::kinematics(float vx, float vy, double time_step){    
     return 
     {
-        this->xc + vx * time_step,
-        this->yc + vy * time_step
+        this->xc + -vy * sin(this->theta) * time_step,
+        this->yc + vx * sin(this->theta) * time_step
     };
 }
 
