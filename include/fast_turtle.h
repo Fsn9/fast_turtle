@@ -8,8 +8,6 @@
 #define MAX_LIN_VELOCITY_TB_BURGER 0.22f
 #define MAX_ANG_VELOCITY_TB_BURGER 2.84f
 #define MAX_LIN_VELOCITY_SIMPLE_DRONE 0.22f
-#define MAX_LIN_VELOCITY 0.5f
-#define MAX_ANG_VELOCITY 2.84f
 
 typedef struct cmd_vel_tbb{
     double v;

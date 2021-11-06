@@ -63,14 +63,28 @@ std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
 void move_tb_burgers(int idx)
 {
-    if (abs(cmd_vels_tb_burgers[idx].v) > MAX_LIN_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].v = MAX_LIN_VELOCITY_TB_BURGER;
-    if (abs(cmd_vels_tb_burgers[idx].w) > MAX_ANG_VELOCITY_TB_BURGER) cmd_vels_tb_burgers[idx].w = MAX_ANG_VELOCITY_TB_BURGER;
+    if (cmd_vels_tb_burgers[idx].v > MAX_LIN_VELOCITY_TB_BURGER)
+    {
+        cmd_vels_tb_burgers[idx].v = MAX_LIN_VELOCITY_TB_BURGER;
+    }
+    else if(cmd_vels_tb_burgers[idx].v < - MAX_LIN_VELOCITY_TB_BURGER)
+    {
+        cmd_vels_tb_burgers[idx].v = -MAX_LIN_VELOCITY_TB_BURGER;
+    }
+    if (cmd_vels_tb_burgers[idx].w > MAX_ANG_VELOCITY_TB_BURGER)
+    {
+        cmd_vels_tb_burgers[idx].w = MAX_ANG_VELOCITY_TB_BURGER;
+    }
+    else if(cmd_vels_tb_burgers[idx].w < -MAX_ANG_VELOCITY_TB_BURGER)
+    {
+        cmd_vels_tb_burgers[idx].w = -MAX_ANG_VELOCITY_TB_BURGER;
+    }
     ft->act_turtlebot_burger(cmd_vels_tb_burgers[idx].v, cmd_vels_tb_burgers[idx].w, idx);
 }
 
 void move_simple_drones(int idx)
 {
-    if (cmd_vels_simple_drones[idx].vx > MAX_LIN_VELOCITY_SIMPLE_DRONE) 
+    if (cmd_vels_simple_drones[idx].vx > MAX_LIN_VELOCITY_SIMPLE_DRONE)
     {
         cmd_vels_simple_drones[idx].vx = MAX_LIN_VELOCITY_SIMPLE_DRONE;
     }
@@ -80,7 +94,7 @@ void move_simple_drones(int idx)
     }
 
 
-    if (abs(cmd_vels_simple_drones[idx].vy) > MAX_LIN_VELOCITY_SIMPLE_DRONE) 
+    if (cmd_vels_simple_drones[idx].vy > MAX_LIN_VELOCITY_SIMPLE_DRONE) 
     {
         cmd_vels_simple_drones[idx].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
     }
