@@ -45,7 +45,7 @@ class SwarmTeam
         int id_;
         unsigned int num_alive_;
         double lifetime_;
-        int foods_collected_;
+        unsigned int foods_collected_;
         bool started_;
         std::map<std::string, std::shared_ptr<RobotState>> robots_;
         void pass_leadership();
@@ -63,7 +63,13 @@ class SwarmCompetition
         void step();
         std::vector<std::shared_ptr<SwarmTeam>> get_teams();
         std::shared_ptr<SwarmTeam> get_team(std::string robot_name);
+        std::shared_ptr<SwarmTeam> get_team(int id);
         int get_team_id(std::string robot_name);
+        unsigned int get_num_alive(int team_id);
+        double get_lifetime(int team_id);
+        unsigned int get_foods_collected(int team_id);
+        bool team_has_started(int team_id);
+        std::string get_leader(int team_id);
         std::string log();
         std::string log_lifetimes();
         std::map<std::string, int> get_robot_list();

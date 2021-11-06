@@ -216,6 +216,25 @@ std::shared_ptr<SwarmTeam> SwarmCompetition::get_team(std::string robot_name)
     return teams_[team_id];
 }
 
+std::shared_ptr<SwarmTeam> SwarmCompetition::get_team(int id)
+{
+    if(id >= 0 && id < NUM_TEAMS)
+    {
+        for(std::shared_ptr<SwarmTeam> st : teams_)
+        {
+            if(st->get_id() == id)
+            {
+                return st;
+            }
+        }
+        return {};
+    }
+    else
+    {
+        throw std::out_of_range("Invalid team id. Needs to be between 0 and " + std::to_string(NUM_TEAMS)+"\n");
+    }
+}
+
 std::vector<std::shared_ptr<SwarmTeam>> SwarmCompetition::get_teams()
 {
     return teams_;
@@ -231,6 +250,66 @@ int SwarmCompetition::get_team_id(std::string robot_name)
         }
     }
     return -1;
+}
+
+unsigned int SwarmCompetition::get_num_alive(int team_id)
+{
+    try
+    {
+        return get_team(team_id)->get_num_alive();
+    }
+    catch(const std::out_of_range& e)
+    {
+        throw std::out_of_range("Invalid team id. Needs to be between 0 and " + std::to_string(NUM_TEAMS)+"\n");
+    }
+}
+
+double SwarmCompetition::get_lifetime(int team_id)
+{
+    try
+    {
+        return get_team(team_id)->get_lifetime();
+    }
+    catch(const std::out_of_range& e)
+    {
+        throw std::out_of_range("Invalid team id. Needs to be between 0 and " + std::to_string(NUM_TEAMS)+"\n");
+    }
+}
+
+unsigned int SwarmCompetition::get_foods_collected(int team_id)
+{
+    try
+    {
+        return get_team(team_id)->get_foods_collected();
+    }
+    catch(const std::out_of_range& e)
+    {
+        throw std::out_of_range("Invalid team id. Needs to be between 0 and " + std::to_string(NUM_TEAMS)+"\n");
+    }
+}
+
+bool SwarmCompetition::team_has_started(int team_id)
+{
+    try
+    {
+        return get_team(team_id)->has_started();
+    }
+    catch(const std::out_of_range& e)
+    {
+        throw std::out_of_range("Invalid team id. Needs to be between 0 and " + std::to_string(NUM_TEAMS)+"\n");
+    }
+}
+
+std::string SwarmCompetition::get_leader(int team_id)
+{
+    try
+    {
+        return get_team(team_id)->get_leader();
+    }
+    catch(const std::out_of_range& e)
+    {
+        throw std::out_of_range("Invalid team id. Needs to be between 0 and " + std::to_string(NUM_TEAMS)+"\n");
+    }
 }
 
 std::map<std::string, int> SwarmCompetition::get_robot_list()

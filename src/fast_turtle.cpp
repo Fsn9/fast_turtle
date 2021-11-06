@@ -225,6 +225,18 @@ void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
     );
 }
 
+std::vector<float> FastTurtle::get_robot_position(std::string robot_name)
+{
+    for(SimpleDrone sd : this->w->get_simple_drones())
+    {
+        if(sd.get_name() == robot_name)
+        {
+            return std::vector<float>{sd.x(), sd.y()};
+        }
+    }
+    return {};
+}
+
 std::vector<float> FastTurtle::get_laser(std::string robot_name)
 {
     for(SimpleDrone sd : this->w->get_simple_drones())
