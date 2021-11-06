@@ -221,6 +221,18 @@ std::vector<std::shared_ptr<SwarmTeam>> SwarmCompetition::get_teams()
     return teams_;
 }
 
+int SwarmCompetition::get_team_id(std::string robot_name)
+{
+    for(std::shared_ptr<SwarmTeam> st : teams_)
+    {
+        if(st->is_robot_enlisted(robot_name))
+        {
+            return st->get_id();
+        }
+    }
+    return -1;
+}
+
 std::map<std::string, int> SwarmCompetition::get_robot_list()
 {
     return robot_list_;

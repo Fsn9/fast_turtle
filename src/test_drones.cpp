@@ -548,9 +548,14 @@ int main(int argc, char **argv)
     sc->enlist("drone2", 0);
     sc->enlist("drone3", 2);
 
+    // Start time for team of each given robots
     sc->start_time("drone0");
-    sc->start_time("drone2");
+    sc->start_time("drone2"); // if already started, it does nothing
+
+    // Increment counter of foods collected by the given robot s team
     sc->food_was_captured("drone0");
+
+    // Declare given robot out of the competition
     sc->the_robot_lost("drone0");
     sc->the_robot_lost("drone1");
 

@@ -63,6 +63,7 @@ class SwarmCompetition
         void step();
         std::vector<std::shared_ptr<SwarmTeam>> get_teams();
         std::shared_ptr<SwarmTeam> get_team(std::string robot_name);
+        int get_team_id(std::string robot_name);
         std::string log();
         std::string log_lifetimes();
         std::map<std::string, int> get_robot_list();
