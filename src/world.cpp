@@ -1,4 +1,5 @@
 #include "world.h"
+#include <ros/ros.h>
 
 World::World(float length, float xc, float yc, float angle): Square(length, xc, yc, angle){
 	this->lines.reserve(4); // Max edges

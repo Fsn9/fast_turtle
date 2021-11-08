@@ -301,11 +301,6 @@ void init_graphics_and_data(){
         wall_marker.color.b = 0.7;
         wall_markers.markers.push_back(wall_marker);
         j+=1;
-       /* ROS_INFO("comprimento: %f , x1: %f, x2: %f, y1: %f, y2: %f ", ft->get_world()->get_wall_obstacle(i)->get_length(),
-        ft->get_world()->get_wall_obstacle(i)->get_x1(),
-        ft->get_world()->get_wall_obstacle(i)->get_x2(),
-        ft->get_world()->get_wall_obstacle(i)->get_y1(),
-        ft->get_world()->get_wall_obstacle(i)->get_y2());*/
     }
     //base walls, don't count as actuall walls
         wall_marker.header.frame_id = "world";
@@ -583,8 +578,8 @@ void publish_data(){
 int main(int argc, char** argv)
 {
     // Init node
-    ros::init(argc, argv, "arena01");
-    ROS_INFO("Initializing arena01");
+    ros::init(argc, argv, "arena_simple");
+    ROS_INFO("Initializing arena_simple");
 
     // Node object
     ros::NodeHandle nh;
@@ -622,34 +617,8 @@ int main(int argc, char** argv)
     float obstacle_radius = 0.15;
     ft->init_world(20, 0, 0, "square");
     
-    // Obstaculos
-    ft->add_obstacle(-6, 4, obstacle_radius, "round");
-    ft->add_obstacle(2, 8, obstacle_radius, "round");
-    ft->add_obstacle(-2, -2, obstacle_radius, "round");
-    ft->add_obstacle(2, -4, obstacle_radius, "round");
-    ft->add_obstacle(6, -6, obstacle_radius, "round");
-    //ft->add_wall(0, -10, 0, -8); //bpartida dos robots
-    //ft->add_wall(-1, -10, -1, -8);
-    //ft->add_wall(1, -10, 1, -8);
-    //ft->add_wall(2, -10, 2, -8);
-    ft->add_wall(-6, -6, 8, 6); //canto superior esq
-    ft->add_wall(-6, -8, 6, 6);
-    ft->add_wall(-6, -6, 0, 2); //L da esq
-    ft->add_wall(-6, -4, 0, 0);
-    ft->add_wall(-6, -6, -4, -2); //traço sozinho 
-    ft->add_wall(8, 10, -2, -2); //canto inferior dir
-    ft->add_wall(8, 8, -4, -2);
-    ft->add_wall(-2, -2, 4, 6); //U ao contrario do topo
-    ft->add_wall(-2, 0, 6, 6);
-    ft->add_wall(0, 0, 4, 6);
-    ft->add_wall(2, 2, 0, 2); //S deitado
-    ft->add_wall(2, 4, 0, 0);
-    ft->add_wall(4, 4, 0, 2);
-    ft->add_wall(4, 6, 2, 2);
-    ft->add_wall(6, 6, 0, 2);
-    ft->add_wall(6, 6, 6, 8); //U do canto superior dir
-    ft->add_wall(6, 8, 6, 6);
-    ft->add_wall(8, 8, 6, 8);
+    //obstacle
+    ft->add_obstacle(0, 0, obstacle_radius, "round");
     
     // Paredes da bounding box
     ft->add_wall(10, 10, 10, -10); //direita
@@ -657,13 +626,6 @@ int main(int argc, char** argv)
     ft->add_wall(-10, -10, -10, 10); //esquerda
     ft->add_wall(-10, 10, 10, 10); //cima
 
-    //Comida
-    ft->add_food_item(8, -8, FOOD_RADIUS);
-    ft->add_food_item(-8, 8, FOOD_RADIUS); 
-    ft->add_food_item(7, 7, FOOD_RADIUS); 
-    ft->add_food_item(0, -3, FOOD_RADIUS); 
-    ft->add_food_item(-8, 1, FOOD_RADIUS); 
-    
     // Teams of Drones
     // Drones #1
     ft->add_simple_drone(-0.5, -9.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
