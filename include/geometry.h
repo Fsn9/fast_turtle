@@ -50,15 +50,15 @@ class Line{
 		bool is_horizontal();
 		std::tuple<float, float> get_midpoint();
 		float get_length();
-		std::tuple<bool, float, float> intersects_line(Line other);
-		std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
+		virtual std::tuple<bool, float, float> intersects_line(Line other);
+		virtual std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
 };
 
 class LineSegment : public Line{
 	public:
 		LineSegment(float x1, float y1, float x2, float y2);
-		//std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
-		//std::tuple<bool, float, float> intersects_line(Line other);
+		std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle) override final;
+		std::tuple<bool, float, float> intersects_line(Line other) override final;
 };
 
 class Square{

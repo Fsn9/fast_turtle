@@ -119,8 +119,7 @@ std::tuple<float, float> Line::get_midpoint(){
 }
 
 float Line::get_length(){
-	return (sqrt(pow(x2 - x1, 2) +
-                pow(y2 - y1, 2)));
+	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
 std::tuple<bool, float, float> Line::intersects_line(Line other){
 	if (this->slope == other.get_slope()) return {false,0,0};
@@ -158,7 +157,7 @@ std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle* cir
 
 //Line Segment
 LineSegment::LineSegment(float x1, float y1, float x2, float y2) : Line(x1,x2,y1,y2){}
-/*
+
 std::tuple<bool, float, float, float, float> LineSegment::intersects_circle(Circle* circle)
 {
 	std::tuple<bool, float, float, float, float> points = Line::intersects_circle(circle);
@@ -187,7 +186,7 @@ std::tuple<bool, float, float> LineSegment::intersects_line(Line other)
 	}
 	return points;
 }
-*/
+
 //Circle
 Circle::Circle(float xc, float yc, float radius) : xc(xc), yc(yc), radius(radius), radius_sqr(pow(this->radius,2)) {
 	this->diameter = radius * 2.0;
