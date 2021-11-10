@@ -255,6 +255,11 @@ add_executable(my_controller src/my_controller.cpp)
 target_link_libraries(my_controller ${catkin_LIBRARIES} ft)
 add_dependencies(my_controller fast_turtle_generate_messages_cpp)
 
+# It defines the my_controller2.cpp as an executable
+add_executable(my_controller2 src/my_controller2.cpp)
+target_link_libraries(my_controller2 ${catkin_LIBRARIES} ft)
+add_dependencies(my_controller2 fast_turtle_generate_messages_cpp)
+
 # It defines the arena_simple.cpp as an executable
 add_executable(arena_simple src/arena_simple.cpp)
 target_link_libraries(arena_simple ${catkin_LIBRARIES} ft)
