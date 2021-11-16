@@ -10,6 +10,7 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include "sensor_msgs/LaserScan.h"
+#include "std_msgs/Bool.h"
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
 #include <nav_msgs/Odometry.h>
@@ -74,10 +75,12 @@ ros::Publisher simple_drone_supports_markers_publisher;
 // Publishers
 ros::Publisher odom_publisher0;
 ros::Publisher laser_publisher0;
+ros::Publisher collision_publisher0;
 
 
 // Messages
 sensor_msgs::LaserScan laser_scan_msg;
+std_msgs::Bool collision;
 
 // Vector of real time command velocities for all robots
 //std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
@@ -280,7 +283,7 @@ void init_graphics_and_data(){
     laser_scan_msg.range_max = MAX_DISTANCE+1e-4;
     laser_scan_msg.time_increment = 0;
     laser_scan_msg.scan_time = 0;
-
+    collision.data = false;
 
     //only if using a MESH_RESOURCE world_marker type:
     //world_marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
@@ -291,7 +294,6 @@ void init_graphics_and_data(){
 
 }
 void repaint(){
-   // ft->check_collisions();
     // World marker
     world_marker_publisher.publish(world_marker);
     
@@ -303,6 +305,12 @@ void repaint(){
         //stats_markers.markers[i+1].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
     }
 
+    ft->check_collisions();
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+        if(!ft->get_world()->get_simple_drone(i)->is_visible()){
+           collision.data = true;
+        }
+    }
 
     // Simple drone markers
     simple_drone_markers_publisher.publish(simple_drone_markers);
@@ -341,6 +349,7 @@ void publish_data(){
     odom.header.stamp = current_time;
     odom.header.frame_id = "odom0";
 
+
     //send the position
     odom.pose.pose.position.x = ft->get_world()->get_simple_drone(0)->x();
     odom.pose.pose.position.y = ft->get_world()->get_simple_drone(0)->y();
@@ -350,6 +359,8 @@ void publish_data(){
 
     
     laser_publisher0.publish(laser_scan_msg);
+
+    collision_publisher0.publish(collision);
 
   
 }
@@ -376,7 +387,7 @@ int main(int argc, char** argv)
     //simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
     odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0", 50);
     laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0", 50);
-
+    collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0", 50);
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
     

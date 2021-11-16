@@ -10,6 +10,7 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include "sensor_msgs/LaserScan.h"
+#include "std_msgs/Bool.h"
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
 #include <nav_msgs/Odometry.h>
@@ -76,10 +77,13 @@ ros::Publisher odom_publisher0;
 ros::Publisher laser_publisher0;
 ros::Publisher odom_publisher1;
 ros::Publisher laser_publisher1;
+ros::Publisher collision_publisher0;
+ros::Publisher collision_publisher1;
 
 
 // Messages
 sensor_msgs::LaserScan laser_scan_msg0, laser_scan_msg1;
+std_msgs::Bool collision0, collision1;
 
 // Vector of real time command velocities for all robots
 //std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
@@ -301,6 +305,9 @@ void init_graphics_and_data(){
     laser_scan_msg1.time_increment = 0;
     laser_scan_msg1.scan_time = 0;
 
+    collision0.data = false;
+    collision1.data = false;
+
 
     //only if using a MESH_RESOURCE world_marker type:
     //world_marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
@@ -323,6 +330,13 @@ void repaint(){
         //stats_markers.markers[i+1].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
     }
 
+    ft->check_collisions();
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++){
+        if(!ft->get_world()->get_simple_drone(i)->is_visible()){
+           if(i == 1) collision1.data = true;
+           else collision0.data = true;
+        }
+    }
 
     // Simple drone markers
     simple_drone_markers_publisher.publish(simple_drone_markers);
@@ -380,6 +394,9 @@ void publish_data(){
     laser_publisher0.publish(laser_scan_msg0);
     laser_publisher1.publish(laser_scan_msg1);
 
+    collision_publisher0.publish(collision0);
+    collision_publisher1.publish(collision1);
+
   
 }
 int main(int argc, char** argv)
@@ -408,7 +425,11 @@ int main(int argc, char** argv)
     laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0", 50);
     odom_publisher1 = nh.advertise<nav_msgs::Odometry>("odom1", 50);
     laser_publisher1 = nh.advertise<sensor_msgs::LaserScan>("laser1", 50);
-
+    
+    collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0", 50);
+    collision_publisher1 = nh.advertise<std_msgs::Bool>("collision1", 50);
+    
+    
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
     
