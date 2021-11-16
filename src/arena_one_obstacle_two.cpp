@@ -103,7 +103,7 @@ void update_physics()
 {    
     //if(ft->get_world()->get_burger(idx)->is_visible()){
     for(int idx = 0; idx < ft->get_world()->get_n_simple_drones(); idx++){
-        if(ft->get_world()->get_simple_drone(idx)->is_visible()) move_simple_drones(idx);
+        move_simple_drones(idx);
     } 
         
 }
@@ -455,15 +455,23 @@ int main(int argc, char** argv)
     // Frames per second
     ros::Rate loop_rate(SIMULATION_FPS);
 
-    //clock_t time;
+    clock_t start = clock();
+    double time_elapsed = 0;
 
     // Main cycle
     while(ros::ok()){
         // Updates logic
         update_physics();
 
+        clock_t end = clock();
+        time_elapsed = ((double) (end - start)) / CLOCKS_PER_SEC;
+        if(time_elapsed>=0.01){
+            publish_data();
+            start = clock();
+        } 
+        
         // Publishes fresh data
-        publish_data();
+        //publish_data();
 
         // Repaint graphics
         repaint();
