@@ -36,6 +36,7 @@
 #define PINK {1,0,1}
 #define CYAN {0,1,1}
 #define PURPLE {0.5,0,0.5}
+#define LOOP_PERIOD 0.01
 
 
 
@@ -85,7 +86,7 @@ std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0},{0,0},{0,
 // Move robot 'idx'
 void move_simple_drones(int idx)
 {
-    if (cmd_vels_simple_drones[idx].vx > MAX_LIN_VELOCITY_SIMPLE_DRONE) cmd_vels_simple_drones[idx].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+    if (cmd_vels_simple_drones[idx].vx > MAX_LIN_VELOCITY_SIMPLE_DRONE) cmd_vels_simple_drones[idx].vx = MAX_LIN_VELOCITY_SIMPLE_DRONE;
     if (cmd_vels_simple_drones[idx].vy > MAX_LIN_VELOCITY_SIMPLE_DRONE) cmd_vels_simple_drones[idx].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
     ft->act_simple_drone(cmd_vels_simple_drones[idx].vx, cmd_vels_simple_drones[idx].vy, idx);
 }
@@ -367,15 +368,22 @@ int main(int argc, char** argv)
     // Frames per second
     ros::Rate loop_rate(SIMULATION_FPS);
 
-    //clock_t time;
+    clock_t start = clock();
+    double time_elapsed = 0;
 
     // Main cycle
     while(ros::ok()){
         // Updates logic
         update_physics();
 
+        clock_t end = clock();
+        time_elapsed = ((double) (end - start)) / CLOCKS_PER_SEC;
+        if(time_elapsed>=LOOP_PERIOD){
+            publish_data();
+            start = clock();
+        } 
         // Publishes fresh data
-        publish_data();
+        //publish_data();
 
         // Repaint graphics
         repaint();
