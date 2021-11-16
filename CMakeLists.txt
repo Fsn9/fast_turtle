@@ -270,3 +270,13 @@ add_executable(arena_obstacle src/arena_obstacle.cpp)
 target_link_libraries(arena_obstacle ${catkin_LIBRARIES} ft)
 add_dependencies(arena_obstacle fast_turtle_generate_messages_cpp)
 
+# It defines the arena_one_obstacle.cpp as an executable
+add_executable(arena_one_obstacle src/arena_one_obstacle.cpp)
+target_link_libraries(arena_one_obstacle ${catkin_LIBRARIES} ft)
+add_dependencies(arena_one_obstacle fast_turtle_generate_messages_cpp)
+
+# It defines the arena_one_obstacle.cpp as an executable
+add_executable(arena_one_obstacle_two src/arena_one_obstacle_two.cpp)
+target_link_libraries(arena_one_obstacle_two ${catkin_LIBRARIES} ft)
+add_dependencies(arena_one_obstacle_two fast_turtle_generate_messages_cpp)
+

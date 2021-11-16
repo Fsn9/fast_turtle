@@ -58,12 +58,14 @@ FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 
 // Markers
 visualization_msgs::Marker world_marker;
+visualization_msgs::MarkerArray obstacle_markers;
 visualization_msgs::MarkerArray wall_markers;
 visualization_msgs::MarkerArray simple_drone_markers;
 visualization_msgs::MarkerArray simple_drone_supports_markers;
 
 // Marker Publishers
 ros::Publisher world_marker_publisher;
+ros::Publisher obstacle_markers_publisher;
 ros::Publisher wall_markers_publisher;
 ros::Publisher simple_drone_markers_publisher;
 ros::Publisher simple_drone_supports_markers_publisher;         
@@ -72,10 +74,12 @@ ros::Publisher simple_drone_supports_markers_publisher;
 // Publishers
 ros::Publisher odom_publisher0;
 ros::Publisher laser_publisher0;
+ros::Publisher odom_publisher1;
+ros::Publisher laser_publisher1;
 
 
 // Messages
-sensor_msgs::LaserScan laser_scan_msg;
+sensor_msgs::LaserScan laser_scan_msg0, laser_scan_msg1;
 
 // Vector of real time command velocities for all robots
 //std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
@@ -108,6 +112,16 @@ void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
         cmd_vels_simple_drones[0].vx = msg.linear.x;
         cmd_vels_simple_drones[0].vy = msg.linear.y;
         std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(0)->tostring() << "\n";
+    }
+}
+
+void listen_cmd_vel_sd1(const geometry_msgs::Twist& msg)
+{
+    if (ft->get_world()->get_n_simple_drones() > 0){
+        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        cmd_vels_simple_drones[1].vx = msg.linear.x;
+        cmd_vels_simple_drones[1].vy = msg.linear.y;
+        std::cout << "[Simple Drone 1 pose]: " << ft->get_world()->get_simple_drone(1)->tostring() << "\n";
     }
 }
 
@@ -218,6 +232,32 @@ void init_graphics_and_data(){
             j+=1;
         }   
     }
+    
+    // Obstacles - cilindros obstaculos
+    visualization_msgs::Marker obstacle_marker;
+    for(i = 0; i < ft->get_world()->get_round_obstacles().size(); i++){
+        obstacle_marker.header.frame_id = "world";
+        obstacle_marker.ns = "simulation_markers";
+        obstacle_marker.id = j;
+        obstacle_marker.type = visualization_msgs::Marker::CYLINDER;
+        obstacle_marker.action = visualization_msgs::Marker::ADD;
+        obstacle_marker.pose.position.x = ft->get_world()->get_round_obstacle(i)->get_xc();
+        obstacle_marker.pose.position.y = ft->get_world()->get_round_obstacle(i)->get_yc();
+        obstacle_marker.pose.position.z = 1.0; //0.192 * 0.5;
+        obstacle_marker.pose.orientation.x = 0.0;
+        obstacle_marker.pose.orientation.y = 0.0;
+        obstacle_marker.pose.orientation.z = 0.0;
+        obstacle_marker.pose.orientation.w = 1.0;
+        obstacle_marker.scale.x = ft->get_world()->get_round_obstacle(i)->get_diameter();
+        obstacle_marker.scale.y = ft->get_world()->get_round_obstacle(i)->get_diameter();
+        obstacle_marker.scale.z = 2;//0.192;
+        obstacle_marker.color.a = 1.0;
+        obstacle_marker.color.r = 1.0;
+        obstacle_marker.color.g = 1.0;
+        obstacle_marker.color.b = 1.0;
+        obstacle_markers.markers.push_back(obstacle_marker);
+        j+=1;
+    }
     // Obstacles - paredes obstaculos
     visualization_msgs::Marker wall_marker;
     for(i = 0; i < ft->get_world()->get_wall_obstacles().size(); i++){
@@ -245,18 +285,27 @@ void init_graphics_and_data(){
     }
     
 
-    laser_scan_msg.angle_min = 0;
-    laser_scan_msg.angle_max = M_PI * 2;
-    laser_scan_msg.angle_increment = 2.0 * M_PI / 360;
-    laser_scan_msg.range_min = MIN_DISTANCE;
-    laser_scan_msg.range_max = MAX_DISTANCE+1e-4;
-    laser_scan_msg.time_increment = 0;
-    laser_scan_msg.scan_time = 0;
+    laser_scan_msg0.angle_min = 0;
+    laser_scan_msg0.angle_max = M_PI * 2;
+    laser_scan_msg0.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg0.range_min = MIN_DISTANCE;
+    laser_scan_msg0.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg0.time_increment = 0;
+    laser_scan_msg0.scan_time = 0;
+
+    laser_scan_msg1.angle_min = 0;
+    laser_scan_msg1.angle_max = M_PI * 2;
+    laser_scan_msg1.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg1.range_min = MIN_DISTANCE;
+    laser_scan_msg1.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg1.time_increment = 0;
+    laser_scan_msg1.scan_time = 0;
 
 
     //only if using a MESH_RESOURCE world_marker type:
     //world_marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
     world_marker_publisher.publish(world_marker);
+    obstacle_markers_publisher.publish(obstacle_markers);
     wall_markers_publisher.publish(wall_markers);
     simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
 
@@ -284,7 +333,16 @@ void repaint(){
     // Walls
     wall_markers_publisher.publish(wall_markers);
 
-    
+    // Obstacles
+    obstacle_markers_publisher.publish(obstacle_markers);
+
+    //laser scan
+    laser_scan_msg0.ranges = ft->get_world()->get_simple_drone(0)->get_lidar()->get_lasers();
+    laser_scan_msg0.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(0)->get_model() + "_" + ft->get_world()->get_simple_drone(0)->get_name();
+
+    laser_scan_msg1.ranges = ft->get_world()->get_simple_drone(1)->get_lidar()->get_lasers();
+    laser_scan_msg1.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(1)->get_model() + "_" + ft->get_world()->get_simple_drone(1)->get_name();
+
 }
 void publish_data(){
     tf::Transform transform;
@@ -312,16 +370,15 @@ void publish_data(){
     odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
     odom_publisher0.publish(odom);
 
-   /* sensor_msgs::LaserScan scan;
-    scan.header.stamp = scan_time;
-    scan.header.frame_id = "laser_frame";
-    scan.angle_min = -1.57;
-    scan.angle_max = 1.57;
-    scan.angle_increment = 3.14 / num_readings;
-    scan.time_increment = (1 / laser_frequency) / (num_readings);
-    scan.range_min = 0.0;
-    scan.range_max = 100.0;
-    laser_publisher0.publish(scan);*/
+    odom.pose.pose.position.x = ft->get_world()->get_simple_drone(1)->x();
+    odom.pose.pose.position.y = ft->get_world()->get_simple_drone(1)->y();
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
+    odom_publisher1.publish(odom);
+
+    
+    laser_publisher0.publish(laser_scan_msg0);
+    laser_publisher1.publish(laser_scan_msg1);
 
   
 }
@@ -337,15 +394,21 @@ int main(int argc, char** argv)
     // Initialize markers
     world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker", 0);
     wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
+    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
     simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers",0);
     simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers",0);
 
     // Subscribers for all robots
     ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0", 1000, listen_cmd_vel_sd0);
-
+    ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1", 1000, listen_cmd_vel_sd1);
+    
     // Publishers
     //simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
     odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0", 50);
+    laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0", 50);
+    odom_publisher1 = nh.advertise<nav_msgs::Odometry>("odom1", 50);
+    laser_publisher1 = nh.advertise<sensor_msgs::LaserScan>("laser1", 50);
+
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
     
@@ -358,7 +421,11 @@ int main(int argc, char** argv)
 
     // Teams of Drones
     // Drones #1
-    ft->add_simple_drone(0.0, 0.0, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_simple_drone(2.0, -1.0, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_simple_drone(-1.0, -2.0, 0.5, BURGER_RADIUS, "drone1", 0.2);
+
+    //Obstacle
+    ft->add_obstacle(1, 1, 0.5, "round");
 
     // Send first world data and graphics data
     publish_data();
