@@ -387,7 +387,7 @@ world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker_
     simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers_obs",0);
 */
     // Subscribers for all robots
-    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0"+ user_id, 1000, listen_cmd_vel_sd0);
+    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0_obs"+ user_id, 1000, listen_cmd_vel_sd0);
 
     // Publishers
     //simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);

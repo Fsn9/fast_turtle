@@ -411,25 +411,25 @@ int main(int argc, char** argv)
     user_id=argv[1];
 
     // Initialize markers
-    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker"+ user_id, 0);
-    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers"+ user_id,0);
-    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers"+ user_id,0);
-    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers"+ user_id,0);
-    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers"+ user_id,0);
+    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker_two"+ user_id, 0);
+    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers_two"+ user_id,0);
+    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers_two"+ user_id,0);
+    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers_two"+ user_id,0);
+    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers_two"+ user_id,0);
 
     // Subscribers for all robots
-    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0"+ user_id, 1000, listen_cmd_vel_sd0);
-    ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1"+ user_id, 1000, listen_cmd_vel_sd1);
+    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0_two"+ user_id, 1000, listen_cmd_vel_sd0);
+    ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1_two"+ user_id, 1000, listen_cmd_vel_sd1);
     
     // Publishers
     //simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
-    odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0"+ user_id, 50);
-    laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0"+ user_id, 50);
-    odom_publisher1 = nh.advertise<nav_msgs::Odometry>("odom1"+ user_id, 50);
-    laser_publisher1 = nh.advertise<sensor_msgs::LaserScan>("laser1"+ user_id, 50);
+    odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0_two"+ user_id, 50);
+    laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0_two"+ user_id, 50);
+    odom_publisher1 = nh.advertise<nav_msgs::Odometry>("odom1_two"+ user_id, 50);
+    laser_publisher1 = nh.advertise<sensor_msgs::LaserScan>("laser1_two"+ user_id, 50);
     
-    collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0"+ user_id, 50);
-    collision_publisher1 = nh.advertise<std_msgs::Bool>("collision1"+ user_id, 50);
+    collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0_two"+ user_id, 50);
+    collision_publisher1 = nh.advertise<std_msgs::Bool>("collision1_two"+ user_id, 50);
     
     
     // Initialize simulator object
