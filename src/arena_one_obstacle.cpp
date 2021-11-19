@@ -37,7 +37,7 @@
 #define PINK {1,0,1}
 #define CYAN {0,1,1}
 #define PURPLE {0.5,0,0.5}
-#define LOOP_PERIOD 0.1
+#define LOOP_PERIOD 0.01
 
 
 
@@ -54,7 +54,7 @@ struct drone {
 // // Teams
 // struct team Team;
 
-
+std::string user_id;
 // Initialize fast turtle simulator object
 FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 
@@ -369,26 +369,31 @@ int main(int argc, char** argv)
 {
     // Init node
     ros::init(argc, argv, "arena_simple");
-    ROS_INFO("Initializing arena_simple");
-
+    ROS_INFO("Initializing arena_obstacle");
     // Node object
     ros::NodeHandle nh;
-
+    user_id=argv[1];
     // Initialize markers
-    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker", 0);
-    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
-    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers",0);
-    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers",0);
-    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers",0);
-
+    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker_obs" + user_id, 0);
+    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers_obs" + user_id,0);
+    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers_obs" + user_id,0);
+    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers_obs" + user_id,0);
+    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers_obs" + user_id,0);
+/*
+world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker_obs", 0);
+    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers_obs",0);
+    obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers_obs",0);
+    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers_obs",0);
+    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers_obs",0);
+*/
     // Subscribers for all robots
-    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0", 1000, listen_cmd_vel_sd0);
+    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0"+ user_id, 1000, listen_cmd_vel_sd0);
 
     // Publishers
     //simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
-    odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0", 50);
-    laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0", 50);
-    collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0", 50);
+    odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0_obs" + user_id, 50);
+    laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0_obs" + user_id, 50);
+    collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0_obs" + user_id, 50);
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
     
