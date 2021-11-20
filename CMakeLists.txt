@@ -59,9 +59,10 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-#add_service_files(
-#   FILES
-#)
+add_service_files(
+   FILES
+   ResetArena.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -279,4 +280,3 @@ add_dependencies(arena_one_obstacle fast_turtle_generate_messages_cpp)
 add_executable(arena_one_obstacle_two src/arena_one_obstacle_two.cpp)
 target_link_libraries(arena_one_obstacle_two ${catkin_LIBRARIES} ft)
 add_dependencies(arena_one_obstacle_two fast_turtle_generate_messages_cpp)
-

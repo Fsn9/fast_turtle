@@ -14,6 +14,8 @@
 #include "sensor_msgs/LaserScan.h"
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
+// Services
+#include "fast_turtle/ResetArena.h"
 
 // Simulation frames per second
 #define SIMULATION_FPS 40u
@@ -494,6 +496,12 @@ void publish_data()
     simple_drones_publisher.publish(simple_drones_msg);
 }
 
+bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena::Response& res)
+{
+    ROS_INFO("The arena was reset");
+    return true;
+}
+
 int main(int argc, char **argv)
 {
     // Init node
@@ -523,6 +531,9 @@ int main(int argc, char **argv)
     // Data publishers
     tb_burgers_publisher = nh.advertise<fast_turtle::RobotDataArray>("turtlebot_burgers", 1000);
     simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
+
+    // Services
+    ros::ServiceServer service = nh.advertiseService("reset_arena", reset_arena);
 
     // Initialize world
     ft->init_world(8, 0, 0, "square");
