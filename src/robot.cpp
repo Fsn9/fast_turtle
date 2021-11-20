@@ -113,7 +113,7 @@ SimpleDrone::SimpleDrone(float x, float y, float height, float radius, std::stri
     this->last_vx = 0.0;
     this->last_vy = 0.0;
     this->visible = true;
-    this->theta = M_PI_2;
+    this->theta = 0.0;
 
     // Lidar
     float frequency;
@@ -159,8 +159,8 @@ std::string SimpleDrone::tostring(){
 std::tuple<float, float> SimpleDrone::kinematics(float vx, float vy, double time_step){    
     return 
     {
-        this->xc + -vy * sin(this->theta) * time_step,
-        this->yc + vx * sin(this->theta) * time_step
+        this->xc + vx * time_step,
+        this->yc + vy * time_step
     };
 }
 
