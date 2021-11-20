@@ -367,12 +367,13 @@ void publish_data(){
 }
 int main(int argc, char** argv)
 {
+    user_id=argv[1];
     // Init node
-    ros::init(argc, argv, "arena_simple");
+    ros::init(argc, argv, "arena_simple" + user_id);
     ROS_INFO("Initializing arena_obstacle");
     // Node object
     ros::NodeHandle nh;
-    user_id=argv[1];
+    
     // Initialize markers
     world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker_obs" + user_id, 0);
     wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers_obs" + user_id,0);
