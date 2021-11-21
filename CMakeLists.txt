@@ -280,3 +280,8 @@ add_dependencies(arena_one_obstacle fast_turtle_generate_messages_cpp)
 add_executable(arena_one_obstacle_two src/arena_one_obstacle_two.cpp)
 target_link_libraries(arena_one_obstacle_two ${catkin_LIBRARIES} ft)
 add_dependencies(arena_one_obstacle_two fast_turtle_generate_messages_cpp)
+
+# It defines the arena_offline as an executable
+add_executable(arena_offline src/arena_offline.cpp)
+target_link_libraries(arena_offline ${catkin_LIBRARIES} ft)
+add_dependencies(arena_offline fast_turtle_generate_messages_cpp)
