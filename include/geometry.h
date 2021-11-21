@@ -51,13 +51,13 @@ class Line{
 		std::tuple<float, float> get_midpoint();
 		float get_length();
 		virtual std::tuple<bool, float, float> intersects_line(Line other);
-		virtual std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle);
+		virtual std::tuple<bool, float, float, float, float> intersects_circle(Circle circle);
 };
 
 class LineSegment : public Line{
 	public:
 		LineSegment(float x1, float y1, float x2, float y2);
-		std::tuple<bool, float, float, float, float> intersects_circle(Circle* circle) override final;
+		std::tuple<bool, float, float, float, float> intersects_circle(Circle circle) override final;
 		std::tuple<bool, float, float> intersects_line(Line other) override final;
 };
 
@@ -84,13 +84,15 @@ class Circle{
 		std::string tostring();
 		float get_xc();
 		float get_yc();
+		void set_xc(float x); 
+		void set_yc(float y);
 		float get_radius();
 		float get_diameter();
 		float equation(float x, float y);
 		bool intersects(float x, float y);
 		bool inside(float x, float y);
 		bool outside(float x, float y);
-		bool intersects_circle(Circle* other);
+		bool intersects_circle(Circle other);
 		std::tuple<bool, float, float, float, float> intersects_line(Line line);
 };
 #endif // GEOMETRY_H

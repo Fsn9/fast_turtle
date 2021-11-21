@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string.h>
 #include <vector>
+#include <map>
+#include <memory>
 
 #include "utils.h"
 #include "geometry.h"
@@ -26,7 +28,7 @@ class World : public Square{
 		std::vector<RoundObstacle> round_obstacles;
 		std::vector<WallObstacle> wall_obstacles;
 		std::vector<FoodItem> food_items;
-		std::vector<SimpleDrone> simple_drones;
+		std::vector<std::shared_ptr<SimpleDrone>> simple_drones;
 		int n_burgers;
 		int n_simple_drones;
 	public:
@@ -41,14 +43,17 @@ class World : public Square{
 		std::vector<WallObstacle> get_wall_obstacles();
 		std::vector<TurtlebotBurger> get_burgers();
 		std::vector<FoodItem> get_food_items();
-		std::vector<SimpleDrone> get_simple_drones();
+		std::vector<std::shared_ptr<SimpleDrone>> get_simple_drones();
 		RoundObstacle* get_round_obstacle(int idx);
 		WallObstacle* get_wall_obstacle(int idx);
 		TurtlebotBurger* get_burger(int idx);
 		FoodItem* get_food_item(int idx);
-		SimpleDrone* get_simple_drone(int idx);
+		std::shared_ptr<SimpleDrone> get_simple_drone(int idx);
+		std::shared_ptr<SimpleDrone> get_simple_drone(std::string name);
+		void set_simple_drone_position(std::string name, float x, float y);
 		int get_n_burgers();
 		int get_n_simple_drones();
 		std::vector<std::string> get_robot_names();
+		void set_robot_positions(const std::map<std::string, std::pair<float, float>>& position);
 };
 #endif // WORLD_H

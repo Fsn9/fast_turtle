@@ -198,7 +198,7 @@ void SimpleDrone::set_new_vx_vy(double vx, double vy){
     this->last_vy = vy;
 }
 
-void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<SimpleDrone> simple_drones,std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot){
+void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<std::shared_ptr<SimpleDrone>> simple_drones,std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot){
     std::fill(this->lasers.begin(), this->lasers.end(), MAX_DISTANCE);
     LineSegment laser(0,0,0,0);
     bool in_sight;
@@ -255,7 +255,7 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
         for(int r = 0; r < simple_drones.size(); r++)
         {
             // Check intersections
-            intersection_obstacle = simple_drones[r].intersects_line(laser);
+            intersection_obstacle = simple_drones[r]->intersects_line(laser);
             // If there was intersection
             if (std::get<0>(intersection_obstacle))
             {

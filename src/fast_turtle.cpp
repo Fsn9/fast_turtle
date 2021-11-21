@@ -24,6 +24,7 @@ void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radiu
     if (this->get_world()->get_n_burgers() < MAX_BURGERS){
         this->last_times_tb_robots[this->w->get_n_burgers()] = std::chrono::steady_clock::now();
         this->w->add_turtlebot_burger(x,y,theta,radius,name,controller_period);
+        initial_positions_robots_[name] = std::make_pair(x, y);
     }
     else{
         throw std::invalid_argument("No more tb_robots allowed. Maximum is: " + std::to_string(MAX_BURGERS));
@@ -37,6 +38,7 @@ void FastTurtle::add_simple_drone(float x, float y, float height, float radius, 
     if (this->get_world()->get_n_simple_drones() < MAX_SIMPLE_DRONES){
         this->last_times_simple_drones[this->w->get_n_simple_drones()] = std::chrono::steady_clock::now();
         this->w->add_simple_drone(x,y,height,radius,name,controller_period);
+        initial_positions_robots_[name] = std::make_pair(x, y);
     }
     else{
         throw std::invalid_argument("No more simple drones allowed. Maximum is: " + std::to_string(MAX_SIMPLE_DRONES));
@@ -61,7 +63,7 @@ void FastTurtle::check_collisions(){
             //check collisions between bots
             for(int j = i+1; j < this->get_world()->get_n_simple_drones(); j++){
                 if(this->get_world()->get_simple_drone(j)->is_visible()){
-                    if(this->get_world()->get_simple_drone(i)->intersects_circle(this->get_world()->get_simple_drone(j))){
+                    if(this->get_world()->get_simple_drone(i)->intersects_circle(*this->get_world()->get_simple_drone(j))){
                         this->get_world()->get_simple_drone(i)->set_visibility(false);
                         this->get_world()->get_simple_drone(j)->set_visibility(false);
                         std::cout << " collision bot";
@@ -72,7 +74,7 @@ void FastTurtle::check_collisions(){
             //check collisions with obstacles
             if(this->get_world()->get_simple_drone(i)->is_visible()){
                 for(int j = 0; j < this->get_world()->get_round_obstacles().size(); j++){
-                    if(this->get_world()->get_simple_drone(i)->intersects_circle(this->get_world()->get_round_obstacle(j))){
+                    if(this->get_world()->get_simple_drone(i)->intersects_circle(*this->get_world()->get_round_obstacle(j))){
                         this->get_world()->get_simple_drone(i)->set_visibility(false);
                         std::cout << " collision obstacle";
                         break;
@@ -82,11 +84,12 @@ void FastTurtle::check_collisions(){
             //check collisions with walls
             if(this->get_world()->get_simple_drone(i)->is_visible()){
                 for(int j = 0; j < this->get_world()->get_wall_obstacles().size(); j++){
-                    if(std::get<0>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)))){
-                        float x1 = std::get<1>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)));
-                        float y1 = std::get<2>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)));
-                        float x2 = std::get<3>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i)));
-                        float y2 = std::get<4>(this->get_world()->get_wall_obstacle(j)->intersects_circle(this->get_world()->get_simple_drone(i))); //pontos do circulo onde a reta intersecta
+                    if(std::get<0>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i))))
+                    {
+                        float x1 = std::get<1>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
+                        float y1 = std::get<2>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
+                        float x2 = std::get<3>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
+                        float y2 = std::get<4>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i))); //pontos do circulo onde a reta intersecta
                         float xa = this->get_world()->get_wall_obstacle(j)->get_x1();
                         float ya = this->get_world()->get_wall_obstacle(j)->get_y1();
                         float xb = this->get_world()->get_wall_obstacle(j)->get_x2();
@@ -227,11 +230,11 @@ void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
 
 std::vector<float> FastTurtle::get_robot_position(std::string robot_name)
 {
-    for(SimpleDrone sd : this->w->get_simple_drones())
+    for(std::shared_ptr<SimpleDrone> sd : this->w->get_simple_drones())
     {
-        if(sd.get_name() == robot_name)
+        if(sd->get_name() == robot_name)
         {
-            return std::vector<float>{sd.x(), sd.y()};
+            return std::vector<float>{sd->x(), sd->y()};
         }
     }
     return {};
@@ -239,14 +242,20 @@ std::vector<float> FastTurtle::get_robot_position(std::string robot_name)
 
 std::vector<float> FastTurtle::get_laser(std::string robot_name)
 {
-    for(SimpleDrone sd : this->w->get_simple_drones())
+    for(std::shared_ptr<SimpleDrone> sd : this->w->get_simple_drones())
     {
-        if(sd.get_name() == robot_name)
+        if(sd->get_name() == robot_name)
         {
-            return sd.get_lidar()->get_lasers();
+            return sd->get_lidar()->get_lasers();
         }
     }
     return default_scan_;
+}
+
+void FastTurtle::reset_robots()
+{
+    std::cout << "Reseting robot positions...\n";
+    this->w->set_robot_positions(initial_positions_robots_);
 }
 
 std::vector<float> Observation::get_pose(){

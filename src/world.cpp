@@ -34,9 +34,9 @@ void World::add_turtlebot_burger(float x, float y, float theta, float radius, st
 }
 
 void World::add_simple_drone(float x, float y, float height, float radius, std::string name, float controller_period){
-	std::vector<SimpleDrone>::iterator it; 
+	std::vector<std::shared_ptr<SimpleDrone>>::iterator it; 
 	it = this->simple_drones.begin() + this->n_simple_drones;
-	it = this->simple_drones.insert(it, SimpleDrone(x,y,height,radius,name,controller_period));
+	it = this->simple_drones.insert(it, std::make_shared<SimpleDrone>(x,y,height,radius,name,controller_period));
 	this->n_simple_drones += 1;
 }
 
@@ -100,21 +100,54 @@ std::vector<FoodItem> World::get_food_items(){
 FoodItem* World::get_food_item(int idx){
 	return &this->food_items[idx];
 }
-std::vector<SimpleDrone> World::get_simple_drones(){
+std::vector<std::shared_ptr<SimpleDrone>> World::get_simple_drones(){
 	return this->simple_drones;
 }
 
-SimpleDrone* World::get_simple_drone(int idx){
-	return &this->simple_drones[idx];
+std::shared_ptr<SimpleDrone> World::get_simple_drone(int idx){
+	return this->simple_drones[idx];
 }
 
 // For now we work with drones only
 std::vector<std::string> World::get_robot_names()
 {
 	std::vector<std::string> names;
-	for(SimpleDrone robot : this->simple_drones)
+	for(std::shared_ptr<SimpleDrone> robot : this->simple_drones)
 	{
-		names.emplace_back(robot.get_name());
+		names.emplace_back(robot->get_name());
 	}
 	return names;
+}
+
+std::shared_ptr<SimpleDrone> World::get_simple_drone(std::string name)
+{
+	for(std::shared_ptr<SimpleDrone> drone : simple_drones)
+	{
+		if(drone->get_name() == name)
+		{
+			return drone;
+		}
+	}
+	return {};
+}
+
+void World::set_simple_drone_position(std::string name, float x, float y)
+{
+	std::shared_ptr<SimpleDrone> sd = get_simple_drone(name);
+	if(sd != nullptr)
+	{
+		printf("[1] %f, %f\n", sd->get_xc(), sd->get_yc());
+		sd->set_xc(x);
+		sd->set_yc(y);
+		printf("[2] %f, %f\n", sd->get_xc(), sd->get_yc());
+	}
+	
+}
+
+void World::set_robot_positions(const std::map<std::string, std::pair<float, float>>& positions)
+{
+	for(std::pair<std::string, std::pair<float, float>> robot : positions)
+	{
+		set_simple_drone_position(robot.first, std::get<0>(robot.second), std::get<1>(robot.second));
+	}
 }

@@ -135,22 +135,22 @@ std::tuple<bool, float, float> Line::intersects_line(Line other){
 
 }
 
-std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle* circle){ //x1, y1, x2, y2
+std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle circle){ //x1, y1, x2, y2
 	float discriminant;
 	if (this->vertical){
-		discriminant = pow(circle->get_radius(),2) - pow(this->intercept - circle->get_xc(),2);
+		discriminant = pow(circle.get_radius(),2) - pow(this->intercept - circle.get_xc(),2);
 		if (discriminant <= 0) return {false, 0,0,0,0};
 		float sqrt_d = sqrt(discriminant);
-		return {true, this->intercept, circle->get_yc() + sqrt_d, this-> intercept, circle->get_yc() - sqrt_d};
+		return {true, this->intercept, circle.get_yc() + sqrt_d, this-> intercept, circle.get_yc() - sqrt_d};
 	}
 	else{
 		float slope_sqr = pow(this->slope,2);
-		discriminant = pow(circle->get_radius(), 2) * (1 + slope_sqr) - pow(circle->get_yc() - this->slope * circle->get_xc() - this->intercept,2);
+		discriminant = pow(circle.get_radius(), 2) * (1 + slope_sqr) - pow(circle.get_yc() - this->slope * circle.get_xc() - this->intercept,2);
 		if(discriminant <= 0) return {false, 0,0,0,0};
 		float den = 1 + slope_sqr;
 		float sqrt_d = sqrt(discriminant);
-		float a = circle->get_xc() + circle->get_yc() * this->slope - this->intercept * this->slope;
-		float b = this->intercept + circle->get_xc() * this->slope + circle->get_yc() * slope_sqr;
+		float a = circle.get_xc() + circle.get_yc() * this->slope - this->intercept * this->slope;
+		float b = this->intercept + circle.get_xc() * this->slope + circle.get_yc() * slope_sqr;
 		return {true, (a + sqrt_d) / den, (b + this->slope * sqrt_d) / den, (a - sqrt_d) / den, (b - this->slope * sqrt_d) / den};
 	}
 }
@@ -158,7 +158,7 @@ std::tuple<bool, float, float, float, float> Line::intersects_circle(Circle* cir
 //Line Segment
 LineSegment::LineSegment(float x1, float y1, float x2, float y2) : Line(x1,x2,y1,y2){}
 
-std::tuple<bool, float, float, float, float> LineSegment::intersects_circle(Circle* circle)
+std::tuple<bool, float, float, float, float> LineSegment::intersects_circle(Circle circle)
 {
 	std::tuple<bool, float, float, float, float> points = Line::intersects_circle(circle);
 	if(std::get<0>(points))
@@ -198,6 +198,10 @@ float Circle::get_xc(){return this->xc;}
 
 float Circle::get_yc(){return this->yc;}
 
+void Circle::set_xc(float x){this->xc = x;}
+
+void Circle::set_yc(float y){this->yc = y;}
+
 float Circle::get_radius(){return this->radius;}
 
 float Circle::get_diameter(){return this->diameter;}
@@ -210,9 +214,9 @@ bool Circle::inside(float x, float y){return equation(x,y) <= this->radius_sqr;}
 
 bool Circle::outside(float x, float y){return !inside(x,y);}
 
-bool Circle::intersects_circle(Circle* other){
-	float d = sqrt(equation(other->get_xc(), other->get_yc()));
-	return (this->radius + other->get_radius()) > d && (d > abs(this->radius - other->get_radius()));
+bool Circle::intersects_circle(Circle other){
+	float d = sqrt(equation(other.get_xc(), other.get_yc()));
+	return (this->radius + other.get_radius()) > d && (d > abs(this->radius - other.get_radius()));
 }
 
 

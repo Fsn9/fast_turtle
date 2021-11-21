@@ -2,6 +2,7 @@
 #define FAST_TURTLE_H
 
 #include "world.h"
+#include <map>
 #include <unistd.h> 
 #include <chrono>
 
@@ -29,6 +30,7 @@ class FastTurtle{
         unsigned int simulation_fps;
         double simulation_dt;
         std::vector<float> default_scan_;
+        std::map<std::string, std::pair<float, float>> initial_positions_robots_;
     public:
         FastTurtle();
         FastTurtle(unsigned int simulation_fps);
@@ -51,6 +53,7 @@ class FastTurtle{
         Observation observe(int idx_robot);
         void sleep() = delete;
         void check_collisions();
+        void reset_robots();
 };
 
 class Observation{

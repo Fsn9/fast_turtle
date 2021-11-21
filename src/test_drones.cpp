@@ -498,6 +498,7 @@ void publish_data()
 
 bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena::Response& res)
 {
+    ft->reset_robots();
     ROS_INFO("The arena was reset");
     return true;
 }
@@ -567,7 +568,6 @@ int main(int argc, char **argv)
     sc->food_was_captured("drone0");
 
     // Declare given robot out of the competition
-    sc->the_robot_lost("drone0");
     sc->the_robot_lost("drone1");
 
     // Send first world data and graphics data
