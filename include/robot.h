@@ -93,6 +93,7 @@ class SimpleDrone : public Circle{
         std::string get_model();
         Lidar* get_lidar();
         void move(float v, float w, double time_step);
+        void reset();
 };
 
 #endif // ROBOT_H

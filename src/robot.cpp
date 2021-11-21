@@ -173,6 +173,13 @@ void SimpleDrone::move(float vx, float vy, double time_step){
     return;
 }
 
+void SimpleDrone::reset()
+{
+    this->last_vx = 0.0;
+    this->last_vy = 0.0;
+    this->visible = true;
+}
+
 Lidar* SimpleDrone::get_lidar(){
     return this->lidar;
 }

@@ -256,6 +256,7 @@ void FastTurtle::reset_robots()
 {
     std::cout << "Reseting robot positions...\n";
     this->w->set_robot_positions(initial_positions_robots_);
+    this->w->reset_simple_drones();
 }
 
 std::vector<float> Observation::get_pose(){

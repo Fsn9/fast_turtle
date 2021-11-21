@@ -51,6 +51,7 @@ class World : public Square{
 		std::shared_ptr<SimpleDrone> get_simple_drone(int idx);
 		std::shared_ptr<SimpleDrone> get_simple_drone(std::string name);
 		void set_simple_drone_position(std::string name, float x, float y);
+		void reset_simple_drones();
 		int get_n_burgers();
 		int get_n_simple_drones();
 		std::vector<std::string> get_robot_names();

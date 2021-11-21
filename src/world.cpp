@@ -136,12 +136,18 @@ void World::set_simple_drone_position(std::string name, float x, float y)
 	std::shared_ptr<SimpleDrone> sd = get_simple_drone(name);
 	if(sd != nullptr)
 	{
-		printf("[1] %f, %f\n", sd->get_xc(), sd->get_yc());
 		sd->set_xc(x);
 		sd->set_yc(y);
-		printf("[2] %f, %f\n", sd->get_xc(), sd->get_yc());
 	}
 	
+}
+
+void World::reset_simple_drones()
+{
+	for(std::shared_ptr<SimpleDrone> drone : simple_drones)
+	{
+		drone->reset();
+	}
 }
 
 void World::set_robot_positions(const std::map<std::string, std::pair<float, float>>& positions)
