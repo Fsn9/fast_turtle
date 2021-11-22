@@ -371,6 +371,11 @@ bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena:
 {
     ft->reset_robots();
     ROS_INFO("The arena was reset");
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
+        cmd_vels_simple_drones[i].vx = 0.0;
+        cmd_vels_simple_drones[i].vy = 0.0;
+    }
     return true;
 }
 int main(int argc, char** argv)

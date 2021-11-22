@@ -86,7 +86,7 @@ void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_simple_drones() > 0)
     {
-        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        ROS_INFO("Received commands vx: %f and vy: %f\n", msg.linear.x, msg.linear.y);
         cmd_vels_simple_drones[0].vx = msg.linear.x;
         cmd_vels_simple_drones[0].vy = msg.linear.y;
         std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(0)->tostring() << "\n";
@@ -97,7 +97,7 @@ void listen_cmd_vel_sd1(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_simple_drones() > 0)
     {
-        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        ROS_INFO("Received commands vx: %f and vy: %f\n", msg.linear.x, msg.linear.y);
         cmd_vels_simple_drones[1].vx = msg.linear.x;
         cmd_vels_simple_drones[1].vy = msg.linear.y;
         std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(1)->tostring() << "\n";
@@ -335,6 +335,11 @@ void publish_data()
 bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena::Response& res)
 {
     ft->reset_robots();
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
+        cmd_vels_simple_drones[i].vx = 0.0;
+        cmd_vels_simple_drones[i].vy = 0.0;
+    }
     ROS_INFO("The arena was reset");
     return true;
 }
