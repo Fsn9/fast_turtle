@@ -15,6 +15,8 @@
 #include "fast_turtle/RobotDataArray.h"
 #include <nav_msgs/Odometry.h>
 #include <string.h>
+// Services
+#include "fast_turtle/ResetArena.h"
 
 // #include <time.h>
 
@@ -400,6 +402,12 @@ void publish_data(){
 
   
 }
+bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena::Response& res)
+{
+    ft->reset_robots();
+    ROS_INFO("The arena was reset");
+    return true;
+}
 int main(int argc, char** argv)
 {
     user_id=argv[1];
@@ -431,6 +439,8 @@ int main(int argc, char** argv)
     collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0_two"+ user_id, 50);
     collision_publisher1 = nh.advertise<std_msgs::Bool>("collision1_two"+ user_id, 50);
     
+    // Services
+    ros::ServiceServer service = nh.advertiseService("reset_arena", reset_arena);
     
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
