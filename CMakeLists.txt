@@ -62,6 +62,8 @@ add_message_files(
 add_service_files(
    FILES
    ResetArena.srv
+   ResetArena_obs.srv
+   ResetArena_two.srv
 )
 
 ## Generate actions in the 'action' folder

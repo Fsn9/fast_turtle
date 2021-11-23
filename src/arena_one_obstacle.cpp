@@ -16,7 +16,7 @@
 #include <nav_msgs/Odometry.h>
 #include <string.h>
 // Services
-#include "fast_turtle/ResetArena.h"
+#include "fast_turtle/ResetArena_obs.h"
 
 // #include <time.h>
 
@@ -367,7 +367,7 @@ void publish_data(){
 
   
 }
-bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena::Response& res)
+bool reset_arena(fast_turtle::ResetArena_obs::Request &req, fast_turtle::ResetArena_obs::Response& res)
 {
     ft->reset_robots();
     ROS_INFO("The arena was reset");
@@ -410,7 +410,7 @@ world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker_
     collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0_obs" + user_id, 50);
     
     // Services
-    ros::ServiceServer service = nh.advertiseService("reset_arena", reset_arena);
+    ros::ServiceServer service = nh.advertiseService("reset_arena_obs", reset_arena);
     
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
