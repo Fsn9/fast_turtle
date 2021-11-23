@@ -254,9 +254,13 @@ std::vector<float> FastTurtle::get_laser(std::string robot_name)
 
 void FastTurtle::reset_robots()
 {
-    std::cout << "Reseting robot positions...\n";
     this->w->set_robot_positions(initial_positions_robots_);
     this->w->reset_simple_drones();
+    for(int i=0; i < this->w->get_n_simple_drones(); i++)
+    {
+        act_simple_drone(0, 0, i);
+    }
+    std::cout << "Robot were reset (stopped and returned to initial position)...\n";
 }
 
 std::vector<float> Observation::get_pose(){
