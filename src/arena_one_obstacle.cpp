@@ -382,7 +382,7 @@ int main(int argc, char** argv)
 {
     user_id=argv[1];
     // Init node
-    ros::init(argc, argv, "arena_simple" + user_id);
+    ros::init(argc, argv, "arena_one_obstacle" + user_id);
     ROS_INFO("Initializing arena_obstacle");
     // Node object
     ros::NodeHandle nh;
