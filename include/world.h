@@ -22,7 +22,7 @@
 
 class World : public Square{
 	private:
-		float dt;
+		double dt;
 		std::vector<Line> lines;
 		std::vector<TurtlebotBurger> burgers;
 		std::vector<RoundObstacle> round_obstacles;
@@ -32,13 +32,13 @@ class World : public Square{
 		int n_burgers;
 		int n_simple_drones;
 	public:
-		World(float length, float xc, float yc, float angle);
+		World(double length, double xc, double yc, double angle);
 		std::string tostring();
-		void add_obstacle(float x, float y, float radius, std::string type_);
-		void add_wall(float x1, float y1, float x2, float y2);
-		void add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period);
-		void add_simple_drone(float x, float y, float height, float radius, std::string name, float controller_period);
-		void add_food_item(float x, float y, float radius);
+		void add_obstacle(double x, double y, double radius, std::string type_);
+		void add_wall(double x1, double y1, double x2, double y2);
+		void add_turtlebot_burger(double x, double y, double theta, double radius, std::string name, double controller_period);
+		void add_simple_drone(double x, double y, double height, double radius, std::string name, double controller_period);
+		void add_food_item(double x, double y, double radius);
 		std::vector<RoundObstacle> get_round_obstacles();
 		std::vector<WallObstacle> get_wall_obstacles();
 		std::vector<TurtlebotBurger> get_burgers();
@@ -50,11 +50,11 @@ class World : public Square{
 		FoodItem* get_food_item(int idx);
 		std::shared_ptr<SimpleDrone> get_simple_drone(int idx);
 		std::shared_ptr<SimpleDrone> get_simple_drone(std::string name);
-		void set_simple_drone_position(std::string name, float x, float y);
+		void set_simple_drone_position(std::string name, double x, double y);
 		void reset_simple_drones();
 		int get_n_burgers();
 		int get_n_simple_drones();
 		std::vector<std::string> get_robot_names();
-		void set_robot_positions(const std::map<std::string, std::pair<float, float>>& position);
+		void set_robot_positions(const std::map<std::string, std::pair<double, double>>& position);
 };
 #endif // WORLD_H

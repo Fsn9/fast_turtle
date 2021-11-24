@@ -16,7 +16,7 @@
 #include "fast_turtle/ResetArena.h"
 
 // Simulation frames per second
-#define SIMULATION_FPS 40u
+#define SIMULATION_FPS 10u
 
 // Values for food distances
 #define FOOD_LIMIT_X 0.5
@@ -86,9 +86,10 @@ void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_simple_drones() > 0)
     {
-        ROS_INFO("Received commands vx: %f and vy: %f\n", msg.linear.x, msg.linear.y);
+        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
         cmd_vels_simple_drones[0].vx = msg.linear.x;
         cmd_vels_simple_drones[0].vy = msg.linear.y;
+        ft->act_simple_drone(msg.linear.x, msg.linear.y, 0);
         std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(0)->tostring() << "\n";
     }
 }
@@ -366,7 +367,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1", 1000, listen_cmd_vel_sd1);
 
     // Data publishers
-    simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
+    simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 100);
 
     // Services
     ros::ServiceServer service = nh.advertiseService("reset_arena", reset_arena);
@@ -380,10 +381,7 @@ int main(int argc, char **argv)
     ft->add_obstacle(0, 2, obstacle_radius, "round");
     ft->add_obstacle(-1, -1, obstacle_radius, "round");
     ft->add_obstacle(-1, -2, obstacle_radius, "round");
-    ft->add_simple_drone(1, 1.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
-    ft->add_simple_drone(2, 1, 0.5, BURGER_RADIUS, "drone1", 0.2);
-    ft->add_simple_drone(-2, 1, 0.5, BURGER_RADIUS, "drone2", 0.2);
-    ft->add_simple_drone(2, -2, 0.5, BURGER_RADIUS, "drone3", 0.2);
+    ft->add_simple_drone(0.0, 0.0, 0.5, BURGER_RADIUS, "drone0", 0.01);
     ft->add_wall(2, 0, 2, 2);
 
     // Send first world data and graphics data
@@ -397,7 +395,7 @@ int main(int argc, char **argv)
     while (ros::ok())
     {
         // Updates logic
-        update_physics();
+        //update_physics();
 
         // Publishes fresh data
         publish_data();

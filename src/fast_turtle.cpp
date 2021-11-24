@@ -16,11 +16,11 @@ FastTurtle::FastTurtle(unsigned int simulation_fps){
     this->simulation_dt = 1.0 / this->simulation_fps;
 }
 
-void FastTurtle::init_world(float length, float xc, float yc, std::string type = "square"){
+void FastTurtle::init_world(double length, double xc, double yc, std::string type = "square"){
     this->w = new World(length, xc, yc, 0.0);
 }
 
-void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period){
+void FastTurtle::add_turtlebot_burger(double x, double y, double theta, double radius, std::string name, double controller_period){
     if (this->get_world()->get_n_burgers() < MAX_BURGERS){
         this->last_times_tb_robots[this->w->get_n_burgers()] = std::chrono::steady_clock::now();
         this->w->add_turtlebot_burger(x,y,theta,radius,name,controller_period);
@@ -31,7 +31,7 @@ void FastTurtle::add_turtlebot_burger(float x, float y, float theta, float radiu
     }
 }
 
-void FastTurtle::add_simple_drone(float x, float y, float height, float radius, std::string name, float controller_period){
+void FastTurtle::add_simple_drone(double x, double y, double height, double radius, std::string name, double controller_period){
     if (height < MIN_HEIGHT_DRONES){
         throw std::invalid_argument("Entered height is invalid. Minimum height for drones is: " + std::to_string(MIN_HEIGHT_DRONES));
     }
@@ -45,15 +45,15 @@ void FastTurtle::add_simple_drone(float x, float y, float height, float radius, 
     }
 }
 
-void FastTurtle::add_obstacle(float x, float y, float radius, std::string type_){
+void FastTurtle::add_obstacle(double x, double y, double radius, std::string type_){
     this->w->add_obstacle(x,y,radius,type_);
 }
 
-void FastTurtle::add_wall(float x1, float y1, float x2, float y2){
+void FastTurtle::add_wall(double x1, double y1, double x2, double y2){
     this->w->add_wall(x1, y1, x2, y2);
 }
 
-void FastTurtle::add_food_item(float x, float y, float radius){
+void FastTurtle::add_food_item(double x, double y, double radius){
     this->w->add_food_item(x,y,radius);
 }
 
@@ -86,22 +86,22 @@ void FastTurtle::check_collisions(){
                 for(int j = 0; j < this->get_world()->get_wall_obstacles().size(); j++){
                     if(std::get<0>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i))))
                     {
-                        float x1 = std::get<1>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
-                        float y1 = std::get<2>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
-                        float x2 = std::get<3>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
-                        float y2 = std::get<4>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i))); //pontos do circulo onde a reta intersecta
-                        float xa = this->get_world()->get_wall_obstacle(j)->get_x1();
-                        float ya = this->get_world()->get_wall_obstacle(j)->get_y1();
-                        float xb = this->get_world()->get_wall_obstacle(j)->get_x2();
-                        float yb = this->get_world()->get_wall_obstacle(j)->get_y2(); //extremidades da reta
+                        double x1 = std::get<1>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
+                        double y1 = std::get<2>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
+                        double x2 = std::get<3>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i)));
+                        double y2 = std::get<4>(this->get_world()->get_wall_obstacle(j)->intersects_circle(*this->get_world()->get_simple_drone(i))); //pontos do circulo onde a reta intersecta
+                        double xa = this->get_world()->get_wall_obstacle(j)->get_x1();
+                        double ya = this->get_world()->get_wall_obstacle(j)->get_y1();
+                        double xb = this->get_world()->get_wall_obstacle(j)->get_x2();
+                        double yb = this->get_world()->get_wall_obstacle(j)->get_y2(); //extremidades da reta
                         
-                        float crossproduct_1 = (y1 - ya) * (xb - xa) - (x1 - xa) * (yb - ya);
-                        float crossproduct_2 = (y2 - ya) * (xb - xa) - (x2 - xa) * (yb - ya);
+                        double crossproduct_1 = (y1 - ya) * (xb - xa) - (x1 - xa) * (yb - ya);
+                        double crossproduct_2 = (y2 - ya) * (xb - xa) - (x2 - xa) * (yb - ya);
 
-                        float dotproduct_1 = (x1 - xa) * (xb - xa) + (y1 - ya)*(yb - ya);
-                        float dotproduct_2 = (x2 - xa) * (xb - xa) + (y2 - ya)*(yb - ya);
+                        double dotproduct_1 = (x1 - xa) * (xb - xa) + (y1 - ya)*(yb - ya);
+                        double dotproduct_2 = (x2 - xa) * (xb - xa) + (y2 - ya)*(yb - ya);
 
-                        float squaredlengthba = (xb - xa)*(xb - xa) + (yb - ya)*(yb - ya);
+                        double squaredlengthba = (xb - xa)*(xb - xa) + (yb - ya)*(yb - ya);
                         if ((crossproduct_1 <= 0.0001  &&  dotproduct_1 > 0  &&  dotproduct_1 <= squaredlengthba) || 
                             (crossproduct_2 <= 0.0001  &&  dotproduct_2 > 0  &&  dotproduct_2 <= squaredlengthba)){
                                 this->get_world()->get_simple_drone(i)->set_visibility(false);
@@ -121,13 +121,13 @@ World* FastTurtle::get_world(){
     return this->w;
 }
 
-std::vector<float> FastTurtle::observe_robot_pose(int idx_robot){
+std::vector<double> FastTurtle::observe_robot_pose(int idx_robot){
     if (idx_robot < 0 || idx_robot > this->w->get_burgers().size() - 1){
         throw std::invalid_argument("invalid robot index of " + 
         std::to_string(idx_robot) +". It needs to be >= 0 or < " + 
         std::to_string(this->w->get_burgers().size()));
     }
-    return std::vector<float> {this->w->get_burger(idx_robot)->x(), this->w->get_burger(idx_robot)->y(), this->w->get_burger(idx_robot)->get_theta()};
+    return std::vector<double> {this->w->get_burger(idx_robot)->x(), this->w->get_burger(idx_robot)->y(), this->w->get_burger(idx_robot)->get_theta()};
 }
 
 // Returns lidar measurements from robot with index = idx_robot
@@ -150,7 +150,7 @@ Observation FastTurtle::observe(int idx_robot){
 }
 
 // Acts with twist message in robot with idx_robot
-void FastTurtle::act_turtlebot_burger(float v, float w, int idx_tbb){
+void FastTurtle::act_turtlebot_burger(double v, double w, int idx_tbb){
     if (idx_tbb < 0 || idx_tbb > this->w->get_n_burgers() - 1){
         throw std::invalid_argument("invalid tb_robot index of " + 
         std::to_string(idx_tbb) +". It needs to be >= 0 or < " + 
@@ -189,7 +189,7 @@ void FastTurtle::act_turtlebot_burger(float v, float w, int idx_tbb){
     );
 }
 
-void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
+void FastTurtle::act_simple_drone(double vx, double vy, int idx_sd){
     if (idx_sd < 0 || idx_sd > this->w->get_n_simple_drones() - 1){
         throw std::invalid_argument("invalid burger index of " + 
         std::to_string(idx_sd) +". It needs to be >= 0 or < " + 
@@ -205,10 +205,11 @@ void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
     if(elapsed > this->w->get_simple_drone(idx_sd)->get_controller_period()){
         // Update last time
         this->last_times_simple_drones[idx_sd] = now;
-        // Update last twist valuesact
+        // Update last twist values
         this->w->get_simple_drone(idx_sd)->set_new_vx_vy(vx,vy);
     }
 
+    this->w->get_simple_drone(idx_sd)->set_new_vx_vy(vx,vy);
     // Move drone
     this->w->get_simple_drone(idx_sd)->move(
         this->w->get_simple_drone(idx_sd)->get_last_vx(),
@@ -228,13 +229,13 @@ void FastTurtle::act_simple_drone(float vx, float vy, int idx_sd){
     );
 }
 
-std::vector<float> FastTurtle::get_robot_position(std::string robot_name)
+std::vector<double> FastTurtle::get_robot_position(std::string robot_name)
 {
     for(std::shared_ptr<SimpleDrone> sd : this->w->get_simple_drones())
     {
         if(sd->get_name() == robot_name)
         {
-            return std::vector<float>{sd->x(), sd->y()};
+            return std::vector<double>{sd->x(), sd->y()};
         }
     }
     return {};
@@ -263,7 +264,7 @@ void FastTurtle::reset_robots()
     std::cout << "Robot were reset (stopped and returned to initial position)...\n";
 }
 
-std::vector<float> Observation::get_pose(){
+std::vector<double> Observation::get_pose(){
     return this->pose;
 }
 
@@ -279,7 +280,7 @@ void Observation::print(){
 
 void Observation::print_pose(){
     std::cout << "\nPose of robot " << this->idx_robot << ": \n";
-    for(std::vector<float>::const_iterator i = this->pose.begin(); i!=this->pose.end(); ++i)
+    for(std::vector<double>::const_iterator i = this->pose.begin(); i!=this->pose.end(); ++i)
         std::cout << *i << ' ';
     std::cout << "\n";
 }
@@ -291,6 +292,6 @@ void Observation::print_laser_data(){
     std::cout << "\n";
 }
 
-Observation::Observation(std::vector<float> pose, std::vector<float> laser_data, int idx_robot) : pose(pose), laser_data(laser_data), idx_robot(idx_robot){}
+Observation::Observation(std::vector<double> pose, std::vector<float> laser_data, int idx_robot) : pose(pose), laser_data(laser_data), idx_robot(idx_robot){}
 
 Observation::Observation(){}

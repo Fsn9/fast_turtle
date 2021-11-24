@@ -1,6 +1,6 @@
 #include "robot.h"
 
-TurtlebotBurger::TurtlebotBurger(float x, float y, float theta, float radius, std::string name, float controller_period) : Circle(x, y, radius){
+TurtlebotBurger::TurtlebotBurger(double x, double y, double theta, double radius, std::string name, double controller_period) : Circle(x, y, radius){
     // Attributes
     this->controller_period = controller_period;
     this->theta = theta;
@@ -13,23 +13,23 @@ TurtlebotBurger::TurtlebotBurger(float x, float y, float theta, float radius, st
     this->visible = true;
 
     // Lidar
-    float frequency;
+    double frequency;
     this->lidar = new Lidar(frequency, new Point2d(x,y));
 }
 
-float TurtlebotBurger::x(){
+double TurtlebotBurger::x(){
     return this->xc;
 }
 
-float TurtlebotBurger::y(){
+double TurtlebotBurger::y(){
     return this->yc;
 }
 
-float TurtlebotBurger::get_theta(){
+double TurtlebotBurger::get_theta(){
     return this->theta;
 }
 
-float TurtlebotBurger::get_controller_period(){
+double TurtlebotBurger::get_controller_period(){
     return this->controller_period;
 }
 
@@ -48,11 +48,11 @@ std::string TurtlebotBurger::tostring(){
     + ", with " + this->lidar->tostring() + "\n";
 }
 
-std::tuple<float, float, float> TurtlebotBurger::kinematics(float v, float w, double time_step){
-    float v_left = v + w * this->radius;
-    float v_right = v - w * this->radius;
-    float dd = (v_left + v_right) * 0.5;
-    float dth = (v_left - v_right) * this->inv_diameter;
+std::tuple<double, double, double> TurtlebotBurger::kinematics(double v, double w, double time_step){
+    double v_left = v + w * this->radius;
+    double v_right = v - w * this->radius;
+    double dd = (v_left + v_right) * 0.5;
+    double dth = (v_left - v_right) * this->inv_diameter;
     
     return 
     {
@@ -62,9 +62,9 @@ std::tuple<float, float, float> TurtlebotBurger::kinematics(float v, float w, do
     };
 }
 
-void TurtlebotBurger::move(float v, float w, double time_step){
+void TurtlebotBurger::move(double v, double w, double time_step){
     // Compute position
-    std::tuple<float,float,float> new_pose = this->kinematics(v, w, time_step);
+    std::tuple<double,double,double> new_pose = this->kinematics(v, w, time_step);
     // Update position
     this->xc = std::get<0>(new_pose);
     this->yc = std::get<1>(new_pose);
@@ -101,7 +101,7 @@ void TurtlebotBurger::set_new_v_w(double v, double w){
     this->last_w = w;
 }
 
-SimpleDrone::SimpleDrone(float x, float y, float height, float radius, std::string name, float controller_period) : Circle(x, y, radius)
+SimpleDrone::SimpleDrone(double x, double y, double height, double radius, std::string name, double controller_period) : Circle(x, y, radius)
 {
     // Attributes
     this->controller_period = controller_period;
@@ -116,27 +116,27 @@ SimpleDrone::SimpleDrone(float x, float y, float height, float radius, std::stri
     this->theta = 0.0;
 
     // Lidar
-    float frequency;
+    double frequency;
     this->lidar = new Lidar(frequency, new Point2d(x,y));
 }
 
-float SimpleDrone::x(){
+double SimpleDrone::x(){
     return this->xc;
 }
 
-float SimpleDrone::y(){
+double SimpleDrone::y(){
     return this->yc;
 }
 
-float SimpleDrone::get_theta(){
+double SimpleDrone::get_theta(){
     return this->theta;
 }
 
-float SimpleDrone::get_height(){
+double SimpleDrone::get_height(){
     return this->height;
 }
 
-float SimpleDrone::get_controller_period(){
+double SimpleDrone::get_controller_period(){
     return this->controller_period;
 }
 
@@ -156,7 +156,7 @@ std::string SimpleDrone::tostring(){
     + ", with " + this->lidar->tostring() + "\n";
 }
 
-std::tuple<float, float> SimpleDrone::kinematics(float vx, float vy, double time_step){    
+std::tuple<double, double> SimpleDrone::kinematics(double vx, double vy, double time_step){    
     return 
     {
         this->xc + vx * time_step,
@@ -164,9 +164,9 @@ std::tuple<float, float> SimpleDrone::kinematics(float vx, float vy, double time
     };
 }
 
-void SimpleDrone::move(float vx, float vy, double time_step){
+void SimpleDrone::move(double vx, double vy, double time_step){
     // Compute position
-    std::tuple<float,float> new_pose = this->kinematics(vx, vy, time_step);
+    std::tuple<double,double> new_pose = this->kinematics(vx, vy, time_step);
     // Update position
     this->xc = std::get<0>(new_pose);
     this->yc = std::get<1>(new_pose);
@@ -205,19 +205,19 @@ void SimpleDrone::set_new_vx_vy(double vx, double vy){
     this->last_vy = vy;
 }
 
-void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<std::shared_ptr<SimpleDrone>> simple_drones,std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot){
+void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<std::shared_ptr<SimpleDrone>> simple_drones,std::vector<LineSegment> edges, std::vector<WallObstacle> walls, double x_robot, double y_robot, double theta_robot){
     std::fill(this->lasers.begin(), this->lasers.end(), MAX_DISTANCE);
     LineSegment laser(0,0,0,0);
     bool in_sight;
-    std::tuple<bool, float, float, float, float> intersection_obstacle;
-    std::tuple<bool, float, float> intersection_line;
+    std::tuple<bool, double, double, double, double> intersection_obstacle;
+    std::tuple<bool, double, double> intersection_line;
     float min_distance;
     float distance;
 
     // Go through all rays
     for (int ray=0; ray < this->lasers.size(); ray++)
     {
-        std::tuple<float, float, float, float> laser_points = this->get_laser_points(ray, x_robot, y_robot, theta_robot);
+        std::tuple<double, double, double, double> laser_points = this->get_laser_points(ray, x_robot, y_robot, theta_robot);
         laser.set_points(std::get<0>(laser_points), std::get<1>(laser_points), std::get<2>(laser_points), std::get<3>(laser_points));
         // Obstacles scanning
         for(int o = 0; o < round_obstacles.size(); o++)
@@ -228,7 +228,7 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
             if (std::get<0>(intersection_obstacle))
             {
                 // Choose right pair of points. The intersection function returns two possible pairs.
-                std::tuple<float, float> obstacle_points = this->get_nearest_points(
+                std::tuple<double, double> obstacle_points = this->get_nearest_points(
                     x_robot,
                     y_robot,
                     std::get<1>(intersection_obstacle),
@@ -267,7 +267,7 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
             if (std::get<0>(intersection_obstacle))
             {
                 // Choose right pair of points. The intersection function returns two possible pairs.
-                std::tuple<float, float> obstacle_points = this->get_nearest_points(
+                std::tuple<double, double> obstacle_points = this->get_nearest_points(
                     x_robot,
                     y_robot,
                     std::get<1>(intersection_obstacle),
@@ -351,12 +351,12 @@ void Lidar::update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::
                 }
             }
         }
-        this->lasers[ray] = std::max(this->lasers[ray], MIN_DISTANCE);
+        this->lasers[ray] = (float)std::max(this->lasers[ray], MIN_DISTANCE);
     }
 }
 
 // Lidar
-Lidar::Lidar(float frequency, Point2d* position){
+Lidar::Lidar(double frequency, Point2d* position){
     this->frequency = frequency;
     this->position = position;
     this->lasers.assign(N_LASERS, MAX_DISTANCE);
@@ -380,27 +380,27 @@ void Lidar::display_lasers(){
     std::cout << "]" << std::endl;
 }
 
-bool Lidar::in_between(float xi, float xm, float xf){
+bool Lidar::in_between(double xi, double xm, double xf){
     return (xi <= xm && xm <= xf) || (xf <= xm && xm <= xi);
 }
 
-bool Lidar::in_sight(float x_min, float y_min, float x_max, float y_max, float x_obs, float y_obs){
+bool Lidar::in_sight(double x_min, double y_min, double x_max, double y_max, double x_obs, double y_obs){
     // Check after if it is needed to add the last condition
     return this->in_between(x_min, x_obs, x_max) && this->in_between(y_min, y_obs, y_max);
 }
 
 // intersection is two pair of points. the right pair is the nearest to the robot.
-std::tuple<float, float> Lidar::get_nearest_points(float xr, float yr, float x1, float y1, float x2, float y2){
-    float distance = HIGHEST_NUMBER;
+std::tuple<double, double> Lidar::get_nearest_points(double xr, double yr, double x1, double y1, double x2, double y2){
+    double distance = HIGHEST_NUMBER;
     if (distance_between_points(xr,yr,x1,y1) < distance_between_points(xr,yr,x2,y2)) return {x1,y1};
     else return {x2,y2};
 }
 
 
-std::tuple<float,float,float,float> Lidar::get_laser_points(float angle, float x, float y, float theta){
-    float angle_rad = angle * TO_RAD;
-    float cos_ = cos(angle_rad + theta);
-    float sin_ = sin(angle_rad + theta);
+std::tuple<double,double,double,double> Lidar::get_laser_points(double angle, double x, double y, double theta){
+    double angle_rad = angle * TO_RAD;
+    double cos_ = cos(angle_rad + theta);
+    double sin_ = sin(angle_rad + theta);
     return 
     {
         x + this->min_distance * cos_,

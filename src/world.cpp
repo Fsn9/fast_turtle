@@ -1,6 +1,6 @@
 #include "world.h"
 
-World::World(float length, float xc, float yc, float angle): Square(length, xc, yc, angle){
+World::World(double length, double xc, double yc, double angle): Square(length, xc, yc, angle){
 	this->lines.reserve(4); // Max edges
 	this->round_obstacles.reserve(MAX_ROUND_OBSTACLES); // Max round obstacles
 	this->wall_obstacles.reserve(MAX_WALL_OBSTACLES); // Max wall obstacles
@@ -11,7 +11,7 @@ World::World(float length, float xc, float yc, float angle): Square(length, xc, 
 	this->n_simple_drones = 0; // counter of burgers
 }
 
-void World::add_obstacle(float x, float y, float radius, std::string type_){
+void World::add_obstacle(double x, double y, double radius, std::string type_){
 	if (type_.compare("round") == 0) this->round_obstacles.push_back(RoundObstacle(x,y,radius));
 	else if (type_.compare("squared") == 0) {}
 	else{
@@ -20,27 +20,27 @@ void World::add_obstacle(float x, float y, float radius, std::string type_){
 	return;
 }
 
-void World::add_wall(float x1, float y1, float x2, float y2){
+void World::add_wall(double x1, double y1, double x2, double y2){
 	this->wall_obstacles.push_back(WallObstacle(x1, y1, x2, y2));
 	return;
 }
 
 
-void World::add_turtlebot_burger(float x, float y, float theta, float radius, std::string name, float controller_period){
+void World::add_turtlebot_burger(double x, double y, double theta, double radius, std::string name, double controller_period){
 	std::vector<TurtlebotBurger>::iterator it; 
 	it = this->burgers.begin() + this->n_burgers;
 	it = this->burgers.insert(it, TurtlebotBurger(x,y,theta,radius,name,controller_period));
 	this->n_burgers += 1;
 }
 
-void World::add_simple_drone(float x, float y, float height, float radius, std::string name, float controller_period){
+void World::add_simple_drone(double x, double y, double height, double radius, std::string name, double controller_period){
 	std::vector<std::shared_ptr<SimpleDrone>>::iterator it; 
 	it = this->simple_drones.begin() + this->n_simple_drones;
 	it = this->simple_drones.insert(it, std::make_shared<SimpleDrone>(x,y,height,radius,name,controller_period));
 	this->n_simple_drones += 1;
 }
 
-void World::add_food_item(float xc, float yc, float radius){
+void World::add_food_item(double xc, double yc, double radius){
 	this->food_items.push_back(FoodItem(xc, yc, radius));
 	return;
 }
@@ -131,7 +131,7 @@ std::shared_ptr<SimpleDrone> World::get_simple_drone(std::string name)
 	return {};
 }
 
-void World::set_simple_drone_position(std::string name, float x, float y)
+void World::set_simple_drone_position(std::string name, double x, double y)
 {
 	std::shared_ptr<SimpleDrone> sd = get_simple_drone(name);
 	if(sd != nullptr)
@@ -150,9 +150,9 @@ void World::reset_simple_drones()
 	}
 }
 
-void World::set_robot_positions(const std::map<std::string, std::pair<float, float>>& positions)
+void World::set_robot_positions(const std::map<std::string, std::pair<double, double>>& positions)
 {
-	for(std::pair<std::string, std::pair<float, float>> robot : positions)
+	for(std::pair<std::string, std::pair<double, double>> robot : positions)
 	{
 		set_simple_drone_position(robot.first, std::get<0>(robot.second), std::get<1>(robot.second));
 	}

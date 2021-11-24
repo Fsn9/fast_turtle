@@ -13,34 +13,34 @@
 #define TO_DEG 57.29577f
 #define TO_RAD 0.01745f
 #define N_LASERS 360u
-#define MIN_DISTANCE 0.12f
 #define MAX_DISTANCE 3.5f
 #define BURGER_RADIUS 0.09f
 #define FOOD_RADIUS 0.1f
 #define TIME_STEP 0.05f
 #define DEFAULT_CONTROLLER_PERIOD 0.1f
+const float MIN_DISTANCE = 0.12;
 
 class SimpleDrone; // in the future sd and tbb will extend Robot
 class Lidar{
     private:
-        float frequency, min_distance, max_distance;
+        double frequency, min_distance, max_distance;
         Point2d* position;
         std::vector<float> lasers;
     public:
-        Lidar(float frequency, Point2d* position);
+        Lidar(double frequency, Point2d* position);
         std::vector<float> get_lasers();
         void display_lasers();
-        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<std::shared_ptr<SimpleDrone>> simple_drones ,std::vector<LineSegment> edges, std::vector<WallObstacle> walls, float x_robot, float y_robot, float theta_robot);
+        void update_lidar_heavy(std::vector<RoundObstacle> round_obstacles, std::vector<std::shared_ptr<SimpleDrone>> simple_drones ,std::vector<LineSegment> edges, std::vector<WallObstacle> walls, double x_robot, double y_robot, double theta_robot);
         std::string tostring();
-        bool in_between(float xi, float xm, float xf);
-        std::tuple<float, float> get_nearest_points(float xr, float yr, float x1, float y1, float x2, float y2);
-        std::tuple<float,float,float,float> get_laser_points(float, float, float, float);
-        bool in_sight(float, float, float, float, float, float);
+        bool in_between(double xi, double xm, double xf);
+        std::tuple<double, double> get_nearest_points(double xr, double yr, double x1, double y1, double x2, double y2);
+        std::tuple<double,double,double,double> get_laser_points(double, double, double, double);
+        bool in_sight(double, double, double, double, double, double);
 };
 
 class TurtlebotBurger : public Circle{
     private:
-        float theta, inv_diameter, diameter, controller_period;
+        double theta, inv_diameter, diameter, controller_period;
         Lidar* lidar;
         std::string model;
         std::string name;
@@ -48,13 +48,13 @@ class TurtlebotBurger : public Circle{
         double last_w;
         bool visible;
     public:
-        TurtlebotBurger(float x, float y, float theta, float radius, std::string name, float controller_period);
+        TurtlebotBurger(double x, double y, double theta, double radius, std::string name, double controller_period);
         std::string tostring();
-        std::tuple<float, float, float> kinematics(float v, float w, double time_step);
-        float x();
-        float y();
-        float get_theta();
-        float get_controller_period();
+        std::tuple<double, double, double> kinematics(double v, double w, double time_step);
+        double x();
+        double y();
+        double get_theta();
+        double get_controller_period();
         bool is_visible();
         void set_visibility(bool value);    
         double get_last_v();
@@ -63,12 +63,12 @@ class TurtlebotBurger : public Circle{
         std::string get_name();
         std::string get_model();
         Lidar* get_lidar();
-        void move(float v, float w, double time_step);
+        void move(double v, double w, double time_step);
 };
 
 class SimpleDrone : public Circle{
     private:
-        float theta, height, inv_diameter, diameter, controller_period;
+        double theta, height, inv_diameter, diameter, controller_period;
         Lidar* lidar;
         std::string model;
         std::string name;
@@ -76,14 +76,14 @@ class SimpleDrone : public Circle{
         double last_vy;
         bool visible;
     public:
-        SimpleDrone(float x, float y, float height, float radius, std::string name, float controller_period);
+        SimpleDrone(double x, double y, double height, double radius, std::string name, double controller_period);
         std::string tostring();
-        std::tuple<float, float> kinematics(float vx, float vy, double time_step);
-        float x();
-        float y();
-        float get_theta();
-        float get_height();
-        float get_controller_period();
+        std::tuple<double, double> kinematics(double vx, double vy, double time_step);
+        double x();
+        double y();
+        double get_theta();
+        double get_height();
+        double get_controller_period();
         bool is_visible();
         void set_visibility(bool value);
         double get_last_vx();
@@ -92,7 +92,7 @@ class SimpleDrone : public Circle{
         std::string get_name();
         std::string get_model();
         Lidar* get_lidar();
-        void move(float v, float w, double time_step);
+        void move(double v, double w, double time_step);
         void reset();
 };
 
