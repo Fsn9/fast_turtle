@@ -447,7 +447,7 @@ int main(int argc, char** argv)
     collision_publisher1 = nh.advertise<std_msgs::Bool>("collision1_two"+ user_id, 50);
     
     // Services
-    ros::ServiceServer service = nh.advertiseService("reset_arena_two", reset_arena);
+    ros::ServiceServer service = nh.advertiseService("reset_arena_two" + user_id, reset_arena);
     
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");

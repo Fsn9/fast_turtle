@@ -411,7 +411,7 @@ world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker_
     collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0_obs" + user_id, 50);
     
     // Services
-    ros::ServiceServer service = nh.advertiseService("reset_arena_obs", reset_arena);
+    ros::ServiceServer service = nh.advertiseService("reset_arena_obs" + user_id, reset_arena);
     
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");

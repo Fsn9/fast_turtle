@@ -365,7 +365,7 @@ int main(int argc, char** argv)
     odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0"+ user_id, 50);
     
     // Services
-    ros::ServiceServer service = nh.advertiseService("reset_arena", reset_arena);
+    ros::ServiceServer service = nh.advertiseService("reset_arena" + user_id, reset_arena);
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
     
