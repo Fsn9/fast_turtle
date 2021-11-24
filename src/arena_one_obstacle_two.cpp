@@ -116,9 +116,24 @@ void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_simple_drones() > 0){
         ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        
+        //saturacao
+        if (msg.linear.x > MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[0].vx = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else if(msg.linear.x  < -MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[0].vx = -MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else{
         cmd_vels_simple_drones[0].vx = msg.linear.x;
+        }
+        if (msg.linear.y > MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[0].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else if(msg.linear.y < -MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[0].vy = -MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else{
         cmd_vels_simple_drones[0].vy = msg.linear.y;
-        ft->act_simple_drone(msg.linear.x, msg.linear.y, 0);
+        }
+
+        ft->act_simple_drone(cmd_vels_simple_drones[0].vx, cmd_vels_simple_drones[0].vy, 0);
         std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(0)->tostring() << "\n";
     }
 }
@@ -127,9 +142,23 @@ void listen_cmd_vel_sd1(const geometry_msgs::Twist& msg)
 {
     if (ft->get_world()->get_n_simple_drones() > 0){
         ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        
+        //saturacao
+        if (msg.linear.x > MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[1].vx = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else if(msg.linear.x  < -MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[1].vx = -MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else{
         cmd_vels_simple_drones[1].vx = msg.linear.x;
+        }
+        if (msg.linear.y > MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[1].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else if(msg.linear.y < -MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_simple_drones[1].vy = -MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else{
         cmd_vels_simple_drones[1].vy = msg.linear.y;
-        ft->act_simple_drone(msg.linear.x, msg.linear.y, 1);
+   	}
+        ft->act_simple_drone(cmd_vels_simple_drones[1].vx, cmd_vels_simple_drones[1].vy, 1);
         std::cout << "[Simple Drone 1 pose]: " << ft->get_world()->get_simple_drone(1)->tostring() << "\n";
     }
 }
