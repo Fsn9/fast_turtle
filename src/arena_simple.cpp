@@ -20,7 +20,7 @@
 // #include <time.h>
 
 // Simulation frames per second
-#define SIMULATION_FPS 40u
+#define SIMULATION_FPS 10u
 
 // Values for food distances
 #define FOOD_LIMIT_X_sup -6
@@ -110,6 +110,7 @@ void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
         ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
         cmd_vels_simple_drones[0].vx = msg.linear.x;
         cmd_vels_simple_drones[0].vy = msg.linear.y;
+        ft->act_simple_drone(msg.linear.x, msg.linear.y, 0);
         std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(0)->tostring() << "\n";
     }
 }
@@ -377,7 +378,7 @@ int main(int argc, char** argv)
 
     // Teams of Drones
     // Drones #1
-    ft->add_simple_drone(0.0, 0.0, 0.5, BURGER_RADIUS, "drone0", 0.2);
+    ft->add_simple_drone(0.0, 0.0, 0.5, BURGER_RADIUS, "drone0", 0.01);
 
     // Send first world data and graphics data
     publish_data();
@@ -391,6 +392,7 @@ int main(int argc, char** argv)
 
     // Main cycle
     while(ros::ok()){
+        /*
         // Updates logic
         update_physics();
 
@@ -400,8 +402,9 @@ int main(int argc, char** argv)
             publish_data();
             start = clock();
         } 
+        */
         // Publishes fresh data
-        //publish_data();
+        publish_data();
 
         // Repaint graphics
         repaint();
