@@ -4,3 +4,4 @@ docs/_build
 scripts/exe
 scripts/build
 .vscode/
+notebooks/__pycache__
