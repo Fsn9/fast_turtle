@@ -81,13 +81,23 @@ ros::Publisher odom_publisher0;
 ros::Publisher laser_publisher0;
 ros::Publisher odom_publisher1;
 ros::Publisher laser_publisher1;
+ros::Publisher odom_publisher2;
+ros::Publisher laser_publisher2;
+ros::Publisher odom_publisher3;
+ros::Publisher laser_publisher3;
+ros::Publisher odom_publisher4;
+ros::Publisher laser_publisher4;
+
+
 ros::Publisher collision_publisher0;
 ros::Publisher collision_publisher1;
-
+ros::Publisher collision_publisher2;
+ros::Publisher collision_publisher3;
+ros::Publisher collision_publisher4;
 
 // Messages
-sensor_msgs::LaserScan laser_scan_msg0, laser_scan_msg1;
-std_msgs::Bool collision0, collision1;
+sensor_msgs::LaserScan laser_scan_msg0, laser_scan_msg1, laser_scan_msg2, laser_scan_msg3, laser_scan_msg4;
+std_msgs::Bool collision0, collision1, collision2, collision3, collision4;
 
 // Vector of real time command velocities for all robots
 //std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
@@ -440,8 +450,35 @@ void init_graphics_and_data(){
     laser_scan_msg1.time_increment = 0;
     laser_scan_msg1.scan_time = 0;
 
+    laser_scan_msg2.angle_min = 0;
+    laser_scan_msg2.angle_max = M_PI * 2;
+    laser_scan_msg2.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg2.range_min = MIN_DISTANCE;
+    laser_scan_msg2.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg2.time_increment = 0;
+    laser_scan_msg2.scan_time = 0;
+
+    laser_scan_msg3.angle_min = 0;
+    laser_scan_msg3.angle_max = M_PI * 2;
+    laser_scan_msg3.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg3.range_min = MIN_DISTANCE;
+    laser_scan_msg3.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg3.time_increment = 0;
+    laser_scan_msg3.scan_time = 0;
+
+    laser_scan_msg4.angle_min = 0;
+    laser_scan_msg4.angle_max = M_PI * 2;
+    laser_scan_msg4.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg4.range_min = MIN_DISTANCE;
+    laser_scan_msg4.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg4.time_increment = 0;
+    laser_scan_msg4.scan_time = 0;
+
     collision0.data = false;
     collision1.data = false;
+    collision2.data = false;
+    collision3.data = false;
+    collision4.data = false;
 
 
     //only if using a MESH_RESOURCE world_marker type:
@@ -497,6 +534,15 @@ void repaint(){
     laser_scan_msg1.ranges = ft->get_world()->get_simple_drone(1)->get_lidar()->get_lasers();
     laser_scan_msg1.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(1)->get_model() + "_" + ft->get_world()->get_simple_drone(1)->get_name();
 
+    laser_scan_msg2.ranges = ft->get_world()->get_simple_drone(2)->get_lidar()->get_lasers();
+    laser_scan_msg2.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(2)->get_model() + "_" + ft->get_world()->get_simple_drone(2)->get_name();
+
+    laser_scan_msg3.ranges = ft->get_world()->get_simple_drone(3)->get_lidar()->get_lasers();
+    laser_scan_msg3.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(3)->get_model() + "_" + ft->get_world()->get_simple_drone(3)->get_name();
+
+    laser_scan_msg4.ranges = ft->get_world()->get_simple_drone(4)->get_lidar()->get_lasers();
+    laser_scan_msg4.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(4)->get_model() + "_" + ft->get_world()->get_simple_drone(4)->get_name();
+
 }
 void publish_data(){
     tf::Transform transform;
@@ -518,24 +564,32 @@ void publish_data(){
     odom.header.frame_id = "odom0";
 
     //send the position
-    odom.pose.pose.position.x = ft->get_world()->get_simple_drone(0)->x();
-    odom.pose.pose.position.y = ft->get_world()->get_simple_drone(0)->y();
-    odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
-    odom_publisher0.publish(odom);
-
-    odom.pose.pose.position.x = ft->get_world()->get_simple_drone(1)->x();
-    odom.pose.pose.position.y = ft->get_world()->get_simple_drone(1)->y();
-    odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
-    odom_publisher1.publish(odom);
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
+        odom.pose.pose.position.x = ft->get_world()->get_simple_drone(i)->x();
+        odom.pose.pose.position.y = ft->get_world()->get_simple_drone(i)->y();
+        odom.pose.pose.position.z = 0.0;
+        odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
+        odom_publisher0.publish(odom);
+    }
+    // odom.pose.pose.position.x = ft->get_world()->get_simple_drone(1)->x();
+    // odom.pose.pose.position.y = ft->get_world()->get_simple_drone(1)->y();
+    // odom.pose.pose.position.z = 0.0;
+    // odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
+    // odom_publisher1.publish(odom);
 
     
     laser_publisher0.publish(laser_scan_msg0);
     laser_publisher1.publish(laser_scan_msg1);
+    laser_publisher2.publish(laser_scan_msg2);
+    laser_publisher3.publish(laser_scan_msg3);
+    laser_publisher4.publish(laser_scan_msg4);
 
     collision_publisher0.publish(collision0);
     collision_publisher1.publish(collision1);
+    collision_publisher2.publish(collision2);
+    collision_publisher3.publish(collision3);
+    collision_publisher4.publish(collision4);
 
   
 }
@@ -581,10 +635,18 @@ int main(int argc, char** argv)
     laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0_two"+ user_id, 50);
     odom_publisher1 = nh.advertise<nav_msgs::Odometry>("odom1_two"+ user_id, 50);
     laser_publisher1 = nh.advertise<sensor_msgs::LaserScan>("laser1_two"+ user_id, 50);
+    odom_publisher2 = nh.advertise<nav_msgs::Odometry>("odom2_two"+ user_id, 50);
+    laser_publisher2 = nh.advertise<sensor_msgs::LaserScan>("laser2_two"+ user_id, 50);
+    odom_publisher3 = nh.advertise<nav_msgs::Odometry>("odom3_two"+ user_id, 50);
+    laser_publisher3 = nh.advertise<sensor_msgs::LaserScan>("laser3_two"+ user_id, 50);
+    odom_publisher4 = nh.advertise<nav_msgs::Odometry>("odom4_two"+ user_id, 50);
+    laser_publisher4 = nh.advertise<sensor_msgs::LaserScan>("laser4_two"+ user_id, 50);
     
     collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0_two"+ user_id, 50);
     collision_publisher1 = nh.advertise<std_msgs::Bool>("collision1_two"+ user_id, 50);
-    
+    collision_publisher2 = nh.advertise<std_msgs::Bool>("collision2_two"+ user_id, 50);
+    collision_publisher3 = nh.advertise<std_msgs::Bool>("collision3_two"+ user_id, 50);
+    collision_publisher4 = nh.advertise<std_msgs::Bool>("collision4_two"+ user_id, 50);
     // Services
     ros::ServiceServer service = nh.advertiseService("reset_arena_two" + user_id, reset_arena);
     

@@ -10,6 +10,7 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include "sensor_msgs/LaserScan.h"
+#include "std_msgs/Bool.h"
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
 #include <nav_msgs/Odometry.h>
@@ -76,10 +77,28 @@ ros::Publisher food_markers_publisher;
 // Publishers
 ros::Publisher odom_publisher0;
 ros::Publisher laser_publisher0;
+ros::Publisher odom_publisher1;
+ros::Publisher laser_publisher1;
+ros::Publisher odom_publisher2;
+ros::Publisher laser_publisher2;
+ros::Publisher odom_publisher3;
+ros::Publisher laser_publisher3;
+ros::Publisher odom_publisher4;
+ros::Publisher laser_publisher4;
 
+
+ros::Publisher collision_publisher0;
+ros::Publisher collision_publisher1;
+ros::Publisher collision_publisher2;
+ros::Publisher collision_publisher3;
+ros::Publisher collision_publisher4;
 
 // Messages
-sensor_msgs::LaserScan laser_scan_msg;
+sensor_msgs::LaserScan laser_scan_msg0, laser_scan_msg1, laser_scan_msg2, laser_scan_msg3, laser_scan_msg4;
+std_msgs::Bool collision0, collision1, collision2, collision3, collision4;
+
+// Messages
+//sensor_msgs::LaserScan laser_scan_msg;
 
 // Vector of real time command velocities for all robots
 //std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0}};
@@ -387,13 +406,60 @@ void init_graphics_and_data(){
         j+=1;
     }
 
-    laser_scan_msg.angle_min = 0;
-    laser_scan_msg.angle_max = M_PI * 2;
-    laser_scan_msg.angle_increment = 2.0 * M_PI / 360;
-    laser_scan_msg.range_min = MIN_DISTANCE;
-    laser_scan_msg.range_max = MAX_DISTANCE+1e-4;
-    laser_scan_msg.time_increment = 0;
-    laser_scan_msg.scan_time = 0;
+    laser_scan_msg0.angle_min = 0;
+    laser_scan_msg0.angle_max = M_PI * 2;
+    laser_scan_msg0.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg0.range_min = MIN_DISTANCE;
+    laser_scan_msg0.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg0.time_increment = 0;
+    laser_scan_msg0.scan_time = 0;
+
+    laser_scan_msg1.angle_min = 0;
+    laser_scan_msg1.angle_max = M_PI * 2;
+    laser_scan_msg1.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg1.range_min = MIN_DISTANCE;
+    laser_scan_msg1.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg1.time_increment = 0;
+    laser_scan_msg1.scan_time = 0;
+
+    laser_scan_msg2.angle_min = 0;
+    laser_scan_msg2.angle_max = M_PI * 2;
+    laser_scan_msg2.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg2.range_min = MIN_DISTANCE;
+    laser_scan_msg2.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg2.time_increment = 0;
+    laser_scan_msg2.scan_time = 0;
+
+    laser_scan_msg3.angle_min = 0;
+    laser_scan_msg3.angle_max = M_PI * 2;
+    laser_scan_msg3.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg3.range_min = MIN_DISTANCE;
+    laser_scan_msg3.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg3.time_increment = 0;
+    laser_scan_msg3.scan_time = 0;
+
+    laser_scan_msg4.angle_min = 0;
+    laser_scan_msg4.angle_max = M_PI * 2;
+    laser_scan_msg4.angle_increment = 2.0 * M_PI / 360;
+    laser_scan_msg4.range_min = MIN_DISTANCE;
+    laser_scan_msg4.range_max = MAX_DISTANCE+1e-4;
+    laser_scan_msg4.time_increment = 0;
+    laser_scan_msg4.scan_time = 0;
+
+    collision0.data = false;
+    collision1.data = false;
+    collision2.data = false;
+    collision3.data = false;
+    collision4.data = false;
+
+
+    // laser_scan_msg.angle_min = 0;
+    // laser_scan_msg.angle_max = M_PI * 2;
+    // laser_scan_msg.angle_increment = 2.0 * M_PI / 360;
+    // laser_scan_msg.range_min = MIN_DISTANCE;
+    // laser_scan_msg.range_max = MAX_DISTANCE+1e-4;
+    // laser_scan_msg.time_increment = 0;
+    // laser_scan_msg.scan_time = 0;
 
 
     //only if using a MESH_RESOURCE world_marker type:
@@ -430,6 +496,23 @@ void repaint(){
     // Food
     food_markers_publisher.publish(food_markers);
 
+    //laser scan
+    laser_scan_msg0.ranges = ft->get_world()->get_simple_drone(0)->get_lidar()->get_lasers();
+    laser_scan_msg0.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(0)->get_model() + "_" + ft->get_world()->get_simple_drone(0)->get_name();
+
+    laser_scan_msg1.ranges = ft->get_world()->get_simple_drone(1)->get_lidar()->get_lasers();
+    laser_scan_msg1.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(1)->get_model() + "_" + ft->get_world()->get_simple_drone(1)->get_name();
+
+    laser_scan_msg2.ranges = ft->get_world()->get_simple_drone(2)->get_lidar()->get_lasers();
+    laser_scan_msg2.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(2)->get_model() + "_" + ft->get_world()->get_simple_drone(2)->get_name();
+
+    laser_scan_msg3.ranges = ft->get_world()->get_simple_drone(3)->get_lidar()->get_lasers();
+    laser_scan_msg3.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(3)->get_model() + "_" + ft->get_world()->get_simple_drone(3)->get_name();
+
+    laser_scan_msg4.ranges = ft->get_world()->get_simple_drone(4)->get_lidar()->get_lasers();
+    laser_scan_msg4.header.frame_id = "simple_drone_" + ft->get_world()->get_simple_drone(4)->get_model() + "_" + ft->get_world()->get_simple_drone(4)->get_name();
+
+
     
 }
 void publish_data(){
@@ -452,11 +535,32 @@ void publish_data(){
     odom.header.frame_id = "odom0";
 
     //send the position
-    odom.pose.pose.position.x = ft->get_world()->get_simple_drone(0)->x();
-    odom.pose.pose.position.y = ft->get_world()->get_simple_drone(0)->y();
-    odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
-    odom_publisher0.publish(odom);
+    for(int i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
+        odom.pose.pose.position.x = ft->get_world()->get_simple_drone(i)->x();
+        odom.pose.pose.position.y = ft->get_world()->get_simple_drone(i)->y();
+        odom.pose.pose.position.z = 0.0;
+        odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
+        odom_publisher0.publish(odom);
+    }
+    
+    laser_publisher0.publish(laser_scan_msg0);
+    laser_publisher1.publish(laser_scan_msg1);
+    laser_publisher2.publish(laser_scan_msg2);
+    laser_publisher3.publish(laser_scan_msg3);
+    laser_publisher4.publish(laser_scan_msg4);
+
+    collision_publisher0.publish(collision0);
+    collision_publisher1.publish(collision1);
+    collision_publisher2.publish(collision2);
+    collision_publisher3.publish(collision3);
+    collision_publisher4.publish(collision4);
+
+    // odom.pose.pose.position.x = ft->get_world()->get_simple_drone(0)->x();
+    // odom.pose.pose.position.y = ft->get_world()->get_simple_drone(0)->y();
+    // odom.pose.pose.position.z = 0.0;
+    // odom.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0.0, 0.0, 0.0);
+    // odom_publisher0.publish(odom);
 
    /* sensor_msgs::LaserScan scan;
     scan.header.stamp = scan_time;
@@ -498,14 +602,33 @@ int main(int argc, char** argv)
     wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers"+ user_id,0);
     simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers"+ user_id,0);
     simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers"+ user_id,0);
-    food_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("food_markers_two"+ user_id,0);
+    food_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("food_markers"+ user_id,0);
     
     // Subscribers for all robots
     ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0"+ user_id, 1000, listen_cmd_vel_sd0);
-
+    ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1"+ user_id, 1000, listen_cmd_vel_sd1);
+    ros::Subscriber sub_sd2 = nh.subscribe("cmd_vel_sd2"+ user_id, 1000, listen_cmd_vel_sd2);
+    ros::Subscriber sub_sd3 = nh.subscribe("cmd_vel_sd3"+ user_id, 1000, listen_cmd_vel_sd3);
+    ros::Subscriber sub_sd4 = nh.subscribe("cmd_vel_sd4"+ user_id, 1000, listen_cmd_vel_sd4);
+    
     // Publishers
     //simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
     odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0"+ user_id, 50);
+    laser_publisher0 = nh.advertise<sensor_msgs::LaserScan>("laser0"+ user_id, 50);
+    odom_publisher1 = nh.advertise<nav_msgs::Odometry>("odom1"+ user_id, 50);
+    laser_publisher1 = nh.advertise<sensor_msgs::LaserScan>("laser1"+ user_id, 50);
+    odom_publisher2 = nh.advertise<nav_msgs::Odometry>("odom2"+ user_id, 50);
+    laser_publisher2 = nh.advertise<sensor_msgs::LaserScan>("laser2"+ user_id, 50);
+    odom_publisher3 = nh.advertise<nav_msgs::Odometry>("odom3"+ user_id, 50);
+    laser_publisher3 = nh.advertise<sensor_msgs::LaserScan>("laser3"+ user_id, 50);
+    odom_publisher4 = nh.advertise<nav_msgs::Odometry>("odom4"+ user_id, 50);
+    laser_publisher4 = nh.advertise<sensor_msgs::LaserScan>("laser4"+ user_id, 50);
+    
+    collision_publisher0 = nh.advertise<std_msgs::Bool>("collision0"+ user_id, 50);
+    collision_publisher1 = nh.advertise<std_msgs::Bool>("collision1"+ user_id, 50);
+    collision_publisher2 = nh.advertise<std_msgs::Bool>("collision2"+ user_id, 50);
+    collision_publisher3 = nh.advertise<std_msgs::Bool>("collision3"+ user_id, 50);
+    collision_publisher4 = nh.advertise<std_msgs::Bool>("collision4"+ user_id, 50);
     
     // Services
     ros::ServiceServer service = nh.advertiseService("reset_arena" + user_id, reset_arena);
