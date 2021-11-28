@@ -12,5 +12,5 @@ output: where to log the outputs. "screen" is to the terminal.
   <!-- Nodes to launch-->
   <arg name="user_id"/>
   <node pkg="fast_turtle" type="arena_sc_single_obstacle" name="arena_sc_single_obstacle$(arg user_id)" output="screen" args="$(arg user_id)"/>
-  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find fast_turtle)/rviz/scene3.rviz" />
+  <!--node type="rviz" name="rviz" pkg="rviz" args="-d $(find fast_turtle)/rviz/scene3.rviz" /-->
 </launch> 

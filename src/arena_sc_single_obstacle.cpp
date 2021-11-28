@@ -417,7 +417,7 @@ void init_graphics_and_data(){
         food_marker.action = visualization_msgs::Marker::ADD;
         food_marker.pose.position.x = ft->get_world()->get_food_item(i)->get_xc();
         food_marker.pose.position.y = ft->get_world()->get_food_item(i)->get_yc();
-        food_marker.pose.position.z = 1;
+        food_marker.pose.position.z = 0.5;
         food_marker.pose.orientation.x = 0.0;
         food_marker.pose.orientation.y = 0.0;
         food_marker.pose.orientation.z = 0.0;
@@ -674,8 +674,14 @@ int main(int argc, char** argv)
     ft->add_simple_drone(4.0, -9.0, 0.5, BURGER_RADIUS, "drone4", 0.01);
 
     ft->add_food_item(0, -3, FOOD_RADIUS);
+    ft->add_food_item(-4, 5, FOOD_RADIUS);
+    ft->add_food_item(2, 1, FOOD_RADIUS);
+    ft->add_food_item(5, -3, FOOD_RADIUS);
 
     ft->add_obstacle(1, 1, 0.5, "round");
+    ft->add_obstacle(0, -4, 0.5, "round");
+    ft->add_obstacle(3, 2, 0.5, "round");
+    ft->add_obstacle(3, -6, 0.5, "round");
     // Send first world data and graphics data
     publish_data();
     init_graphics_and_data();
