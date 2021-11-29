@@ -265,3 +265,8 @@ add_dependencies(arena_one_obstacle fast_turtle_generate_messages_cpp)
 add_executable(arena_one_obstacle_two src/arena_one_obstacle_two.cpp)
 target_link_libraries(arena_one_obstacle_two ${catkin_LIBRARIES} ft)
 add_dependencies(arena_one_obstacle_two fast_turtle_generate_messages_cpp)
+
+# It defines the test_drones.cpp as an executable
+add_executable(test_drones src/test_drones.cpp)
+target_link_libraries(test_drones ${catkin_LIBRARIES} ft)
+add_dependencies(test_drones fast_turtle_generate_messages_cpp)
