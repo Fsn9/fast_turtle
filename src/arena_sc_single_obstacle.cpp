@@ -67,6 +67,8 @@ visualization_msgs::MarkerArray wall_markers;
 visualization_msgs::MarkerArray simple_drone_markers;
 visualization_msgs::MarkerArray simple_drone_supports_markers;
 visualization_msgs::MarkerArray food_markers;
+visualization_msgs::MarkerArray base_markers;
+
 
 // Marker Publishers
 ros::Publisher world_marker_publisher;
@@ -75,6 +77,7 @@ ros::Publisher wall_markers_publisher;
 ros::Publisher simple_drone_markers_publisher;
 ros::Publisher simple_drone_supports_markers_publisher;         
 ros::Publisher food_markers_publisher;
+ros::Publisher base_markers_publisher;
 
 // Publishers
 ros::Publisher odom_publisher0;
@@ -433,6 +436,51 @@ void init_graphics_and_data(){
         j+=1;
     }
     
+    //Base
+    visualization_msgs::Marker base_marker;
+    base_marker.header.frame_id = "world";
+    base_marker.ns = "simulation_markers";
+    base_marker.id = j;
+    base_marker.type = visualization_msgs::Marker::CUBE;
+    base_marker.action = visualization_msgs::Marker::ADD;
+    base_marker.pose.position.x = -5.0;
+    base_marker.pose.position.y = -7.5;
+    base_marker.pose.position.z = 0.50;
+    base_marker.pose.orientation.x = 0.0;
+    base_marker.pose.orientation.y = 0.0;
+    base_marker.pose.orientation.z = 1.0;//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
+    base_marker.pose.orientation.w = 1.0;
+    base_marker.scale.x = 5.0;
+    base_marker.scale.y = 0.01;
+    base_marker.scale.z = 1.0;
+    base_marker.color.a = 1.0;
+    base_marker.color.r = 0.0;
+    base_marker.color.g = 0.7;
+    base_marker.color.b = 0.2;
+    base_markers.markers.push_back(base_marker);
+    j+=1;
+
+    base_marker.header.frame_id = "world";
+    base_marker.ns = "simulation_markers";
+    base_marker.id = j;
+    base_marker.type = visualization_msgs::Marker::CUBE;
+    base_marker.action = visualization_msgs::Marker::ADD;
+    base_marker.pose.position.x = -7.5;
+    base_marker.pose.position.y = -5.0;
+    base_marker.pose.position.z = 0.50;
+    base_marker.pose.orientation.x = 0.0;
+    base_marker.pose.orientation.y = 0.0;
+    base_marker.pose.orientation.z = 0.0;//1.0; //1 - para estar assim | ; 0 - para esta assim _ ;
+    base_marker.pose.orientation.w = 1.0;
+    base_marker.scale.x = 5.0;
+    base_marker.scale.y = 0.01;
+    base_marker.scale.z = 1.0;
+    base_marker.color.a = 1.0;
+    base_marker.color.r = 0.0;
+    base_marker.color.g = 0.7;
+    base_marker.color.b = 0.2;
+    base_markers.markers.push_back(base_marker);
+    j+=1;
 
     laser_scan_msg0.angle_min = 0;
     laser_scan_msg0.angle_max = M_PI * 2;
@@ -489,6 +537,7 @@ void init_graphics_and_data(){
     simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
     // simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
     food_markers_publisher.publish(food_markers);
+    base_markers_publisher.publish(base_markers);
 
 }
 void repaint(){
@@ -526,6 +575,9 @@ void repaint(){
 
     // Food
     food_markers_publisher.publish(food_markers);
+
+    // Base
+    base_markers_publisher.publish(base_markers);
 
     //laser scan
     laser_scan_msg0.ranges = ft->get_world()->get_simple_drone(0)->get_lidar()->get_lasers();
@@ -621,7 +673,8 @@ int main(int argc, char** argv)
     obstacle_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("obstacle_markers_two"+ user_id,0);
     simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers_two"+ user_id,0);
     simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers_two"+ user_id,0);
-
+    base_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("base_markers"+ user_id,0);
+    
     // Subscribers for all robots
     ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0_two"+ user_id, 1000, listen_cmd_vel_sd0);
     ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1_two"+ user_id, 1000, listen_cmd_vel_sd1);
@@ -662,8 +715,8 @@ int main(int argc, char** argv)
 
     // Teams of Drones
     // Drones #1
-    ft->add_wall(-10, -5, -5, -5); //cima
-    ft->add_wall(-5, -5, -10, -5); //cima
+    // ft->add_wall(-10, -5, -5, -5); //cima
+    // ft->add_wall(-5, -5, -10, -5); //cima
 
     // Teams of Drones
     // Drones #1

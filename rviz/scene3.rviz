@@ -77,6 +77,14 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
+      Marker Topic: /base_markers
+      Name: Base Obstacles
+      Namespaces:
+        simulation_markers: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
       Marker Topic: /food_markers
       Name: Food Obstacles
       Namespaces:
