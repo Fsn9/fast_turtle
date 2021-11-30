@@ -1,0 +1,15 @@
+<!--
+Type: name of the executable
+Name: name of the node
+output: where to log the outputs. "screen" is to the terminal.
+-->
+<launch>
+  <!-- Turtlebot3 model-->
+  <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
+  <param name="model" value="$(arg model)"/>
+  <param name="turtlebot_model" type="string" value="burger"/>
+
+  <!-- Nodes to launch-->
+  <node pkg="fast_turtle" type="arena_food_test" name="arena_food_test" output="screen"/>
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find fast_turtle)/rviz/scene.rviz"/>
+</launch> 
