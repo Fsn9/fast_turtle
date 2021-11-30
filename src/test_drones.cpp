@@ -14,6 +14,9 @@
 #include "sensor_msgs/LaserScan.h"
 #include "fast_turtle/RobotData.h"
 #include "fast_turtle/RobotDataArray.h"
+#include "fast_turtle/LaserSimpleScan.h"
+#include "fast_turtle/SwarmAgentData.h"
+#include "fast_turtle/SwarmLeaderData.h"
 // Services
 #include "fast_turtle/ResetArena.h"
 
@@ -55,6 +58,11 @@ ros::Publisher laser_scan_publisher;
 // Publishers
 ros::Publisher tb_burgers_publisher;
 ros::Publisher simple_drones_publisher;
+ros::Publisher leader_swarm_competition_publisher;
+ros::Publisher agent0_swarm_competition_publisher;
+ros::Publisher agent1_swarm_competition_publisher;
+ros::Publisher agent2_swarm_competition_publisher;
+ros::Publisher agent3_swarm_competition_publisher;
 
 // Messages
 sensor_msgs::LaserScan laser_scan_msg;
@@ -433,6 +441,15 @@ void repaint()
     laser_scan_publisher.publish(laser_scan_msg);
 }
 
+void publish_swarm_competition_data()
+{
+    fast_turtle::SwarmAgentData sad;
+    fast_turtle::SwarmLeaderData sld;
+    fast_turtle::LaserSimpleScan lss;
+
+    
+}
+
 void publish_data()
 {
     tf::Transform transform;
@@ -494,6 +511,8 @@ void publish_data()
         simple_drones_msg.robots.push_back(simple_drone_msg);
     }
     simple_drones_publisher.publish(simple_drones_msg);
+
+    publish_swarm_competition_data();
 }
 
 bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena::Response& res)
@@ -532,6 +551,11 @@ int main(int argc, char **argv)
     // Data publishers
     tb_burgers_publisher = nh.advertise<fast_turtle::RobotDataArray>("turtlebot_burgers", 1000);
     simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
+    leader_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("leader", 1000);
+    agent0_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent0", 1000);
+    agent1_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent1", 1000);
+    agent2_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent2", 1000);
+    agent3_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent3", 1000);
 
     // Services
     ros::ServiceServer service = nh.advertiseService("reset_arena", reset_arena);
