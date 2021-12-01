@@ -35,6 +35,9 @@
 FastTurtle *ft = new FastTurtle(SIMULATION_FPS);
 SwarmCompetition* sc = new SwarmCompetition(SIMULATION_FPS);
 
+// Team ID for this arena if only one team playing
+uint8_t global_single_tid = 0;
+
 // Markers
 visualization_msgs::Marker world_marker;
 visualization_msgs::MarkerArray obstacle_markers;
@@ -63,6 +66,7 @@ ros::Publisher agent0_swarm_competition_publisher;
 ros::Publisher agent1_swarm_competition_publisher;
 ros::Publisher agent2_swarm_competition_publisher;
 ros::Publisher agent3_swarm_competition_publisher;
+std::vector<ros::Publisher> sc_agents_pubs;
 
 // Messages
 sensor_msgs::LaserScan laser_scan_msg;
@@ -443,11 +447,58 @@ void repaint()
 
 void publish_swarm_competition_data()
 {
+    // Messages
     fast_turtle::SwarmAgentData sad;
+    fast_turtle::SwarmAgentData relative_sad;
     fast_turtle::SwarmLeaderData sld;
     fast_turtle::LaserSimpleScan lss;
 
+    // Team
+    std::shared_ptr<SwarmTeam> team = sc->get_team(global_single_tid);
+
     
+    // Leader message
+    std::string leader_name = team->get_leader();
+    std::vector<double> leader_pos = ft->get_robot_position(leader_name);
+    std::vector<float> leader_scan = ft->get_world()->
+    get_simple_drone(leader_name)->get_lidar()->get_lasers();
+    std::map<std::string, std::shared_ptr<SwarmTeam::RobotState>> robots_state = team->get_robots_state();
+    
+    sld.name = leader_name;
+    sld.position.x = leader_pos[0];
+    sld.position.y = leader_pos[1];
+    sld.scan.distance = *std::min_element(leader_scan.begin(), leader_scan.end());
+    sld.scan.angle = std::min_element(leader_scan.begin(), leader_scan.end()) - leader_scan.begin();
+
+    // Agents messages
+    unsigned int i = 0;
+    for(std::pair<std::string, std::shared_ptr<SwarmTeam::RobotState>> robot : robots_state)
+    {
+        if(robot.first == leader_name) continue;
+        std::vector<double> agent_pos = ft->get_robot_position(robot.first);
+        std::vector<float> agent_scan = ft->get_world()->get_simple_drone(robot.first)->get_lidar()->get_lasers();
+        
+        sad.name = robot.first;
+        relative_sad.name = robot.first;
+        
+        sad.alive = robots_state.find(robot.first)->second->is_alive();
+        relative_sad.alive = sad.alive;
+        
+        sad.scan.distance = *std::min_element(agent_scan.begin(), agent_scan.end());
+        sad.scan.angle = std::min_element(agent_scan.begin(), agent_scan.end()) - agent_scan.begin();
+        relative_sad.scan = sad.scan;
+
+        sad.rel_position.x = agent_pos[0] - sld.position.x;
+        sad.rel_position.y = agent_pos[1] - sld.position.y;
+        relative_sad.rel_position.x = -sad.rel_position.x;
+        relative_sad.rel_position.y = -sad.rel_position.y;
+
+        sld.agents.push_back(relative_sad);
+        sc_agents_pubs[i].publish(sad);
+        ++i;
+    }
+    // Publish data
+    leader_swarm_competition_publisher.publish(sld);
 }
 
 void publish_data()
@@ -551,11 +602,15 @@ int main(int argc, char **argv)
     // Data publishers
     tb_burgers_publisher = nh.advertise<fast_turtle::RobotDataArray>("turtlebot_burgers", 1000);
     simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
-    leader_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("leader", 1000);
+    leader_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmLeaderData>("leader", 1000);
     agent0_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent0", 1000);
     agent1_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent1", 1000);
     agent2_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent2", 1000);
     agent3_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent3", 1000);
+    sc_agents_pubs.emplace_back(agent0_swarm_competition_publisher);
+    sc_agents_pubs.emplace_back(agent1_swarm_competition_publisher);
+    sc_agents_pubs.emplace_back(agent2_swarm_competition_publisher);
+    sc_agents_pubs.emplace_back(agent3_swarm_competition_publisher);
 
     // Services
     ros::ServiceServer service = nh.advertiseService("reset_arena", reset_arena);
@@ -572,7 +627,10 @@ int main(int argc, char **argv)
     ft->add_simple_drone(1, 1.5, 0.5, BURGER_RADIUS, "drone0", 0.2);
     ft->add_simple_drone(2, 1, 0.5, BURGER_RADIUS, "drone1", 0.2);
     ft->add_simple_drone(-2, 1, 0.5, BURGER_RADIUS, "drone2", 0.2);
-    ft->add_simple_drone(2, -2, 0.5, BURGER_RADIUS, "drone3", 0.2);
+    ft->add_simple_drone(1, -2, 0.5, BURGER_RADIUS, "drone3", 0.2);
+    ft->add_simple_drone(2, -2, 0.5, BURGER_RADIUS, "drone4", 0.2);
+    ft->add_simple_drone(4, -2, 0.5, BURGER_RADIUS, "drone5", 0.2);
+    ft->add_simple_drone(2, -1, 0.5, BURGER_RADIUS, "drone6", 0.2);
     ft->add_wall(2, 0, 2, 2);
     
     // Initialize swarm competition giving the robot names
@@ -582,7 +640,9 @@ int main(int argc, char **argv)
     sc->enlist("drone0", 0);
     sc->enlist("drone1", 0);
     sc->enlist("drone2", 0);
-    sc->enlist("drone3", 2);
+    sc->enlist("drone3", 0);
+    sc->enlist("drone4", 0);
+    sc->enlist("drone5", 2);
 
     // Start time for team of each given robots
     sc->start_time("drone0");
