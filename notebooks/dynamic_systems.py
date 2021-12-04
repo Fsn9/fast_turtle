@@ -420,3 +420,247 @@ class World():
         self.arena.plot()
         for obs in self.obstacles:
             obs.plot()
+
+
+def check_collisions(points_vec, l_mtx, d_mtx, w_food_mtx, do, xi):
+
+    c_mtx = d_mtx
+
+    max_distance = 2
+    if np.linalg.norm(xi[0]) > max_distance and l_mtx[1] == 0 and d_mtx[1] == 0: # Dist from 2 to 1
+        print('Drone 2 lost...')
+        l_mtx[1] = 1 
+    elif np.linalg.norm(xi[0]) < max_distance and l_mtx[1] == 1 and d_mtx[1] == 0: # Dist from 2 to 1
+        print('Drone 2 found!')
+        l_mtx[1] = 0 
+    
+    if np.linalg.norm(xi[1]) > max_distance and l_mtx[2] == 0 and d_mtx[2] == 0: # Dist from 3 to 1
+        print('Drone 3 lost...')
+        l_mtx[2] = 1 
+    elif np.linalg.norm(xi[1]) < max_distance and l_mtx[2] == 1 and d_mtx[2] == 0: # Dist from 3 to 1
+        print('Drone 3 found!')
+        l_mtx[2] = 0 
+
+    if np.linalg.norm(xi[2]) > max_distance and l_mtx[3] == 0 and d_mtx[3] == 0: # Dist from 4 to 1
+        print('Drone 4 lost...')
+        l_mtx[3] = 1 
+    elif np.linalg.norm(xi[2]) < max_distance and l_mtx[3] == 1 and d_mtx[3] == 0: # Dist from 4 to 1
+        print('Drone 4 found!')
+        l_mtx[3] = 0 
+
+    if np.linalg.norm(xi[3]) > max_distance and l_mtx[4] == 0 and d_mtx[4] == 0: # Dist from 5 to 1
+        print('Drone 5 lost...')
+        l_mtx[4] = 1 
+    elif np.linalg.norm(xi[3]) < max_distance and l_mtx[4] == 1 and d_mtx[4] == 0: # Dist from 5 to 1
+        print('Drone 5 found!')
+        l_mtx[4] = 0 
+    
+    
+     
+    
+    for i in range(0,len(points_vec)-1):
+
+        if d_mtx[i]==0: #para nao voltar a verificar -> pensar como implementar isto
+            if points_vec[i][0] > 10 or points_vec[i][0] < -10 or points_vec[i][1] > 10 or points_vec[i][1] < -10: # Verify if the drone left the arena
+                c_mtx[i]=1
+                print('WARNING: Drone', i+1, 'left the arena!!')
+                if w_food_mtx[i] == 1:
+                    w_food_mtx[i] = 0
+                    ind = np.where(w_food_mtx == 1)
+                    ind_eli = ind[0][0]
+                    w_food_mtx[ind_eli] = 0
+                elif w_food_mtx[i] == 2:
+                    w_food_mtx[i] = 0
+                    ind2 = np.where(w_food_mtx == 1)
+                    ind_eli2 = ind2[0][0]
+                    w_food_mtx[ind_eli2] = 0
+                    #w_food_mtx[w_food_mtx.index(2)] = 0
+                continue
+            #for l in range(len(obs_vec)):
+            #elif obs1.isInside(points_vec[i]) == 0 or obs2.isInside(points_vec[i]) == 0: # Verify if the drone is inside the obstacle
+            #    c_mtx[i]=1
+            #    continue
+            elif do[i] < 0.01: # If distance to nearest object is smaller than 0.01, the drone is damaged - REVER PQ ELE PODE COLIDIR QUANDO NAO DETETA NENHUM OBSTACULO
+                c_mtx[i]=1
+                print('WARNING: Collision with obstacle! Drone:', i+1)
+                if w_food_mtx[i] == 1:
+                    w_food_mtx[i] = 0
+                    ind = np.where(w_food_mtx == 1)
+                    ind_eli = ind[0][0]
+                    w_food_mtx[ind_eli] = 0
+                elif w_food_mtx[i] == 2:
+                    w_food_mtx[i] = 0
+                    ind2 = np.where(w_food_mtx == 1)
+                    ind_eli2 = ind2[0][0]
+                    w_food_mtx[ind_eli2] = 0
+                continue
+            
+            # Verify collisions between drones
+            for j in range(i+1,4): 
+                dist = np.sqrt( (points_vec[i][0] - points_vec[j][0])**2 + (points_vec[i][1] - points_vec[j][1])**2 ) 
+                if dist < 0.1: 
+                    c_mtx[i]=1
+                    c_mtx[j]=1
+                    print('WARNING: Colision between drone', i+1, 'and drone', j+1,'!!', ' -> dist =', dist)
+                    if w_food_mtx[j] == 1:
+                        w_food_mtx[j] = 0
+                        ind = np.where(w_food_mtx == 1)
+                        ind_eli = ind[0][0]
+                        w_food_mtx[ind_eli] = 0
+                        #print('w_food in drone collision1:',w_food_mtx)
+                    if w_food_mtx[i] == 1:
+                        w_food_mtx[i] = 0
+                        ind = np.where(w_food_mtx == 1)
+                        ind_eli = ind[0][0]
+                        w_food_mtx[ind_eli] = 0
+                        #print('w_food in drone collision2:',w_food_mtx)
+                    if w_food_mtx[j] == 2:
+                        w_food_mtx[j] = 0
+                        ind2 = np.where(w_food_mtx == 2)
+                        ind_eli2 = ind2[0][0]
+                        w_food_mtx[ind_eli2] = 0
+                        #print('w_food in drone collision3:',w_food_mtx)
+                    if w_food_mtx[i] == 2:
+                        w_food_mtx[i] = 0
+                        ind2 = np.where(w_food_mtx == 2)
+                        ind_eli2 = ind2[0][0]
+                        w_food_mtx[ind_eli2] = 0
+                        #print('w_food in drone collision4:',w_food_mtx)
+                 
+            # if c_mtx[i]!=1: #verify which drone has the food
+            #     if np.sqrt( (points_vec[i][0] - food[1][0])**2 + (points_vec[i][1] - food[1][1])**2 ) < 0.5:
+            #         print('bamo la crlho')
+            #         for l in range(i+1,4): 
+            #             if np.sqrt( (points_vec[i][0] - food[1][0])**2 + (points_vec[i][1] - food[1][1])**2 )  < 0.5: # Verify if the drones is near the food
+            #                 w_food_mtx[i][j]=1
+            #                 w_food_mtx[j][i]=1
+
+    d_mtx = c_mtx
+    
+    #print('Hello')
+    
+    return l_mtx, d_mtx, w_food_mtx
+    
+
+
+def proximity(points_vec, food):
+
+    prox_mtx_1 = np.array([np.sqrt((points_vec[0][0] - food[1][0])**2 + (points_vec[0][1] - food[1][1])**2), 
+                            np.sqrt((points_vec[1][0] - food[1][0])**2 + (points_vec[1][1] - food[1][1])**2),
+                            np.sqrt((points_vec[2][0] - food[1][0])**2 + (points_vec[2][1] - food[1][1])**2),
+                            np.sqrt((points_vec[3][0] - food[1][0])**2 + (points_vec[3][1] - food[1][1])**2),
+                            np.sqrt((points_vec[4][0] - food[1][0])**2 + (points_vec[4][1] - food[1][1])**2)])
+
+    prox_mtx_2 = np.array([np.sqrt((points_vec[0][0] - food[2][0])**2 + (points_vec[0][1] - food[2][1])**2),
+                            np.sqrt((points_vec[1][0] - food[2][0])**2 + (points_vec[1][1] - food[2][1])**2),
+                            np.sqrt((points_vec[2][0] - food[2][0])**2 + (points_vec[2][1] - food[2][1])**2),
+                            np.sqrt((points_vec[3][0] - food[2][0])**2 + (points_vec[3][1] - food[2][1])**2),
+                            np.sqrt((points_vec[4][0] - food[2][0])**2 + (points_vec[4][1] - food[2][1])**2)])
+
+    return prox_mtx_1, prox_mtx_2
+    
+    
+    
+def closest_drones(prox_mtx_1, prox_mtx_2, w_food_mtx, time_score, t, food_delivered, looking_for):
+    # Find the closest drones to the food
+    closer = 99
+    pre_candidate = 9
+    candidate = 9
+    #if prox_mtx_1[np.argmin(prox_mtx_1)] < 0.5 and w_food_mtx[np.argmin(prox_mtx_1)] == 0 and food_delivered[0] == 0: # If closer than 0.5 and food is not delivered
+    
+    for i in range(0, 4):
+        if prox_mtx_1[i] < closer and w_food_mtx[i] == 0: # Finds the closest drone without food        
+            closer = prox_mtx_1[i]
+            pre_candidate = i
+    
+    closer = 99
+    if pre_candidate != 9: # If a drone withou food was found and is the closest
+        if prox_mtx_1[pre_candidate] < 0.5 and not 1 in w_food_mtx and food_delivered[0] == 0 and looking_for == 1: # If distance to the food is smaller than 0.5 and food 1 is not delivered and isn't with any other drone
+            print('Drone',pre_candidate+1,'found the food 1')
+            for i in [x for x in range(0,4) if x != pre_candidate and w_food_mtx[x] == 0]: # Verifies all drones except the closest one, and the ones with food
+                if prox_mtx_1[i] < 0.5 and prox_mtx_1[i] < closer and w_food_mtx[i] == 0: # If closer than 0.5, closer than closer (to get the minimum) and without food
+                    closer = prox_mtx_1[i]
+                    candidate = i
+            if candidate != 9:
+                print('Drone',candidate+1,'found the food 1')
+                w_food_mtx[pre_candidate] = 1
+                w_food_mtx[candidate] = 1
+                time_score[0] = t
+            else:
+                print('But no other drone found the food 1...')
+    
+    closer = 99
+    pre_candidate = 9
+    candidate = 9
+
+    for i in range(0, 4):
+        if prox_mtx_2[i] < closer and w_food_mtx[i] == 0: # Finds the closest drone without food   
+            #print('i:', i)
+            closer = prox_mtx_1[i]
+            pre_candidate = i
+
+    closer = 99
+    
+    #if prox_mtx_2[np.argmin(prox_mtx_2)] < 0.5 and w_food_mtx[np.argmin(prox_mtx_2)] == 0 and food_delivered[1] == 0: # If closer than 0.5 and food is not delivered
+    if pre_candidate != 9: # If a drone withou food was found and is the closest
+        if prox_mtx_2[(pre_candidate)] < 0.5 and not 2 in w_food_mtx and food_delivered[1] == 0 and looking_for == 2: # If distance to the food is smaller than 0.5 and food 1 is not delivered and isn't with any other drone
+            print('Drone',pre_candidate+1,'found the food 2')
+            for i in [x for x in range(0,4) if x != pre_candidate and w_food_mtx[x] == 0]: # Verifies all drones except the closest one, and the ones with food
+                if prox_mtx_2[i] < 0.5 and prox_mtx_2[i] < closer and w_food_mtx[i] == 0: # If closer than 0.5, closer than closer (to get the minimum) and without food
+                    closer = prox_mtx_2[i]
+                    candidate = i
+            if candidate != 9:
+                print('Drone',candidate+1,'found the food 2')
+                w_food_mtx[pre_candidate] = 2
+                w_food_mtx[candidate] = 2
+                time_score[1] = t
+            else:
+                print('But no other drone found the food 2...')
+
+    return w_food_mtx, time_score
+
+
+
+def food_base_check(w_food_mtx, points_vec, food, time_score, t, food_delivered):
+    # Verify if food reached base or lost food
+    if 1 in w_food_mtx:    
+        result = np.where(w_food_mtx == 1)
+        index = result[0][0]
+        index_2 = result[0][1]
+        #print(result[0][0])
+        #print(result[0][1])
+        #index = w_food_mtx.index(1)
+        #index_2 = w_food_mtx.index(1,index+1)
+        if points_vec[index][0] < -5 and points_vec[index][1] < -5 and points_vec[index_2][0] < -5 and points_vec[index_2][1] < -5: # Arriving to base
+            food[1][0] = points_vec[index][0]
+            food[1][1] = points_vec[index][1]
+            time_score[2] = t
+            w_food_mtx[index] = 0
+            w_food_mtx[index_2] = 0
+            food_delivered[0] = 1
+            print('Food 1 delivered!')
+        elif np.sqrt( (points_vec[index][0] - points_vec[index_2][0])**2 + (points_vec[index][1] - points_vec[index_2][1])**2 ) > 1.5: # Loosing food
+            w_food_mtx[index] = 0
+            w_food_mtx[index_2] = 0
+            print('WARNING: Food 1 lost!')
+
+    if 2 in w_food_mtx:
+        result2 = np.where(w_food_mtx == 2)
+        index2 = result2[0][0]
+        index2_2 = result2[0][1]
+        #index2 = w_food_mtx.index(2)
+        #index2_2 = w_food_mtx.index(1,index2+1)
+        if points_vec[index2][0] < -5 and points_vec[index2][1] < -5 and points_vec[index2_2][0] < -5 and points_vec[index2_2][1] < -5: # Arriving to base
+            food[2][0] = points_vec[index2][0]
+            food[2][1] = points_vec[index2][1]
+            time_score[3] = t
+            w_food_mtx[index2] = 0
+            w_food_mtx[index2_2] = 0
+            food_delivered[1] = 1
+            print('Food 2 delivered!')
+        elif np.sqrt( (points_vec[index2][0] - points_vec[index2_2][0])**2 + (points_vec[index2][1] - points_vec[index2_2][1])**2 ) > 1.5: # Loosing food
+            w_food_mtx[index2] = 0
+            w_food_mtx[index2_2] = 0
+            print('WARNING: Food 2 lost!')
+    
+    return w_food_mtx, time_score, food_delivered
