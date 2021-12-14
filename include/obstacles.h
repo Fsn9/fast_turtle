@@ -25,7 +25,8 @@ class FoodItem : public Obstacle, public Circle{
         FoodItem(float xc, float yc, float radius);
         std::string tostring();
         bool visible;
-        int robot;  //-1  if the food is free, robot_id if it was captured
+        int robot1;  //-1  if the food is free, robot_id if it was captured
+        int robot2; //-1 if the food is free, robot_id if it was captured
 };
 
 #endif // OBSTACLES_H

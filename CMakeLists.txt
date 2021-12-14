@@ -280,8 +280,7 @@ add_executable(arena_sc_single_obstacle src/arena_sc_single_obstacle.cpp)
 target_link_libraries(arena_sc_single_obstacle ${catkin_LIBRARIES} ft)
 add_dependencies(arena_sc_single_obstacle fast_turtle_generate_messages_cpp)
 
-# It defines the arena_offline as an executable
-# add_executable(arena_offline src/arena_offline.cpp)
-# target_link_libraries(arena_offline ${catkin_LIBRARIES} ft)
-# add_dependencies(arena_offline fast_turtle_generate_messages_cpp)
+add_executable(arena_food_test src/arena_food_test.cpp)
+target_link_libraries(arena_food_test ${catkin_LIBRARIES} ft)
+add_dependencies(arena_food_test fast_turtle_generate_messages_cpp)
 
