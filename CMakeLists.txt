@@ -59,6 +59,7 @@ add_message_files(
    LaserSimpleScan.msg
    SwarmAgentData.msg
    SwarmLeaderData.msg
+   FoodData.msg
 )
 
 ## Generate services in the 'srv' folder

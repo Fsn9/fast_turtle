@@ -8,7 +8,7 @@
 #include <tf/transform_broadcaster.h>
 // Messages
 #include "geometry_msgs/Twist.h"
-#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/Pose2D.h"
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include "sensor_msgs/LaserScan.h"
@@ -17,6 +17,7 @@
 #include "fast_turtle/LaserSimpleScan.h"
 #include "fast_turtle/SwarmAgentData.h"
 #include "fast_turtle/SwarmLeaderData.h"
+#include "fast_turtle/FoodData.h"
 // Services
 #include "fast_turtle/ResetArena.h"
 
@@ -66,6 +67,7 @@ ros::Publisher agent0_swarm_competition_publisher;
 ros::Publisher agent1_swarm_competition_publisher;
 ros::Publisher agent2_swarm_competition_publisher;
 ros::Publisher agent3_swarm_competition_publisher;
+ros::Publisher foods_publisher;
 std::vector<ros::Publisher> sc_agents_pubs;
 
 // Messages
@@ -452,6 +454,7 @@ void publish_swarm_competition_data()
     fast_turtle::SwarmAgentData relative_sad;
     fast_turtle::SwarmLeaderData sld;
     fast_turtle::LaserSimpleScan lss;
+    fast_turtle::FoodData fd;
 
     // Team
     std::shared_ptr<SwarmTeam> team = sc->get_team(global_single_tid);
@@ -499,6 +502,18 @@ void publish_swarm_competition_data()
     }
     // Publish data
     leader_swarm_competition_publisher.publish(sld);
+
+    // Foods data
+    int n_foods;
+    geometry_msgs::Pose2D pose;
+    for(int i = 0; i < n_foods; i++)
+    {
+        pose.x = 1.0;
+        pose.y = 1.0;
+        fd.positions.push_back(pose);
+        fd.active.push_back(false);
+    }
+   foods_publisher.publish(fd);
 }
 
 void publish_data()
@@ -607,6 +622,7 @@ int main(int argc, char **argv)
     agent1_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent1", 1000);
     agent2_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent2", 1000);
     agent3_swarm_competition_publisher = nh.advertise<fast_turtle::SwarmAgentData>("agent3", 1000);
+    foods_publisher = nh.advertise<fast_turtle::FoodData>("foods", 1000);
     sc_agents_pubs.emplace_back(agent0_swarm_competition_publisher);
     sc_agents_pubs.emplace_back(agent1_swarm_competition_publisher);
     sc_agents_pubs.emplace_back(agent2_swarm_competition_publisher);
