@@ -12,11 +12,6 @@ SwarmTeam::SwarmTeam(int id)
 SwarmCompetition::SwarmCompetition(unsigned int simulation_fps)
 {
     simulation_dt_ = 1.0 / simulation_fps;
-    for(int i = 0; i < NUM_TEAMS; i++)
-    {
-        std::shared_ptr<SwarmTeam> st = std::make_shared<SwarmTeam>(i);
-        teams_.emplace_back(st);
-    }
 }
 
 void SwarmCompetition::init(std::vector<std::string> robot_names)
@@ -31,11 +26,24 @@ void SwarmCompetition::enlist(std::string robot_name, int team_id)
 {
     if(team_id >= 0 && team_id < NUM_TEAMS)
     {
+        if(teams_.find(team_id) == teams_.end())
+        {
+            teams_[team_id] = std::make_shared<SwarmTeam>(team_id);
+        }
         if(is_robot_enlisted(robot_name))
         {
             std::map<std::string, int>::iterator it = robot_list_.find(robot_name);
             it->second = team_id;
-            (*teams_[team_id]).enlist(robot_name);
+            if(teams_[team_id]->get_num_robots() != ROBOTS_PER_TEAM)
+            {
+                teams_[team_id]->enlist(robot_name);
+            }
+            else
+            {
+                throw std::length_error("Maximum number of robots per team is "
+                + std::to_string(ROBOTS_PER_TEAM) + ". Robot "
+                + robot_name + " was not added.");
+            }      
         }
         else
         {
@@ -107,6 +115,11 @@ std::string SwarmTeam::get_leader()
     return "none";
 }
 
+size_t SwarmTeam::get_num_robots()
+{
+    return robots_.size();
+}
+
 void SwarmTeam::enlist(std::string robot_name)
 {
     std::shared_ptr<RobotState> rs = std::make_shared<RobotState>();
@@ -119,11 +132,12 @@ void SwarmTeam::enlist(std::string robot_name)
 
 void SwarmCompetition::the_robot_lost(std::string robot_name)
 {
-    for(std::shared_ptr<SwarmTeam> team : teams_)
+    for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+    teams_.begin(); team != teams_.end(); team++)
     {
-        if((*team).is_robot_enlisted(robot_name))
+        if(team->second->is_robot_enlisted(robot_name))
         {   
-            (*team).the_robot_lost(robot_name);
+            team->second->the_robot_lost(robot_name);
             return;
         }
     }
@@ -155,11 +169,12 @@ void SwarmTeam::pass_leadership()
 
 void SwarmCompetition::food_was_captured(std::string robot_name)
 {
-    for(std::shared_ptr<SwarmTeam> team : teams_)
+    for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+    teams_.begin(); team != teams_.end(); team++)
     {
-        if((*team).is_robot_enlisted(robot_name))
+        if(team->second->is_robot_enlisted(robot_name))
         {
-            (*team).food_was_captured(robot_name);
+            team->second->food_was_captured(robot_name);
             return;
         }
     }
@@ -172,11 +187,12 @@ void SwarmTeam::food_was_captured(std::string robot_name)
 
 void SwarmCompetition::start_time(std::string robot_name)
 {
-    for(std::shared_ptr<SwarmTeam> team : teams_)
+    for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+    teams_.begin(); team != teams_.end(); team++)
     {
-        if((*team).is_robot_enlisted(robot_name))
+        if(team->second->is_robot_enlisted(robot_name))
         {
-            (*team).start_time(robot_name);
+            team->second->start_time(robot_name);
             return;
         }
     }
@@ -197,11 +213,12 @@ void SwarmTeam::increase_lifetime(double step)
 
 void SwarmCompetition::step()
 {
-    for(std::shared_ptr<SwarmTeam> team : teams_)
+    for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+    teams_.begin(); team != teams_.end(); team++)
     {
-        if((*team).has_started())
+        if(team->second->has_started())
         {
-            (*team).increase_lifetime(simulation_dt_);
+            team->second->increase_lifetime(simulation_dt_);
         }
     }
 }
@@ -220,11 +237,12 @@ std::shared_ptr<SwarmTeam> SwarmCompetition::get_team(int id)
 {
     if(id >= 0 && id < NUM_TEAMS)
     {
-        for(std::shared_ptr<SwarmTeam> st : teams_)
+        for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+        teams_.begin(); team != teams_.end(); team++)
         {
-            if(st->get_id() == id)
+            if(team->second->get_id() == id)
             {
-                return st;
+                return team->second;
             }
         }
         return {};
@@ -235,18 +253,19 @@ std::shared_ptr<SwarmTeam> SwarmCompetition::get_team(int id)
     }
 }
 
-std::vector<std::shared_ptr<SwarmTeam>> SwarmCompetition::get_teams()
+std::map<int,std::shared_ptr<SwarmTeam>> SwarmCompetition::get_teams()
 {
     return teams_;
 }
 
 int SwarmCompetition::get_team_id(std::string robot_name)
 {
-    for(std::shared_ptr<SwarmTeam> st : teams_)
+    for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+    teams_.begin(); team != teams_.end(); team++)
     {
-        if(st->is_robot_enlisted(robot_name))
+        if(team->second->is_robot_enlisted(robot_name))
         {
-            return st->get_id();
+            return team->second->get_id();
         }
     }
     return -1;
@@ -354,14 +373,15 @@ std::string SwarmCompetition::log()
     oss << "NUM TEAMS: " << NUM_TEAMS << "\n";
     oss << "NUM ROBOTS PER TEAM" << ROBOTS_PER_TEAM << "\n";
     oss << "Teams: \n";
-    for(std::shared_ptr<SwarmTeam> team : teams_)
+    for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+    teams_.begin(); team != teams_.end(); team++)
     {
-        oss << "\t# Team " << team->get_id() << "\n";
-        oss << "\tFoods collected: " << team->get_foods_collected() << "\n";
-        oss << "\tLifetime: " << team->get_lifetime() << "\n";
-        oss << "\tNumber of robots alive: "<< team->get_num_alive() << "\n";
-        oss << "\tHas started: " << team->has_started() << "\n";
-        oss << "\tLeader: " << team->get_leader() << "\n";
+        oss << "\t# Team " << team->second->get_id() << "\n";
+        oss << "\tFoods collected: " << team->second->get_foods_collected() << "\n";
+        oss << "\tLifetime: " << team->second->get_lifetime() << "\n";
+        oss << "\tNumber of robots alive: "<< team->second->get_num_alive() << "\n";
+        oss << "\tHas started: " << team->second->has_started() << "\n";
+        oss << "\tLeader: " << team->second->get_leader() << "\n";
     }
     return oss.str();
 }
@@ -370,10 +390,11 @@ std::string SwarmCompetition::log_lifetimes()
 {
     std::ostringstream oss;
     oss << "Swarm Competition lifetimes log\n";
-    for(std::shared_ptr<SwarmTeam> team : teams_)
+    for(std::map<int, std::shared_ptr<SwarmTeam>>::iterator team =
+    teams_.begin(); team != teams_.end(); team++)
     {
-        oss << "\t# Team " << team->get_id() << "\n";
-        oss << "\tLifetime: " << team->get_lifetime() << "\n";
+        oss << "\t# Team " << team->second->get_id() << "\n";
+        oss << "\tLifetime: " << team->second->get_lifetime() << "\n";
     }
     return oss.str();
 }

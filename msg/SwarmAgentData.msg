@@ -1,0 +1,4 @@
+string name
+geometry_msgs/Pose2D rel_position
+fast_turtle/LaserSimpleScan scan
+bool alive

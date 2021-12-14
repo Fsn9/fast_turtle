@@ -13,20 +13,20 @@ const float RANGE_MAX = 1;
 
 class SwarmTeam
 {
-    class RobotState
-    {
-        public:
-            RobotState();
-            RobotState(bool alive, bool leader);
-            bool is_alive();
-            bool is_leader();
-            void kick_out();
-            void declare_leader();
-        private:
-            bool alive_;
-            bool leader_;
-    };
     public:
+        class RobotState
+        {
+            public:
+                RobotState();
+                RobotState(bool alive, bool leader);
+                bool is_alive();
+                bool is_leader();
+                void kick_out();
+                void declare_leader();
+            private:
+                bool alive_;
+                bool leader_;
+        };        
         SwarmTeam(int id);
         int get_id();
         unsigned int get_num_alive();
@@ -41,6 +41,7 @@ class SwarmTeam
         void increase_lifetime(double step);
         std::map<std::string, std::shared_ptr<RobotState>> get_robots_state();
         std::string get_leader();
+        size_t get_num_robots();
     private:
         int id_;
         unsigned int num_alive_;
@@ -61,7 +62,7 @@ class SwarmCompetition
         void food_was_captured(std::string robot_name);
         void start_time(std::string robot_name);
         void step();
-        std::vector<std::shared_ptr<SwarmTeam>> get_teams();
+        std::map<int, std::shared_ptr<SwarmTeam>> get_teams();
         std::shared_ptr<SwarmTeam> get_team(std::string robot_name);
         std::shared_ptr<SwarmTeam> get_team(int id);
         int get_team_id(std::string robot_name);
@@ -76,7 +77,7 @@ class SwarmCompetition
     private:
         bool is_robot_enlisted(std::string name);
         std::map<std::string, int> robot_list_; 
-        std::vector<std::shared_ptr<SwarmTeam>> teams_;
+        std::map<int, std::shared_ptr<SwarmTeam>> teams_;
         float simulation_dt_;
 };
 
