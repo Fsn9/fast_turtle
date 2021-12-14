@@ -271,3 +271,17 @@ add_dependencies(arena_one_obstacle_two fast_turtle_generate_messages_cpp)
 add_executable(test_drones src/test_drones.cpp)
 target_link_libraries(test_drones ${catkin_LIBRARIES} ft)
 add_dependencies(test_drones fast_turtle_generate_messages_cpp)
+
+add_executable(arena_sc_free src/arena_sc_free.cpp)
+target_link_libraries(arena_sc_free ${catkin_LIBRARIES} ft)
+add_dependencies(arena_sc_free fast_turtle_generate_messages_cpp)
+
+add_executable(arena_sc_single_obstacle src/arena_sc_single_obstacle.cpp)
+target_link_libraries(arena_sc_single_obstacle ${catkin_LIBRARIES} ft)
+add_dependencies(arena_sc_single_obstacle fast_turtle_generate_messages_cpp)
+
+# It defines the arena_offline as an executable
+# add_executable(arena_offline src/arena_offline.cpp)
+# target_link_libraries(arena_offline ${catkin_LIBRARIES} ft)
+# add_dependencies(arena_offline fast_turtle_generate_messages_cpp)
+
