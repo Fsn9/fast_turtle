@@ -56,6 +56,10 @@ add_message_files(
    FILES
    RobotData.msg
    RobotDataArray.msg
+   LaserSimpleScan.msg
+   SwarmAgentData.msg
+   SwarmLeaderData.msg
+   FoodData.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -233,26 +237,6 @@ add_library(ft STATIC
 # Link libraries
 target_link_libraries(ft ${catkin_LIBRARIES})
 
-# It defines the live_simulation.cpp as an executable
-# add_executable(live_simulation src/live_simulation.cpp)
-# target_link_libraries(live_simulation ${catkin_LIBRARIES} ft)
-# add_dependencies(live_simulation fast_turtle_generate_messages_cpp)
-
-# It defines the arena01.cpp as an executable
-# add_executable(arena01 src/arena01.cpp)
-# target_link_libraries(arena01 ${catkin_LIBRARIES} ft)
-# add_dependencies(arena01 fast_turtle_generate_messages_cpp)
-
-# It defines the arena00.cpp as an executable
-# add_executable(arena00 src/arena00.cpp)
-# target_link_libraries(arena00 ${catkin_LIBRARIES} ft)
-# add_dependencies(arena00 fast_turtle_generate_messages_cpp)
-
-# It defines the test_drones.cpp as an executable
-# add_executable(test_drones src/test_drones.cpp)
-# target_link_libraries(test_drones ${catkin_LIBRARIES} ft)
-# add_dependencies(test_drones fast_turtle_generate_messages_cpp)
-
 # It defines the my_controller.cpp as an executable
 add_executable(my_controller src/my_controller.cpp)
 target_link_libraries(my_controller ${catkin_LIBRARIES} ft)
@@ -273,11 +257,6 @@ add_executable(arena_simple src/arena_simple.cpp)
 target_link_libraries(arena_simple ${catkin_LIBRARIES} ft)
 add_dependencies(arena_simple fast_turtle_generate_messages_cpp)
 
-# It defines the arena_obstacle.cpp as an executable
-# add_executable(arena_obstacle src/arena_obstacle.cpp)
-# target_link_libraries(arena_obstacle ${catkin_LIBRARIES} ft)
-# add_dependencies(arena_obstacle fast_turtle_generate_messages_cpp)
-
 # It defines the arena_one_obstacle.cpp as an executable
 add_executable(arena_one_obstacle src/arena_one_obstacle.cpp)
 target_link_libraries(arena_one_obstacle ${catkin_LIBRARIES} ft)
@@ -287,6 +266,11 @@ add_dependencies(arena_one_obstacle fast_turtle_generate_messages_cpp)
 add_executable(arena_one_obstacle_two src/arena_one_obstacle_two.cpp)
 target_link_libraries(arena_one_obstacle_two ${catkin_LIBRARIES} ft)
 add_dependencies(arena_one_obstacle_two fast_turtle_generate_messages_cpp)
+
+# It defines the test_drones.cpp as an executable
+add_executable(test_drones src/test_drones.cpp)
+target_link_libraries(test_drones ${catkin_LIBRARIES} ft)
+add_dependencies(test_drones fast_turtle_generate_messages_cpp)
 
 add_executable(arena_sc_free src/arena_sc_free.cpp)
 target_link_libraries(arena_sc_free ${catkin_LIBRARIES} ft)
@@ -300,3 +284,4 @@ add_dependencies(arena_sc_single_obstacle fast_turtle_generate_messages_cpp)
 # add_executable(arena_offline src/arena_offline.cpp)
 # target_link_libraries(arena_offline ${catkin_LIBRARIES} ft)
 # add_dependencies(arena_offline fast_turtle_generate_messages_cpp)
+
