@@ -96,4 +96,39 @@ class SimpleDrone : public Circle{
         void reset();
 };
 
+class Drone3D : public Sphere{
+    private:
+        float yaw, height, inv_diameter, diameter, controller_period;
+        Lidar* lidar;
+        std::string model;
+        std::string name;
+        float last_vx;
+        float last_vy;
+        float last_vz;
+        float last_yaw;
+        bool visible;
+    public:
+        Drone3D(float x, float y, float z, float height, float radius, std::string name, float controller_period);
+        std::string tostring();
+        std::tuple<float, float, float, float> kinematics(float vx, float vy, float vz, float w, float time_step);
+        float x();
+        float y();
+        float z();
+        float get_yaw();
+        //float get_theta();
+        float get_height();
+        float get_controller_period();
+        bool is_visible();
+        void set_visibility(bool value);
+        float get_last_vx();
+        float get_last_vy();
+        float get_last_vz();
+        void set_new_vx_vy_vz_w(float vx, float vy, float vz, float w);
+        std::string get_name();
+        std::string get_model();
+        Lidar* get_lidar();
+        void move(float vx, float vy, float vz, float w, float time_step);
+        void reset();
+};
+
 #endif // ROBOT_H

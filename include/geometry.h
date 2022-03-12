@@ -95,4 +95,24 @@ class Circle{
 		bool intersects_circle(Circle other);
 		std::tuple<bool, float, float, float, float> intersects_line(Line line);
 };
+
+class Sphere{
+	protected:
+		float height, radius, diameter, radius_sqr, xc, yc;	
+	public:
+		Circle(float xc, float yc, float radius);
+		std::string tostring();
+		float get_xc();
+		float get_yc();
+		void set_xc(float x); 
+		void set_yc(float y);
+		float get_radius();
+		float get_diameter();
+		float equation(float x, float y);
+		bool intersects(float x, float y);
+		bool inside(float x, float y);
+		bool outside(float x, float y);
+		bool intersects_circle(Circle other);
+		std::tuple<bool, float, float, float, float> intersects_line(Line line);
+};
 #endif // GEOMETRY_H
