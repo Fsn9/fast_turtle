@@ -410,3 +410,132 @@ std::tuple<float,float,float,float> Lidar::get_laser_points(float angle, float x
     };
 }
 
+
+
+
+
+Drone3D::Drone3D(float x, float y, float z, float height, float radius, std::string name, float controller_period) : Circle(x, y, radius)
+{
+    // Attributes
+    this->controller_period = controller_period;
+    this->inv_diameter = 1.0 / (2 * this->radius);
+    this->diameter = this->radius * 2.0;
+    this->height = height;
+    this->name = name;
+    this->model = "3D";
+    this->last_vx = 0.0;
+    this->last_vy = 0.0;
+    this->last_vz = 0.0;
+    this->visible = true;
+    this->last_yaw = 0.0;
+    this->zc = 0.0;
+
+    // Lidar
+    float frequency;
+    this->lidar = new Lidar(frequency, new Point2d(x,y));
+}
+
+float Drone3D::x(){
+    return this->xc;
+}
+
+float Drone3D::y(){
+    return this->yc;
+}
+
+float Drone3D::z(){
+    return this->zc;
+}
+
+float Drone3D::get_yaw(){
+    return this->yaw;
+}
+
+float Drone3D::get_height(){
+    return this->height;
+}
+
+float Drone3D::get_controller_period(){
+    return this->controller_period;
+}
+
+bool Drone3D::is_visible(){
+    return this->visible;
+}
+
+void Drone3D::set_visibility(bool value){
+    this->visible = value;
+}
+
+
+std::string Drone3D::tostring(){
+    return "(Drone3D) Name: " + this->get_name() + " , Model: " + this->get_model() + " , " +
+    Circle::tostring() + ", height: " 
+    + std::to_string(this->height)
+    + ", with " + this->lidar->tostring() + "\n";
+}
+
+std::tuple<float, float, float, float> Drone3D::kinematics(float vx, float vy, float vz, float w, float time_step){    
+    return 
+    {
+        this->xc + vx * time_step,
+        this->yc + vy * time_step,
+        this->zc + vz * time_step,
+        this->yaw + yaw * time_step
+    };
+}
+
+void Drone3D::move(float vx, float vy, float vz, float w, float time_step){
+    // Compute position
+    std::tuple<float,float,float,float> new_pose = this->kinematics(vx, vy, vz, w, time_step);
+    // Update position
+    this->xc = std::get<0>(new_pose);
+    this->yc = std::get<1>(new_pose);
+    this->zc = std::get<2>(new_pose);
+    this->yaw = std::get<3>(new_pose);
+    return;
+}
+
+void Drone3D::reset()
+{
+    this->last_vx = 0.0;
+    this->last_vy = 0.0;
+    this->last_vz = 0.0;
+    this->last_yaw = 0.0;
+    this->visible = true;
+}
+
+Lidar* Drone3D::get_lidar(){
+    return this->lidar;
+}
+
+std::string Drone3D::get_name(){
+    return this->name;
+}
+
+std::string Drone3D::get_model(){
+    return this->model;
+}
+
+float Drone3D::get_last_vx(){
+    return this->last_vx;
+}
+
+float Drone3D::get_last_vy(){
+    return this->last_vy;
+}
+
+float Drone3D::get_last_vz(){
+    return this->last_vz;
+}
+
+float Drone3D::get_last_yaw(){
+    return this->last_yaw;
+}
+
+void Drone3D::set_new_vx_vy_vz_w(float vx, float vy, float vz, float w){
+    this->last_vx = vx;
+    this->last_vy = vy;
+    this->last_vz = vz;
+    this->last_yaw = yaw;
+}
