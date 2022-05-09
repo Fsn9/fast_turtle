@@ -139,6 +139,14 @@ Visualization Manager:
         simulation_markers: true
       Queue Size: 100
       Value: true
+      Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /t_3d_drone_markers
+      Name: 3dDrones
+      Namespaces:
+        simulation_markers: true
+      Queue Size: 100
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:

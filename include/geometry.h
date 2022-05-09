@@ -96,23 +96,25 @@ class Circle{
 		std::tuple<bool, float, float, float, float> intersects_line(Line line);
 };
 
-// class Sphere{
-// 	protected:
-// 		float height, radius, diameter, radius_sqr, xc, yc;	
-// 	public:
-// 		Circle(float xc, float yc, float radius);
-// 		std::string tostring();
-// 		float get_xc();
-// 		float get_yc();
-// 		void set_xc(float x); 
-// 		void set_yc(float y);
-// 		float get_radius();
-// 		float get_diameter();
-// 		float equation(float x, float y);
-// 		bool intersects(float x, float y);
-// 		bool inside(float x, float y);
-// 		bool outside(float x, float y);
-// 		bool intersects_circle(Circle other);
-// 		std::tuple<bool, float, float, float, float> intersects_line(Line line);
-// };
+class Sphere{
+	protected:
+		float radius, diameter, radius_sqr, xc, yc, zc;	
+	public:
+		Sphere(float xc, float yc, float zc, float radius);
+		std::string tostring();
+		float get_xc();
+		float get_yc();
+		float get_zc();
+		void set_xc(float x); 
+		void set_yc(float y);
+		void set_zc(float z);
+		float get_radius();
+		float get_diameter();
+		float equation(float x, float y, float z);
+		bool intersects(float x, float y, float z);
+		bool inside(float x, float y, float z);
+		bool outside(float x, float y, float z);
+		bool intersects_sphere(Sphere other);
+		std::tuple<bool, float, float, float, float> intersects_line(Line line);
+};
 #endif // GEOMETRY_H

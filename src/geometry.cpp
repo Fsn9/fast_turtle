@@ -288,3 +288,60 @@ float Square::get_angle(){
 float Square::get_length(){
 	return this->length;
 }
+
+//Sphere
+Sphere::Sphere(float xc, float yc, float zc, float radius) : xc(xc), yc(yc), zc(zc), radius(radius), radius_sqr(pow(this->radius,2)) {
+	this->diameter = radius * 2.0;
+}
+
+std::string Sphere::tostring(){return "Sphere with xc: " + std::to_string(this->xc) + ", yc: " + std::to_string(this->yc) + ", zc: " + std::to_string(this->zc)+", radius: " + std::to_string(this->radius);}
+
+float Sphere::get_xc(){return this->xc;}
+
+float Sphere::get_yc(){return this->yc;}
+
+float Sphere::get_zc(){return this->zc;}
+
+void Sphere::set_xc(float x){this->xc = x;}
+
+void Sphere::set_yc(float y){this->yc = y;}
+
+void Sphere::set_zc(float z){this->zc = z;}
+
+float Sphere::get_radius(){return this->radius;}
+
+float Sphere::get_diameter(){return this->diameter;}
+
+float Sphere::equation(float x, float y, float z){return pow(x - this->xc, 2) + pow(y - this->yc, 2) + pow(z - this->zc, 2);}
+
+bool Sphere::intersects(float x, float y, float z){return this->radius_sqr - INTERSECTION_POINT_TOLERANCE <= equation(x,y,z) < this->radius_sqr - INTERSECTION_POINT_TOLERANCE;}
+
+bool Sphere::inside(float x, float y, float z){return equation(x,y,z) <= this->radius_sqr;}
+
+bool Sphere::outside(float x, float y, float z){return !inside(x,y,z);}
+
+bool Sphere::intersects_sphere(Sphere other){
+	float d = sqrt(equation(other.get_xc(), other.get_yc(), other.get_zc()));
+	return (this->radius + other.get_radius()) > d && (d > abs(this->radius - other.get_radius()));
+}
+
+
+std::tuple<bool, float, float, float, float> Sphere::intersects_line(Line line){
+	float discriminant;
+	if (line.is_vertical()){
+		discriminant = pow(this->radius,2) - pow(line.get_intercept() - this->xc, 2);
+		if (discriminant <= 0) return {false, 0,0,0,0};
+		float sqrt_d = sqrt(discriminant);
+		return {true, line.get_intercept(), this->yc + sqrt_d, line.get_intercept(), this->yc - sqrt_d};
+	}
+	else{
+		float slope_sqr = pow(line.get_slope(),2);
+		discriminant = pow(this->radius, 2) * (1 + slope_sqr) - pow(this->yc - line.get_slope() * this->xc - line.get_intercept(), 2);
+		if(discriminant <= 0) return {false,0,0,0,0};
+		float den = 1 + slope_sqr;
+		float sqrt_d = sqrt(discriminant);
+		float a = this->xc + this->yc * line.get_slope() - line.get_intercept() * line.get_slope();
+		float b = line.get_intercept() + this->xc * line.get_slope() + this->yc * slope_sqr;
+		return {true, (a + sqrt_d) / den, (b + line.get_slope() * sqrt_d) / den, (a - sqrt_d) / den, (b - line.get_slope() * sqrt_d) / den};
+	}
+}

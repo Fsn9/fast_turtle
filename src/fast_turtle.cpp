@@ -5,6 +5,7 @@ FastTurtle::FastTurtle(){
     std::cout << "--Fast Turtle simulator created --\n";
     this->last_times_tb_robots.reserve(MAX_BURGERS);
     this->last_times_simple_drones.reserve(MAX_SIMPLE_DRONES);
+    this->last_times_3d_drones.reserve(MAX_SIMPLE_DRONES);
     std::fill(default_scan_.begin(), default_scan_.begin() + N_LASERS, MAX_DISTANCE);
 }
 
@@ -12,6 +13,7 @@ FastTurtle::FastTurtle(unsigned int simulation_fps){
     std::cout << "--Fast Turtle simulator created --\n";
     this->last_times_tb_robots.reserve(MAX_BURGERS);
     this->last_times_simple_drones.reserve(MAX_SIMPLE_DRONES);
+    this->last_times_3d_drones.reserve(MAX_SIMPLE_DRONES);
     this->simulation_fps = simulation_fps;
     this->simulation_dt = 1.0 / this->simulation_fps;
 }
@@ -38,6 +40,21 @@ void FastTurtle::add_simple_drone(double x, double y, double height, double radi
     if (this->get_world()->get_n_simple_drones() < MAX_SIMPLE_DRONES){
         this->last_times_simple_drones[this->w->get_n_simple_drones()] = std::chrono::steady_clock::now();
         this->w->add_simple_drone(x,y,height,radius,name,controller_period);
+        initial_positions_robots_[name] = std::make_pair(x, y);
+    }
+    else{
+        throw std::invalid_argument("No more simple drones allowed. Maximum is: " + std::to_string(MAX_SIMPLE_DRONES));
+    }
+}
+
+void FastTurtle::add_3d_drone(double x, double y, double z, double height, double radius, std::string name, double controller_period){
+    if (height < MIN_HEIGHT_DRONES){
+        throw std::invalid_argument("Entered height is invalid. Minimum height for drones is: " + std::to_string(MIN_HEIGHT_DRONES));
+    }
+    if (this->get_world()->get_n_3d_drones() < MAX_SIMPLE_DRONES){
+        this->last_times_3d_drones[this->w->get_n_3d_drones()] = std::chrono::steady_clock::now();
+        this->w->add_3d_drone(x,y,z,height,radius,name,controller_period);
+        // template<double T1, double T2, double T3>
         initial_positions_robots_[name] = std::make_pair(x, y);
     }
     else{
@@ -189,6 +206,52 @@ void FastTurtle::act_turtlebot_burger(double v, double w, int idx_tbb){
     );
 }
 
+void FastTurtle::act_3d_drone(double vx, double vy, double vz, double yaw, int idx_sd){
+    
+    printf("[act] Received commands vx: %f and vy: %f and vz: %f and vz: %f and idx: %d", vx,vy,vz,yaw,idx_sd);
+    
+    if (idx_sd < 0 || idx_sd > this->w->get_n_3d_drones() - 1){
+        throw std::invalid_argument("invalid burger index of " + 
+        std::to_string(idx_sd) +". It needs to be >= 0 or < " + 
+        std::to_string(this->w->get_simple_drones().size()));
+    }
+    // Check current time
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+
+    // Measure time passed since burger last actuation time
+    double elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(now - this->last_times_3d_drones[idx_sd]).count() * 1e-9;
+
+    // If duration is bigger than the controller rate, then controller can act
+    if(elapsed > this->w->get_3d_drone(idx_sd)->get_controller_period()){
+        // Update last time
+        this->last_times_3d_drones[idx_sd] = now;
+        // Update last twist values
+        this->w->get_3d_drone(idx_sd)->set_new_vx_vy_vz_yaw(vx,vy,vz,yaw);
+    }
+
+    this->w->get_3d_drone(idx_sd)->set_new_vx_vy_vz_yaw(vx,vy,vz,yaw);
+    // Move drone
+    this->w->get_3d_drone(idx_sd)->move(
+        this->w->get_3d_drone(idx_sd)->get_last_vx(),
+        this->w->get_3d_drone(idx_sd)->get_last_vy(),
+        this->w->get_3d_drone(idx_sd)->get_last_vz(),
+        this->w->get_3d_drone(idx_sd)->get_last_yaw(),
+        this->simulation_dt
+    );
+
+    // Update simple_drone lidar
+//     this->w->get_3d_drone(idx_sd)->get_lidar()->update_lidar_heavy(
+//         this->w->get_round_obstacles(), 
+//         this->w->get_3d_drones(),
+//         this->w->get_edges(),
+//         this->w->get_wall_obstacles(), 
+//         this->get_world()->get_3d_drone(idx_sd)->get_xc(), 
+//         this->get_world()->get_3d_drone(idx_sd)->get_yc(), 
+//         this->get_world()->get_3d_drone(idx_sd)->get_zc(), 
+//         this->get_world()->get_3d_drone(idx_sd)->get_yaw()
+//     );
+}
+
 void FastTurtle::act_simple_drone(double vx, double vy, int idx_sd){
     if (idx_sd < 0 || idx_sd > this->w->get_n_simple_drones() - 1){
         throw std::invalid_argument("invalid burger index of " + 
@@ -228,6 +291,7 @@ void FastTurtle::act_simple_drone(double vx, double vy, int idx_sd){
         this->get_world()->get_simple_drone(idx_sd)->get_theta()
     );
 }
+
 
 std::vector<double> FastTurtle::get_robot_position(std::string robot_name)
 {

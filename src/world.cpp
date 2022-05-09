@@ -9,6 +9,8 @@ World::World(double length, double xc, double yc, double angle): Square(length, 
 	this->food_items.reserve(MAX_FOODS); // Max food
 	this->simple_drones.reserve(MAX_SIMPLE_DRONES);
 	this->n_simple_drones = 0; // counter of burgers
+	this->_3d_drones.reserve(MAX_SIMPLE_DRONES);
+	this->n_3d_drones = 0; // counter of burgers
 }
 
 void World::add_obstacle(double x, double y, double radius, std::string type_){
@@ -40,6 +42,13 @@ void World::add_simple_drone(double x, double y, double height, double radius, s
 	this->n_simple_drones += 1;
 }
 
+void World::add_3d_drone(double x, double y, double z, double height, double radius, std::string name, double controller_period){
+	std::vector<std::shared_ptr<Drone3D>>::iterator it; 
+	it = this->_3d_drones.begin() + this->n_3d_drones;
+	it = this->_3d_drones.insert(it, std::make_shared<Drone3D>(x,y,z,height,radius,name,controller_period));
+	this->n_3d_drones += 1;
+}
+
 void World::add_food_item(double xc, double yc, double radius){
 	this->food_items.push_back(FoodItem(xc, yc, radius));
 	return;
@@ -51,6 +60,10 @@ int World::get_n_burgers(){
 
 int World::get_n_simple_drones(){
 	return this->n_simple_drones;
+}
+
+int World::get_n_3d_drones(){
+	return this->n_3d_drones;
 }
 
 std::vector<RoundObstacle> World::get_round_obstacles(){
@@ -108,6 +121,14 @@ std::shared_ptr<SimpleDrone> World::get_simple_drone(int idx){
 	return this->simple_drones[idx];
 }
 
+std::vector<std::shared_ptr<Drone3D>> World::get_3d_drones(){
+	return this->_3d_drones;
+}
+
+std::shared_ptr<Drone3D> World::get_3d_drone(int idx){
+	return this->_3d_drones[idx];
+}
+
 // For now we work with drones only
 std::vector<std::string> World::get_robot_names()
 {
@@ -131,6 +152,19 @@ std::shared_ptr<SimpleDrone> World::get_simple_drone(std::string name)
 	return {};
 }
 
+std::shared_ptr<Drone3D> World::get_3d_drone(std::string name)
+{
+	for(std::shared_ptr<Drone3D> drone : _3d_drones)
+	{
+		if(drone->get_name() == name)
+		{
+			return drone;
+		}
+	}
+	return {};
+}
+
+
 void World::set_simple_drone_position(std::string name, double x, double y)
 {
 	std::shared_ptr<SimpleDrone> sd = get_simple_drone(name);
@@ -142,6 +176,18 @@ void World::set_simple_drone_position(std::string name, double x, double y)
 	
 }
 
+void World::set_3d_drone_position(std::string name, double x, double y, double z)
+{
+	std::shared_ptr<Drone3D> sd = get_3d_drone(name);
+	if(sd != nullptr)
+	{
+		sd->set_xc(x);
+		sd->set_yc(y);
+		sd->set_yc(z);
+	}
+	
+}
+
 void World::reset_simple_drones()
 {
 	for(std::shared_ptr<SimpleDrone> drone : simple_drones)
@@ -149,6 +195,16 @@ void World::reset_simple_drones()
 		drone->reset();
 	}
 }
+
+
+void World::reset_3d_drones()
+{
+	for(std::shared_ptr<Drone3D> drone : _3d_drones)
+	{
+		drone->reset();
+	}
+}
+
 
 void World::set_robot_positions(const std::map<std::string, std::pair<double, double>>& positions)
 {

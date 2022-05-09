@@ -10,7 +10,7 @@ output: where to log the outputs. "screen" is to the terminal.
   <param name="turtlebot_model" type="string" value="burger"/>
 
   <!-- Nodes to launch-->
-  <arg name="user_id"/>
-  <node pkg="fast_turtle" type="arena_simple" name="arena_simple$(arg user_id)" output="screen" args="$(arg user_id)"/>
-  <!-- node type="rviz" name="rviz" pkg="rviz" args="-d $(find fast_turtle)/rviz/scene.rviz" /-->
+  <!-- <arg name="user_id"/> -->
+  <node pkg="fast_turtle" type="arena_simple" name="arena_simple" output="screen"/>
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find fast_turtle)/rviz/scene.rviz" />
 </launch> 

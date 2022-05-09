@@ -2,6 +2,9 @@
 #define FAST_TURTLE_H
 
 #include "world.h"
+#include <tuple>
+#include <functional>
+#include <iostream>
 #include <map>
 #include <unistd.h> 
 #include <chrono>
@@ -20,6 +23,14 @@ typedef struct cmd_vel_sd{
     double vy;
 } cmd_vel_sd;
 
+typedef struct cmd_vel_3d{
+    double vx;
+    double vy;
+    double vz;
+    double w;
+} cmd_vel_3d;
+
+
 class Observation;
 
 class FastTurtle{
@@ -27,6 +38,7 @@ class FastTurtle{
         World* w;
         std::vector<std::chrono::steady_clock::time_point> last_times_tb_robots; // keeps track of the controller last actuation times
         std::vector<std::chrono::steady_clock::time_point> last_times_simple_drones; // keeps track of the controller drones last actuation times
+        std::vector<std::chrono::steady_clock::time_point> last_times_3d_drones; // keeps track of the controller drones last actuation times
         unsigned int simulation_fps;
         double simulation_dt;
         std::vector<float> default_scan_;
@@ -37,6 +49,7 @@ class FastTurtle{
         void init_world(double length, double xc, double yc, std::string type);
         void add_turtlebot_burger(double x, double y, double theta, double radius, std::string name, double controller_period = DEFAULT_CONTROLLER_PERIOD);
         void add_simple_drone(double x, double y, double height, double radius, std::string name, double controller_period = DEFAULT_CONTROLLER_PERIOD);
+        void add_3d_drone(double x, double y, double z, double height, double radius, std::string name, double controller_period = DEFAULT_CONTROLLER_PERIOD);
         void add_obstacle(double x, double y, double radius, std::string type_, bool dynamics) = delete;
         void add_obstacle(double x, double y, double radius, std::string type_);
         void add_wall(double x1, double y1, double x2, double y2, bool dynamics) = delete;
@@ -50,6 +63,7 @@ class FastTurtle{
         std::vector<float> observe_robot_lidar(int idx_robot);
         void act_turtlebot_burger(double v, double w, int idx_robot);
         void act_simple_drone(double vx, double vy, int idx_robot);
+        void act_3d_drone(double vx, double vy, double vz, double w, int idx_robot);
         Observation observe(int idx_robot);
         void sleep() = delete;
         void check_collisions();

@@ -96,10 +96,10 @@ class SimpleDrone : public Circle{
         void reset();
 };
 
-class Drone3D : public Circle{
+class Drone3D : public Sphere{
     private:
         float yaw, height, inv_diameter, diameter, controller_period;
-        Lidar* lidar;
+        // Lidar* lidar;
         std::string model;
         std::string name;
         float last_vx;
@@ -111,7 +111,7 @@ class Drone3D : public Circle{
     public:
         Drone3D(float x, float y, float z, float height, float radius, std::string name, float controller_period);
         std::string tostring();
-        std::tuple<float, float, float, float> kinematics(float vx, float vy, float vz, float w, float time_step);
+        std::tuple<float, float, float, float> kinematics(float vx, float vy, float vz, float yaw, float time_step);
         float x();
         float y();
         float z();
@@ -125,11 +125,11 @@ class Drone3D : public Circle{
         float get_last_vy();
         float get_last_vz();
         float get_last_yaw();
-        void set_new_vx_vy_vz_w(float vx, float vy, float vz, float w);
+        void set_new_vx_vy_vz_yaw(float vx, float vy, float vz, float yaw);
         std::string get_name();
         std::string get_model();
-        Lidar* get_lidar();
-        void move(float vx, float vy, float vz, float w, float time_step);
+        // Lidar* get_lidar();
+        void move(float vx, float vy, float vz, float yaw, float time_step);
         void reset();
 };
 

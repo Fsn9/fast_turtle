@@ -55,7 +55,7 @@ struct drone {
 // // Teams
 // struct team Team;
 
-std::string user_id;
+
 // Initialize fast turtle simulator object
 FastTurtle* ft = new FastTurtle(SIMULATION_FPS);
 
@@ -64,13 +64,14 @@ visualization_msgs::Marker world_marker;
 visualization_msgs::MarkerArray wall_markers;
 visualization_msgs::MarkerArray simple_drone_markers;
 visualization_msgs::MarkerArray simple_drone_supports_markers;
+visualization_msgs::MarkerArray t_3d_drone_markers;
 
 // Marker Publishers
 ros::Publisher world_marker_publisher;
 ros::Publisher wall_markers_publisher;
 ros::Publisher simple_drone_markers_publisher;
 ros::Publisher simple_drone_supports_markers_publisher;         
-
+ros::Publisher t_3d_drone_markers_publisher;
 
 // Publishers
 ros::Publisher odom_publisher0;
@@ -85,6 +86,8 @@ sensor_msgs::LaserScan laser_scan_msg;
 std::vector<cmd_vel_sd> cmd_vels_simple_drones{{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}
 ,{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}
 ,{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
+
+std::vector<cmd_vel_3d> cmd_vels_3d_drones{{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 // Move robot 'idx'
 void move_simple_drones(int idx)
 {
@@ -132,6 +135,45 @@ void listen_cmd_vel_sd0(const geometry_msgs::Twist& msg)
         
         ft->act_simple_drone(cmd_vels_simple_drones[0].vx, cmd_vels_simple_drones[0].vy, 0);
         std::cout << "[Simple Drone 0 pose]: " << ft->get_world()->get_simple_drone(0)->tostring() << "\n";
+    }
+}
+
+void listen_cmd_vel_sd1(const geometry_msgs::Twist& msg)
+{
+
+    if (ft->get_world()->get_n_3d_drones() > 0){
+        ROS_INFO("Received commands vx: %f and vy: %f", msg.linear.x, msg.linear.y);
+        
+        //saturacao
+        if (msg.linear.x > MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_3d_drones[0].vx = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else if(msg.linear.x  < -MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_3d_drones[0].vx = -MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else{
+        cmd_vels_3d_drones[0].vx = msg.linear.x;
+        }
+
+        if (msg.linear.y > MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_3d_drones[0].vy = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else if(msg.linear.y < -MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_3d_drones[0].vy = -MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else{
+        cmd_vels_3d_drones[0].vy = msg.linear.y;
+        }
+
+        if (msg.linear.z > MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_3d_drones[0].vz = MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else if(msg.linear.z < -MAX_LIN_VELOCITY_SIMPLE_DRONE){
+         cmd_vels_3d_drones[0].vz = -MAX_LIN_VELOCITY_SIMPLE_DRONE;
+        }else{
+        cmd_vels_3d_drones[0].vz = msg.linear.z;
+        }
+            
+        ROS_INFO("Chegou aqui");
+            
+        
+        ft->act_3d_drone(cmd_vels_3d_drones[0].vx, cmd_vels_3d_drones[0].vy, cmd_vels_3d_drones[0].vz, 0.0, 0);
+        std::cout << "[3D Drone 0 pose]: " << ft->get_world()->get_3d_drone(0)->tostring() << "\n";
     }
 }
 
@@ -242,6 +284,35 @@ void init_graphics_and_data(){
             j+=1;
         }   
     }
+
+    // Simple drones position
+    visualization_msgs::Marker t_3d_drone_marker;
+    for(i = 0; i < ft->get_world()->get_n_simple_drones(); i++)
+    {
+        t_3d_drone_marker.header.frame_id = "world";
+        t_3d_drone_marker.ns = "simulation_markers";
+        t_3d_drone_marker.id = j;
+        t_3d_drone_marker.type = visualization_msgs::Marker::CYLINDER;
+        t_3d_drone_marker.action = visualization_msgs::Marker::ADD;
+        t_3d_drone_marker.scale.x = ft->get_world()->get_simple_drone(i)->get_diameter();
+        t_3d_drone_marker.scale.y = ft->get_world()->get_simple_drone(i)->get_diameter();
+        t_3d_drone_marker.scale.z = 0.05;
+        t_3d_drone_marker.pose.position.x = ft->get_world()->get_simple_drone(i)->get_xc();
+        t_3d_drone_marker.pose.position.y = ft->get_world()->get_simple_drone(i)->get_yc();
+        t_3d_drone_marker.pose.position.z = ft->get_world()->get_simple_drone(i)->get_height() + t_3d_drone_marker.scale.z * 0.5;
+        t_3d_drone_marker.pose.orientation.x = 0.0;
+        t_3d_drone_marker.pose.orientation.y = 0.0;
+        t_3d_drone_marker.pose.orientation.z = 0.0;
+        t_3d_drone_marker.pose.orientation.w = 1.0;
+
+        t_3d_drone_marker.color.a = 1.0;
+        t_3d_drone_marker.color.r = 0.0;
+        t_3d_drone_marker.color.g = 0.0;
+        t_3d_drone_marker.color.b = 0.0;
+        t_3d_drone_markers.markers.push_back(t_3d_drone_marker);
+        j+=1;
+    }
+
     // Obstacles - paredes obstaculos
     visualization_msgs::Marker wall_marker;
     for(i = 0; i < ft->get_world()->get_wall_obstacles().size(); i++){
@@ -283,6 +354,7 @@ void init_graphics_and_data(){
     world_marker_publisher.publish(world_marker);
     wall_markers_publisher.publish(wall_markers);
     simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
+    // _3d_drone_supports_markers_publisher.publish(_3d_drone_supports_markers);
 
 }
 void repaint(){
@@ -298,9 +370,20 @@ void repaint(){
         //stats_markers.markers[i+1].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
     }
 
+    for(int i = 0; i < ft->get_world()->get_n_3d_drones(); i++){
+        t_3d_drone_markers.markers[i].pose.position.x = ft->get_world()->get_3d_drone(i)->x();
+        t_3d_drone_markers.markers[i].pose.position.y = ft->get_world()->get_3d_drone(i)->y();
+        t_3d_drone_markers.markers[i].pose.position.z = ft->get_world()->get_3d_drone(i)->z();
+        //stats_markers.markers[i+1].pose.position.x = ft->get_world()->get_simple_drone(i)->x();
+        //stats_markers.markers[i+1].pose.position.y = ft->get_world()->get_simple_drone(i)->y();
+    }
+
 
     // Simple drone markers
     simple_drone_markers_publisher.publish(simple_drone_markers);
+
+    // Simple drone markers
+    t_3d_drone_markers_publisher.publish(t_3d_drone_markers);
 
     // Simple drone wings markers
     simple_drone_supports_markers_publisher.publish(simple_drone_supports_markers);
@@ -362,9 +445,9 @@ bool reset_arena(fast_turtle::ResetArena::Request &req, fast_turtle::ResetArena:
 }
 int main(int argc, char** argv)
 {
-    user_id=argv[1];
+
     // Init node
-    ros::init(argc, argv, "arena_simple" + user_id);
+    ros::init(argc, argv, "arena_simple" );
     ROS_INFO("Initializing arena_simple");
 
     // Node object
@@ -372,20 +455,24 @@ int main(int argc, char** argv)
     
 
     // Initialize markers
-    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker"+ user_id, 0);
-    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers"+ user_id,0);
-    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers"+ user_id,0);
-    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers"+ user_id,0);
+    world_marker_publisher = nh.advertise<visualization_msgs::Marker>("world_marker", 0);
+    wall_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("wall_markers",0);
+    simple_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_markers",0);
+    simple_drone_supports_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("simple_drone_supports_markers",0);
+
+    t_3d_drone_markers_publisher = nh.advertise<visualization_msgs::MarkerArray>("t_3d_drone_markers",0);
 
     // Subscribers for all robots
-    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0"+ user_id, 1000, listen_cmd_vel_sd0);
+    ros::Subscriber sub_sd0 = nh.subscribe("cmd_vel_sd0", 1000, listen_cmd_vel_sd0);
+
+    ros::Subscriber sub_sd1 = nh.subscribe("cmd_vel_sd1", 1000, listen_cmd_vel_sd1);
 
     // Publishers
     //simple_drones_publisher = nh.advertise<fast_turtle::RobotDataArray>("simple_drones", 1000);
-    odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0"+ user_id, 50);
+    odom_publisher0 = nh.advertise<nav_msgs::Odometry>("odom0", 50);
     
     // Services
-    ros::ServiceServer service = nh.advertiseService("reset_arena" + user_id, reset_arena);
+    // ros::ServiceServer service = nh.advertiseService("reset_arena" , reset_arena);
     // Initialize simulator object
     ft->init_world(20, 0, 0, "square");
     
@@ -399,6 +486,7 @@ int main(int argc, char** argv)
     // Teams of Drones
     // Drones #1
     ft->add_simple_drone(0.0, 0.0, 0.5, BURGER_RADIUS, "drone0", 0.01);
+    ft->add_3d_drone(0.0, 0.0, 0.0, 0.5, BURGER_RADIUS, "drone1", 0.01);
 
     // Send first world data and graphics data
     publish_data();
